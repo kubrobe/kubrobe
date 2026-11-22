@@ -11,9 +11,9 @@ const [lead, ...rest] = profile.about;
 const show = Boolean(profile.about.length || facts.length || profile.now.length || profile.interests.length);
 ---
 {show && (
-  <section id="about" class="kb-wrap kb-section border-t border-rule" aria-labelledby="intro-h">
+  <section id="about" class="kb-wrap kb-section kb-rule" aria-labelledby="intro-h">
     <div class="kb-grid gap-y-12">
-      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:block lg:self-start lg:pt-3">
         <span class="text-ink lg:block">{code(2)}</span><span>Introduction</span>
       </div>
       <h2 id="intro-h" class="sr-only">Introduction</h2>

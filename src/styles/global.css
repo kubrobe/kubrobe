@@ -3,6 +3,7 @@
 @import '@fontsource-variable/geist-mono/wght.css';
 @import '@fontsource/instrument-serif/latin-400.css';
 @import '@fontsource/instrument-serif/latin-400-italic.css';
+@import './motion.css';
 
 /* Theme is driven by [data-theme] on <html>. Dark is the default. */
 @custom-variant light (&:where([data-theme='light'], [data-theme='light'] *));
@@ -200,6 +201,8 @@
     display: grid;
     gap: 1.1em;
   }
+  .kb-prose { counter-reset: kb-sec; }
+  .kb-prose :where(h2)::before { counter-increment: kb-sec; content: counter(kb-sec, decimal-leading-zero); display: block; font-family: var(--font-mono); font-size: var(--text-meta); font-weight: 400; letter-spacing: 0.02em; color: var(--kb-ink-3); margin-bottom: 0.4em; }
   .kb-prose :where(h2) { font-size: var(--text-h3); font-weight: 550; letter-spacing: -0.02em; margin-top: 1.2em; line-height: 1.25; }
   .kb-prose :where(h3) { font-size: var(--text-lg); font-weight: 550; margin-top: 0.8em; }
   .kb-prose :where(a) { text-decoration: underline; text-underline-offset: 0.2em; text-decoration-color: var(--kb-ink-3); }
@@ -237,6 +240,29 @@
   .kb-prose :where(.kb-diagram figcaption) { font-family: var(--font-mono); font-size: var(--text-meta); color: var(--kb-ink-2); margin-top: 10px; }
   .kb-prose :where(.kb-diagram:focus-visible) { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
   .kb-gallery:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
+
+  /* Shared button for small actions: square, mono, same easing everywhere. */
+  .kb-btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 14px;
+    border: 1px solid var(--kb-rule-2); color: var(--kb-ink); background: transparent; cursor: pointer;
+    font-family: var(--font-mono); font-size: var(--text-meta); letter-spacing: 0.02em;
+    transition: background-color var(--kb-dur-micro) var(--kb-ease-out), color var(--kb-dur-micro) var(--kb-ease-out), border-color var(--kb-dur-micro) var(--kb-ease-out);
+  }
+  @media (hover: hover) { .kb-btn:hover { background: var(--kb-ink); color: var(--kb-surface); border-color: var(--kb-ink); } }
+  .kb-btn:focus-visible { background: var(--kb-ink); color: var(--kb-surface); outline-offset: 2px; }
+  .kb-btn:active { transform: translateY(1px); }
+
+  /* Enlarged screen viewer (see Lightbox.astro). */
+  .kb-lightbox { margin: auto; max-width: min(94vw, 520px); max-height: 96dvh; overflow: auto; padding: 16px; border: 1px solid var(--kb-rule-2); background: var(--kb-surface); color: var(--kb-ink); }
+  .kb-lightbox::backdrop { background: rgb(0 0 0 / 0.8); }
+  @media (prefers-reduced-motion: no-preference) {
+    .kb-lightbox { transition: opacity 240ms var(--kb-ease-out), transform 240ms var(--kb-ease-out), display 240ms allow-discrete, overlay 240ms allow-discrete; opacity: 0; transform: translateY(10px); }
+    .kb-lightbox:popover-open { opacity: 1; transform: none; }
+    @starting-style { .kb-lightbox:popover-open { opacity: 0; transform: translateY(10px); } }
+    .kb-lightbox::backdrop { transition: background-color 240ms, display 240ms allow-discrete, overlay 240ms allow-discrete; background-color: rgb(0 0 0 / 0); }
+    .kb-lightbox:popover-open::backdrop { background-color: rgb(0 0 0 / 0.8); }
+    @starting-style { .kb-lightbox:popover-open::backdrop { background-color: rgb(0 0 0 / 0); } }
+  }
 }
 
 /* Subtle grain in dark only. Pure CSS, no image request. */
@@ -248,52 +274,4 @@ body::after {
   inset: -50%;
   opacity: var(--kb-noise);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  body::after { animation: kb-grain 8s steps(8) infinite; }
-  @keyframes kb-grain {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(-3%, 2%); }
-    50% { transform: translate(2%, -3%); }
-    75% { transform: translate(-2%, -1%); }
-    100% { transform: translate(0, 0); }
-  }
-
-  /* Scroll-linked reveals. No JS; browsers without support show content statically. */
-  @supports (animation-timeline: view()) {
-    [data-reveal] { animation: kb-rise linear both; }
-    /* Kept in its own rule: the CSS minifier would otherwise fold the timeline into the
-       animation shorthand, which browsers reject, silently disabling the reveal. */
-    [data-reveal]:is([data-reveal]) {
-      animation-timeline: view();
-      animation-range: entry 0% entry 55%;
-    }
-    [data-reveal='mask'] { animation-name: kb-mask; }
-    @keyframes kb-rise {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: none; }
-    }
-    @keyframes kb-mask {
-      from { clip-path: inset(0 0 100% 0); transform: translateY(0.35em); }
-      to { clip-path: inset(0 0 -10% 0); transform: none; }
-    }
-  }
-
-  /* Cross-document page transitions, no JS. */
-  @view-transition { navigation: auto; }
-  ::view-transition-group(kb-nav-ind), ::view-transition-group(kb-nav-ind-m) { animation-duration: var(--kb-dur-ui); animation-timing-function: var(--kb-ease-mask); }
-  ::view-transition-old(root) { animation: 240ms var(--kb-ease-mask) both kb-vt-out; }
-  ::view-transition-new(root) { animation: 420ms var(--kb-ease-out) both kb-vt-in; }
-  @keyframes kb-vt-out { to { opacity: 0; } }
-  @keyframes kb-vt-in { from { opacity: 0; transform: translateY(12px); } }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
 }

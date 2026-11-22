@@ -27,6 +27,8 @@ const nav = await getNav();
     <meta name="color-scheme" content="dark light" />
     <script is:inline>
       try { var t = localStorage.getItem('kb-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+      /* The home-page entrance plays on a fresh arrival (direct, reload, external link), not when moving around inside the site. */
+      try { if (location.pathname === '/' && !(document.referrer && new URL(document.referrer).origin === location.origin)) document.documentElement.dataset.intro = ''; } catch (e) {}
     </script>
     <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

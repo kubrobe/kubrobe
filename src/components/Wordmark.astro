@@ -1,7 +1,8 @@
 ---
 /**
  * KUBROBE set full width: the site's one full-bleed typographic moment.
- * Intro: letters rise through a mask, from the O outward (CSS only).
+ * Intro: letters rise through a mask, from the O outward (CSS only, see motion.css).
+ * Scroll: the weight eases from 640 to 440 as the wordmark leaves (--kb-wm-w, CSS scroll timeline).
  * Desktop with a fine pointer: letter weight follows the pointer (small rAF script).
  * Both are off under prefers-reduced-motion.
  */
@@ -28,18 +29,8 @@ const letters = ['K', 'U', 'B', 'R', 'O', 'B', 'E'];
   .kb-wm-mask { display: block; overflow: clip; padding-block: 0.03em 0.02em; }
   .kb-wm-l {
     display: block;
-    font-variation-settings: 'wght' var(--w, 640);
+    font-variation-settings: 'wght' var(--w, var(--kb-wm-w));
     transition: font-variation-settings var(--kb-dur-micro) var(--kb-ease-out);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .kb-wm-l {
-      animation: kb-wm-in var(--kb-dur-reveal) var(--kb-ease-mask) both;
-      animation-delay: calc(120ms + var(--d) * 70ms);
-    }
-    @keyframes kb-wm-in {
-      from { transform: translateY(105%); }
-      to { transform: none; }
-    }
   }
 </style>
 <script>

@@ -14,9 +14,9 @@ interface Props {
 const { number, label, id, heading, headingClass, class: cls } = Astro.props;
 const headingId = id ? `${id}-h` : undefined;
 ---
-<section id={id} aria-labelledby={headingId} class:list={['kb-wrap kb-section border-t border-rule', cls]}>
+<section id={id} aria-labelledby={headingId} class:list={['kb-wrap kb-section kb-rule', cls]}>
   <div class="kb-grid">
-    <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
+    <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:block lg:self-start lg:pt-3">
       <span class="text-ink lg:block">{code(number)}</span>
       <span>{label}</span>
     </div>

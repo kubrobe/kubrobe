@@ -44,7 +44,7 @@ const shown = certs.slice(0, 6);
                   </span>
                 )}
               </span>
-              <span class="kb-meta text-ink-2" aria-hidden="true">{d.credentialUrl ? '↗' : '→'}</span>
+              <span class="kb-meta kb-arrow text-ink-2" data-dir={d.credentialUrl ? 'ne' : 'e'} aria-hidden="true">{d.credentialUrl ? '↗' : '→'}</span>
             </a>
           </li>
         );

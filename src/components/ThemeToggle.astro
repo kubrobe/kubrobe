@@ -5,7 +5,7 @@ const { class: cls = '' } = Astro.props;
 ---
 <button
   type="button"
-  class:list={['kb-theme-toggle inline-grid size-11 place-items-center -mr-2.5 text-ink text-[1.05rem] leading-none cursor-pointer hover:bg-raised transition-colors', cls]}
+  class:list={['kb-theme-toggle inline-grid size-11 place-items-center -mr-2.5 text-ink text-[1.05rem] leading-none cursor-pointer hover:bg-raised transition-colors active:scale-95', cls]}
   data-theme-toggle
   aria-label="Switch to light theme"
 >
@@ -20,11 +20,18 @@ const { class: cls = '' } = Astro.props;
     });
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#f3f2ef' : '#0b0b0c');
   };
+  let timer: ReturnType<typeof setTimeout> | undefined;
   sync();
   document.addEventListener('click', (e) => {
     const btn = (e.target as Element | null)?.closest('[data-theme-toggle]');
     if (!btn) return;
     const next = root.dataset['theme'] === 'light' ? 'dark' : 'light';
+    // Short colour cross-fade; the class is removed once it has run so nothing else pays for it.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      root.classList.add('kb-theming');
+      clearTimeout(timer);
+      timer = setTimeout(() => root.classList.remove('kb-theming'), 360);
+    }
     root.dataset['theme'] = next;
     try { localStorage.setItem('kb-theme', next); } catch { /* storage unavailable */ }
     sync();

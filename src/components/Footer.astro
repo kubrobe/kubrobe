@@ -23,7 +23,7 @@ const hasContact = Boolean(profile.email || profile.links.length);
             <li class="border-t border-rule">
               <a href={l.href} class="group flex min-h-11 items-center justify-between gap-4 py-2 no-underline" rel="me noopener">
                 <span class="transition-transform duration-[var(--kb-dur-ui)] ease-[var(--kb-ease-out)] group-hover:translate-x-2 group-focus-visible:translate-x-2">{l.label}</span>
-                <span class="kb-meta text-ink-2" aria-hidden="true">↗</span>
+                <span class="kb-meta kb-arrow text-ink-2" data-dir="ne" aria-hidden="true">↗</span>
               </a>
             </li>
           ))}
@@ -39,6 +39,6 @@ const hasContact = Boolean(profile.email || profile.links.length);
       {sha && <span> · Build {sha}</span>}
       <span class="block text-ink-3 lg:inline">Geist, Geist Mono, Instrument Serif · Astro</span>
     </p>
-    <a href="#main" class="kb-draw col-span-1 inline-flex min-h-11 items-start justify-self-end whitespace-nowrap text-ink lg:col-[12/13] lg:items-center">Top <span aria-hidden="true" class="ml-1">↑</span></a>
+    <a href="#main" class="kb-draw col-span-1 inline-flex min-h-11 items-start justify-self-end whitespace-nowrap text-ink lg:col-[12/13] lg:items-center">Top <span aria-hidden="true" class="kb-arrow ml-1" data-dir="n">↑</span></a>
   </div>
 </footer>

@@ -251,6 +251,25 @@
   @media (hover: hover) { .kb-btn:hover { background: var(--kb-ink); color: var(--kb-surface); border-color: var(--kb-ink); } }
   .kb-btn:focus-visible { background: var(--kb-ink); color: var(--kb-surface); outline-offset: 2px; }
   .kb-btn:active { transform: translateY(1px); }
+  .kb-btn[data-done] { border-color: var(--kb-ink); }
+
+  /* Directional arrow: nudges one step the way it points when its link is hovered or focused. */
+  .kb-arrow { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) {
+    :is(a, button):hover > .kb-arrow[data-dir='ne'] { transform: translate(2px, -2px); }
+    :is(a, button):hover > .kb-arrow[data-dir='n'] { transform: translateY(-3px); }
+    :is(a, button):hover > .kb-arrow[data-dir='e'] { transform: translateX(4px); }
+  }
+  :is(a, button):focus-visible > .kb-arrow[data-dir='ne'] { transform: translate(2px, -2px); }
+  :is(a, button):focus-visible > .kb-arrow[data-dir='n'] { transform: translateY(-3px); }
+  :is(a, button):focus-visible > .kb-arrow[data-dir='e'] { transform: translateX(4px); }
+  /* Theme switch: a short cross-fade of colours, added by ThemeToggle for about 360ms. */
+  @media (prefers-reduced-motion: no-preference) {
+    html.kb-theming, html.kb-theming *, html.kb-theming *::before, html.kb-theming *::after { transition: background-color 280ms var(--kb-ease-out), color 280ms var(--kb-ease-out), border-color 280ms var(--kb-ease-out), fill 280ms var(--kb-ease-out), stroke 280ms var(--kb-ease-out) !important; }
+    .kb-theme-toggle > svg { transition: transform 420ms var(--kb-ease-mask); }
+    html[data-theme='light'] .kb-theme-toggle > svg { transform: rotate(180deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .kb-arrow { transition: none; } }
 
   /* Enlarged screen viewer (see Lightbox.astro). */
   .kb-lightbox { margin: auto; max-width: min(94vw, 520px); max-height: 96dvh; overflow: auto; padding: 16px; border: 1px solid var(--kb-rule-2); background: var(--kb-surface); color: var(--kb-ink); }

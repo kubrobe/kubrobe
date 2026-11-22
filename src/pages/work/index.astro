@@ -15,7 +15,7 @@ const work = await getWork();
     {work.length ? (
       <>
         <EntryHead />
-        <ol>{work.map((w) => <EntryRow href={`/work/${w.id}/`} number={w.data.number} title={w.data.title} kind="work" status={w.data.status} type={workTypeLabel[w.data.type]} year={w.data.year} placeholder={w.data.placeholder} />)}</ol>
+        <ol>{work.map((w) => <EntryRow href={`/work/${w.id}/`} number={w.data.number} title={w.data.title} kind="work" status={w.data.status} type={workTypeLabel[w.data.type]} year={w.data.year} placeholder={w.data.placeholder} preview={w.data.gallery[0]?.src} />)}</ol>
       </>
     ) : <Empty />}
   </div></div></div>

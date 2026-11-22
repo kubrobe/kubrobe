@@ -44,6 +44,8 @@ const work = defineCollection({
       .array(z.object({ src: image(), alt: z.string().min(1), caption: z.string().optional() }))
       .default([]),
     /** Where the screenshots come from, shown under the gallery. */
+    /** How screens are composed on the home page and case study. `devices` frames them as phones. */
+    presentation: z.enum(['board', 'devices']).default('board'),
     gallerySource: z.string().optional(),
     /** Verified headline numbers shown above the write-up. Each needs a source in `note`. */
     facts: z.array(z.object({ value: z.string(), label: z.string(), note: z.string().optional() })).default([]),

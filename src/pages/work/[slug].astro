@@ -5,12 +5,17 @@ import Base from '@/layouts/Base.astro';
 import PageHead from '@/components/PageHead.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
 import Gallery from '@/components/Gallery.astro';
+import DeviceStage from '@/components/DeviceStage.astro';
 import { getWork, workTypeLabel, code } from '@/lib/entries';
 
 export const getStaticPaths = (async () => (await getWork()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
 const { entry } = Astro.props;
 const d = entry.data;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+const work = await getWork();
+const at = work.findIndex((w) => w.id === entry.id);
+const neighbours = work.length > 1 ? { prev: work.length > 2 ? work[(at + work.length - 1) % work.length]! : undefined, next: work[(at + 1) % work.length]! } : undefined;
+const toc = headings.filter((h) => h.depth === 2);
 const spec = [
   ['Entry', code(d.number)],
   ['Type', workTypeLabel[d.type]],
@@ -21,7 +26,7 @@ const spec = [
 ].filter((r): r is [string, string] => Boolean(r[1]));
 ---
 <Base title={d.title} description={d.summary} type="article">
-  <PageHead number={d.number} label={workTypeLabel[d.type]} title={d.title} lede={d.summary}>
+  <PageHead number={d.number} label={workTypeLabel[d.type]} title={d.title} lede={d.summary} vtName={`kb-t-${d.number}`} crumb={{ href: '/work/', label: `Work · ${String(at + 1).padStart(2, '0')} / ${String(work.length).padStart(2, '0')}` }}>
     {d.placeholder && <span class="kb-ph-tag mt-4 inline-block">Placeholder</span>}
   </PageHead>
   {d.facts.length > 0 && (
@@ -41,19 +46,90 @@ const spec = [
   )}
   {d.gallery.length > 0 && (
     <div class="kb-wrap pb-12 lg:pb-20">
-      <div class="kb-grid"><div class="kb-main"><Gallery id="screens" shots={d.gallery} source={d.gallerySource} /></div></div>
+      <div class="kb-grid"><div class="kb-main">{d.presentation === 'devices' ? <DeviceStage id="screens" shots={d.gallery} source={d.gallerySource} /> : <Gallery id="screens" shots={d.gallery} source={d.gallerySource} />}</div></div>
     </div>
   )}
   <div class="kb-wrap pb-20">
     <div class="kb-grid">
-      <aside class="kb-rail kb-meta lg:sticky lg:top-[calc(var(--kb-bar-h)+24px)] lg:self-start" aria-label="Spec sheet">
+      <aside class="kb-rail kb-meta" aria-label="Spec sheet">
         <dl class="grid grid-cols-[auto_1fr] gap-x-4 border-t border-rule pt-3 lg:grid-cols-1">
           {spec.map(([k, v]) => <><dt class="text-ink-3">{k}</dt><dd class="mb-2 text-ink-2">{v}</dd></>)}
           <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
         </dl>
         {d.links.length > 0 && <ul class="mt-2 grid">{d.links.map((l) => <li><a class="kb-link inline-flex min-h-11 items-center" href={l.href} rel="noopener">{l.label} ↗</a></li>)}</ul>}
+        {toc.length > 2 && (
+          <nav class="kb-toc mt-8 hidden lg:sticky lg:top-[calc(var(--kb-bar-h)+24px)] lg:block" aria-label="On this page">
+            <p class="kb-label mb-2">On this page</p>
+            <ol class="kb-toc-list grid border-l border-rule">
+              {toc.map((h, i) => <li><a href={`#${h.slug}`} class="kb-toc-link" data-toc><span class="text-ink-3">{String(i + 1).padStart(2, '0')}</span> {h.text}</a></li>)}
+            </ol>
+          </nav>
+        )}
       </aside>
-      <article class="kb-main kb-prose mt-8 lg:mt-0"><Content /></article>
+      <article class="kb-main kb-prose mt-8 lg:mt-0">
+        {toc.length > 2 && (
+          <details class="kb-toc-m not-prose lg:hidden">
+            <summary class="kb-meta flex min-h-11 cursor-pointer list-none items-center justify-between border-y border-rule">On this page <span aria-hidden="true" class="kb-toc-m-i">+</span></summary>
+            <ol class="kb-toc-list grid pb-2">
+              {toc.map((h, i) => <li><a href={`#${h.slug}`} class="kb-toc-link kb-toc-link-m" data-toc><span class="text-ink-3">{String(i + 1).padStart(2, '0')}</span> {h.text}</a></li>)}
+            </ol>
+          </details>
+        )}
+        <Content />
+      </article>
     </div>
   </div>
+  {neighbours && (
+    <nav class="kb-wrap kb-rule pb-16 pt-10 lg:pb-24" aria-label="More work">
+      <div class="kb-grid gap-y-6">
+        <p class="kb-rail kb-meta text-ink-2">More work</p>
+        <div class="kb-main grid gap-px md:grid-cols-2 md:gap-[var(--kb-gutter)]">
+          {[['Previous', neighbours.prev, '←'], ['Next', neighbours.next, '→']].filter(([, w]) => w).map(([label, w, arrow]) => {
+            const e = w as typeof neighbours.next;
+            return (
+              <a href={`/work/${e.id}/`} class="kb-next group grid gap-2 border-t border-rule py-5 no-underline" rel={label === 'Next' ? 'next' : 'prev'}>
+                <span class="kb-meta flex justify-between text-ink-2"><span>{label as string} · {code(e.data.number)}</span><span class="kb-next-arrow" aria-hidden="true">{arrow as string}</span></span>
+                <span class="kb-next-title text-h3 font-medium leading-tight tracking-[-0.025em]" style={`view-transition-name:kb-t-${e.data.number};view-transition-class:kb-title`}>{e.data.title}</span>
+                <span class="max-w-[44ch] text-ink-2">{e.data.summary}</span>
+              </a>
+            );
+          })}
+        </div>
+        <a href="/work/" class="kb-draw kb-meta inline-flex min-h-11 items-center justify-self-start text-ink-2 hover:text-ink md:col-start-3">All work →</a>
+      </div>
+    </nav>
+  )}
 </Base>
+<script>
+  // Marks the section being read in the contents list. Passive scroll listener, one read per frame.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+  const heads = links.map((a) => document.getElementById(a.hash.slice(1))).filter((h): h is HTMLElement => Boolean(h));
+  if (heads.length) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const line = innerHeight * 0.25;
+      let id = '';
+      for (const h of heads) if (h.getBoundingClientRect().top <= line) id = h.id;
+      links.forEach((a) => (id && a.hash === `#${id}` ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
+    };
+    addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+</script>
+<style>
+  .kb-toc-list, .kb-toc-list li { list-style: none; padding-left: 0; margin: 0; }
+  .kb-toc-list li::marker { content: none; }
+  .kb-toc-link { display: flex; gap: 10px; min-height: 28px; align-items: center; padding: 3px 0 3px 12px; margin-left: -1px; border-left: 1px solid transparent; color: var(--kb-ink-2); text-decoration: none; transition: color var(--kb-dur-micro) var(--kb-ease-out), border-color var(--kb-dur-micro) var(--kb-ease-out); }
+  .kb-toc-link-m { min-height: 44px; border-left: 0; padding-left: 0; }
+  @media (hover: hover) { .kb-toc-link:hover { color: var(--kb-ink); } }
+  .kb-toc-link[aria-current] { color: var(--kb-ink); border-left-color: var(--kb-ink); }
+  .kb-toc-link-m[aria-current] { border-left-color: transparent; }
+  .kb-toc-m[open] .kb-toc-m-i { transform: rotate(45deg); }
+  .kb-toc-m-i { display: inline-block; transition: transform var(--kb-dur-micro) var(--kb-ease-out); }
+  .kb-next-title, .kb-next-arrow { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-next:hover .kb-next-title { transform: translateX(10px); } .kb-next:hover .kb-next-arrow { transform: translateX(6px); } }
+  .kb-next:focus-visible { outline-offset: -2px; }
+  .kb-next:focus-visible .kb-next-title { transform: translateX(10px); }
+  @media (prefers-reduced-motion: reduce) { .kb-toc-link, .kb-toc-m-i, .kb-next-title, .kb-next-arrow { transition: none; } }
+</style>

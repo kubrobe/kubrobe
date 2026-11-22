@@ -1,8 +1,8 @@
 ---
 import { code } from '@/lib/entries';
 import { emphasize } from '@/lib/text';
-interface Props { number: number; label: string; title: string; lede?: string | undefined }
-const { number, label, title, lede } = Astro.props;
+interface Props { number: number; label: string; title: string; lede?: string | undefined; /** Shared-element name: the same title on another page morphs into this one. */ vtName?: string | undefined; crumb?: { href: string; label: string } | undefined }
+const { number, label, title, lede, vtName, crumb } = Astro.props;
 ---
 <header class="kb-wrap pt-10 pb-10 lg:pt-20 lg:pb-14">
   <div class="kb-grid">
@@ -10,9 +10,16 @@ const { number, label, title, lede } = Astro.props;
       <span class="text-ink-2 lg:block">{code(number)}</span><span>{label}</span>
     </div>
     <div class="kb-main min-w-0">
-      <h1 class="text-h1 font-semibold leading-[0.95] tracking-[-0.04em] break-words"><Fragment set:html={emphasize(title)} /></h1>
+      {crumb && <a href={crumb.href} class="kb-crumb kb-meta mb-6 inline-flex min-h-11 items-center gap-2 text-ink-2 no-underline hover:text-ink"><span class="kb-crumb-a" aria-hidden="true">←</span> <span class="kb-draw">{crumb.label}</span></a>}
+      <h1 class="text-h1 font-semibold leading-[0.95] tracking-[-0.04em] break-words" style={vtName ? `view-transition-name:${vtName};view-transition-class:kb-title` : undefined}><Fragment set:html={emphasize(title)} /></h1>
       {lede && <p class="mt-6 max-w-[60ch] text-lg text-ink-2">{lede}</p>}
       <slot />
     </div>
   </div>
 </header>
+<style>
+  .kb-crumb-a { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-crumb:hover .kb-crumb-a { transform: translateX(-4px); } }
+  .kb-crumb:focus-visible .kb-crumb-a { transform: translateX(-4px); }
+  @media (prefers-reduced-motion: reduce) { .kb-crumb-a { transition: none; } }
+</style>

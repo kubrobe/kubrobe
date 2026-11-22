@@ -107,8 +107,8 @@ These journeys are covered by the website's automated API tests or are visible i
 <text x="432" y="62" fill="currentColor" stroke="none" opacity=".75">Compose · MVVM · Room</text>
 <text x="432" y="78" fill="currentColor" stroke="none" opacity=".75">HttpURLConnection</text>
 <text x="432" y="98" fill="currentColor" stroke="none" opacity=".75">bearer token (Keystore)</text>
-<path d="M120 112 V160 H250"/>
-<path d="M520 112 V160 H390"/>
+<path pathLength="1" d="M120 112 V160 H250"/>
+<path pathLength="1" d="M520 112 V160 H390"/>
 <text x="128" y="140" fill="currentColor" stroke="none" opacity=".75">/api</text>
 <text x="512" y="140" text-anchor="end" fill="currentColor" stroke="none" opacity=".75">/api/mobile</text>
 <rect x="220" y="140" width="200" height="104" stroke-width="1.5"/>
@@ -117,7 +117,7 @@ These journeys are covered by the website's automated API tests or are visible i
 <text x="232" y="198" fill="currentColor" stroke="none" opacity=".75">80 routes · validation</text>
 <text x="232" y="214" fill="currentColor" stroke="none" opacity=".75">SSE live events</text>
 <text x="232" y="230" fill="currentColor" stroke="none" opacity=".75">WebRTC signalling relay</text>
-<path d="M320 244 V290"/>
+<path pathLength="1" d="M320 244 V290"/>
 <rect x="200" y="290" width="240" height="70"/>
 <text x="212" y="312" fill="currentColor" stroke="none" font-weight="600">POSTGRESQL · SUPABASE</text>
 <text x="212" y="332" fill="currentColor" stroke="none" opacity=".75">27 tables · auto migrations</text>
@@ -144,7 +144,7 @@ These journeys are covered by the website's automated API tests or are visible i
 <text x="184" y="48" fill="currentColor" stroke="none" opacity=".75">Compose, Room</text>
 <text x="184" y="64" fill="currentColor" stroke="none" opacity=".75">MVVM</text>
 <text x="184" y="80" fill="currentColor" stroke="none" opacity=".75">bearer token</text>
-<path d="M87 92 V132"/><path d="M253 92 V132"/>
+<path pathLength="1" d="M87 92 V132"/><path pathLength="1" d="M253 92 V132"/>
 <text x="95" y="118" fill="currentColor" stroke="none" opacity=".75">/api</text>
 <text x="245" y="118" text-anchor="end" fill="currentColor" stroke="none" opacity=".75">/api/mobile</text>
 <rect x="8" y="132" width="324" height="104" stroke-width="1.5"/>
@@ -153,7 +153,7 @@ These journeys are covered by the website's automated API tests or are visible i
 <text x="18" y="190" fill="currentColor" stroke="none" opacity=".75">80 routes, input validated</text>
 <text x="18" y="206" fill="currentColor" stroke="none" opacity=".75">Live events (SSE)</text>
 <text x="18" y="222" fill="currentColor" stroke="none" opacity=".75">WebRTC signalling relay</text>
-<path d="M150 236 V288"/>
+<path pathLength="1" d="M150 236 V288"/>
 <rect x="8" y="288" width="290" height="72"/>
 <text x="18" y="310" fill="currentColor" stroke="none" font-weight="600">POSTGRESQL · SUPABASE</text>
 <text x="18" y="330" fill="currentColor" stroke="none" opacity=".75">27 tables, auto migrations</text>

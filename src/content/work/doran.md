@@ -28,6 +28,7 @@ gallery:
   - src: ../../assets/work/doran/build-korean.png
     alt: Doran exercise where the learner builds a Korean sentence from a word bank.
     caption: Build the sentence
+presentation: devices
 gallerySource: Screenshots captured automatically by the project's Android 14 emulator test run.
 facts:
   - value: "26"

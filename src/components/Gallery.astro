@@ -1,55 +1,74 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import Lightbox from '@/components/Lightbox.astro';
+import { pad } from '@/lib/entries';
 
 interface Shot { src: ImageMetadata; alt: string; caption?: string | undefined }
 interface Props { shots: Shot[]; source?: string | undefined; id: string }
 const { shots, source, id } = Astro.props;
+const n = shots.length;
 ---
 <!--
-  Screens scroll sideways on small screens and sit in one row on large ones.
-  Each screen opens full size in a native popover: no script, closes with Esc, a click
-  outside or the Close button, and returns focus to the screen that opened it.
+  Screens scroll sideways on small screens (native scroll-snap, swipe) and sit in one row on large ones.
+  A position bar under the strip follows the screen in view. Each screen enlarges in a native popover
+  with previous/next, arrow keys and swipe (see Lightbox.astro).
 -->
 <section class="kb-gallery-wrap" aria-labelledby={`${id}-h`}>
   <div class="mb-3 flex items-baseline justify-between gap-4">
     <h2 id={`${id}-h`} class="kb-label">Screens</h2>
-    <p class="kb-meta text-ink-3"><span class="lg:hidden">Swipe for more · </span>{shots.length} screens · tap to enlarge</p>
+    <p class="kb-meta text-ink-3">{n} screens · <span class="lg:hidden">swipe, then </span>tap to enlarge</p>
   </div>
-  <ul class="kb-gallery" role="list" tabindex="0" aria-label="Screens, scroll sideways for more">
+  <ul class="kb-gallery" role="list" tabindex="0" aria-label="Screens, scroll sideways for more" data-gallery>
     {shots.map((g, i) => (
-      <li class="kb-gallery-item">
+      <li class="kb-gallery-item" data-i={i}>
         <figure>
-          <button type="button" popovertarget={`${id}-p${i}`} class="kb-shot-btn" aria-label={`Enlarge: ${g.caption ?? g.alt}`}>
+          <button type="button" popovertarget={`${id}-p${i}`} class="kb-shot-btn kb-frame" aria-label={`Enlarge: ${g.caption ?? g.alt}`} data-reveal="clip">
             <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 14vw, 56vw" loading={i < 3 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} class="block h-auto w-full" />
           </button>
-          {g.caption && <figcaption class="kb-meta mt-2 text-ink-2">{g.caption}</figcaption>}
+          {g.caption && <figcaption class="kb-meta mt-2 text-ink-2"><span class="text-ink-3">{pad(i + 1)}</span> {g.caption}</figcaption>}
         </figure>
-        <div popover="auto" id={`${id}-p${i}`} class="kb-lightbox" aria-label={g.caption ?? 'Screen'}>
-          <Image src={g.src} alt={g.alt} widths={[480, 900]} sizes="(min-width: 48rem) 450px, 90vw" loading="lazy" class="block h-auto max-h-[80vh] w-auto max-w-full object-contain" />
-          <div class="kb-meta mt-3 flex items-center justify-between gap-6 text-ink-2">
-            <span>{g.caption}</span>
-            <button type="button" popovertarget={`${id}-p${i}`} popovertargetaction="hide" class="kb-lightbox-close">Close</button>
-          </div>
-        </div>
       </li>
     ))}
   </ul>
+  <div class="kb-gallery-pos lg:hidden" aria-hidden="true" data-pos>
+    {shots.map((_, i) => <span class="kb-tick" data-on={i === 0 ? '' : undefined} />)}
+  </div>
   {source && <p class="kb-meta mt-3 text-ink-3">{source}</p>}
+  {shots.map((g, i) => (
+    <Lightbox id={`${id}-p${i}`} shot={g} index={i} total={n} prevId={`${id}-p${(i + n - 1) % n}`} nextId={`${id}-p${(i + 1) % n}`} />
+  ))}
 </section>
+<script>
+  // Position bar: which screen is nearest the left edge of the strip. One observer, no scroll listener.
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((strip) => {
+    const ticks = strip.parentElement?.querySelectorAll<HTMLElement>('[data-pos] .kb-tick');
+    if (!ticks?.length || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const en of entries) {
+        if (!en.isIntersecting) continue;
+        const i = Number((en.target as HTMLElement).dataset['i']);
+        ticks.forEach((t, k) => (k === i ? t.setAttribute('data-on', '') : t.removeAttribute('data-on')));
+      }
+    }, { root: strip, threshold: 0.9 });
+    strip.querySelectorAll('.kb-gallery-item').forEach((li) => io.observe(li));
+  });
+</script>
 <style>
-  .kb-gallery { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; margin-inline: calc(var(--kb-margin) * -1); padding: 0 var(--kb-margin) 12px; scroll-padding-inline: var(--kb-margin); list-style: none; }
+  .kb-gallery { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; margin-inline: calc(var(--kb-margin) * -1); padding: 0 var(--kb-margin) 12px; scroll-padding-inline: var(--kb-margin); list-style: none; scrollbar-width: none; }
+  .kb-gallery::-webkit-scrollbar { display: none; }
   .kb-gallery:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
-  .kb-gallery-item { flex: none; width: min(56vw, 240px); scroll-snap-align: start; }
-  .kb-shot-btn { display: block; width: 100%; padding: 0; border: 1px solid var(--kb-rule); background: var(--kb-raised); cursor: zoom-in; transition: border-color var(--kb-dur-ui) var(--kb-ease-out); }
-  .kb-shot-btn:hover, .kb-shot-btn:focus-visible { border-color: var(--kb-ink); }
+  .kb-gallery-item { flex: none; width: min(60vw, 250px); scroll-snap-align: start; }
+  .kb-shot-btn { display: block; width: 100%; padding: 0; border: 1px solid var(--kb-rule-2); background: var(--kb-raised); cursor: zoom-in; transition: border-color var(--kb-dur-ui) var(--kb-ease-out), transform var(--kb-dur-ui) var(--kb-ease-out); }
   .kb-shot-btn:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 3px; }
+  @media (hover: hover) { .kb-shot-btn:hover { border-color: var(--kb-ink); transform: translateY(-4px); } }
+  .kb-shot-btn:focus-visible { border-color: var(--kb-ink); transform: translateY(-4px); }
+  .kb-gallery-pos { display: flex; gap: 6px; margin-top: 10px; }
+  .kb-tick { height: 2px; flex: 1 1 0; max-width: 28px; background: var(--kb-rule-2); transition: background-color var(--kb-dur-micro), max-width var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-tick[data-on] { background: var(--kb-ink); max-width: 56px; }
   @media (min-width: 60rem) {
     .kb-gallery { display: grid; grid-template-columns: repeat(6, 1fr); overflow: visible; margin-inline: 0; padding: 0; }
     .kb-gallery-item { width: auto; }
   }
-  .kb-lightbox { margin: auto; max-width: min(92vw, 520px); max-height: 94vh; padding: 16px; border: 1px solid var(--kb-rule-2); background: var(--kb-surface); color: var(--kb-ink); }
-  .kb-lightbox::backdrop { background: rgb(0 0 0 / 0.78); }
-  .kb-lightbox-close { min-height: 44px; min-width: 64px; padding: 0 14px; border: 1px solid var(--kb-rule-2); color: var(--kb-ink); cursor: pointer; }
-  .kb-lightbox-close:hover, .kb-lightbox-close:focus-visible { border-color: var(--kb-ink); }
+  @media (prefers-reduced-motion: reduce) { .kb-shot-btn, .kb-tick { transition: none; } .kb-shot-btn:hover, .kb-shot-btn:focus-visible { transform: none; } }
 </style>

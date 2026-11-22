@@ -18,13 +18,17 @@ const { featured, total } = Astro.props;
       const shots = d.gallery.slice(0, lead ? 3 : 2);
       return (
         <li data-reveal id={`kb-${d.number}`}>
-          <article class="kb-feature group relative grid gap-6 border-t border-rule pt-5 md:grid-cols-12 md:gap-x-[var(--kb-gutter)] lg:pt-6" aria-labelledby={`kb-${d.number}-t`}>
+          <article class="kb-feature kb-rule group relative grid gap-6 pt-5 md:grid-cols-12 md:gap-x-[var(--kb-gutter)] lg:pt-6" aria-labelledby={`kb-${d.number}-t`}>
             <figure class:list={['md:row-span-2', lead ? 'md:col-span-7' : 'md:col-span-5', flip && 'md:order-2 md:col-start-8']}>
               {shots.length > 0 ? (
-                <div class:list={['kb-shots grid gap-2 bg-raised p-3 sm:gap-3 sm:p-5', lead ? 'grid-cols-3' : 'grid-cols-2']}>
+                <div class:list={['kb-shots kb-frame bg-raised px-4 pt-6 sm:px-6 sm:pt-8', d.presentation === 'devices' ? 'kb-devices' : 'kb-board']} data-reveal="clip" style={`--n:${shots.length}`}>
                   {shots.map((g, k) => (
-                    <Image src={g.src} alt={g.alt} widths={[200, 320, 480]} sizes={lead ? '(min-width: 60rem) 16vw, 30vw' : '(min-width: 60rem) 14vw, 45vw'}
-                      loading={i === 0 && k === 0 ? 'eager' : 'lazy'} class="kb-shot block h-auto w-full" style={`--k:${k}`} />
+                    <div class="kb-shot-wrap" style={`--k:${k}`}>
+                      <div class={d.presentation === 'devices' ? 'kb-device' : 'kb-screen'} data-parallax style={`--p:${[1, 0.4, -0.2][k] ?? 0}`}>
+                        <Image src={g.src} alt={g.alt} widths={[200, 320, 480]} sizes={lead ? '(min-width: 60rem) 16vw, 30vw' : '(min-width: 60rem) 14vw, 45vw'}
+                          loading={i === 0 && k === 0 ? 'eager' : 'lazy'} class="kb-shot block h-auto w-full" />
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -41,7 +45,7 @@ const { featured, total } = Astro.props;
               </p>
               <h3 id={`kb-${d.number}-t`} class="text-[clamp(2rem,1.4rem+2.6vw,3.75rem)] leading-[0.98] font-[560] tracking-[-0.035em] text-balance">
                 <a href={`/work/${w.id}/`} class="kb-feature-link no-underline">
-                  <span class="kb-feature-title inline-block">{d.title}</span>
+                  <span class="kb-feature-title inline-block" style={`view-transition-name:kb-t-${d.number};view-transition-class:kb-title`}>{d.title}</span>
                 </a>
                 {d.placeholder && <span class="kb-ph-tag ml-2 align-middle text-[0.6rem]">Placeholder</span>}
               </h3>
@@ -88,6 +92,17 @@ const { featured, total } = Astro.props;
     .kb-feature :global(.kb-fig-fine) { clip-path: none; }
     .kb-feature :global(.kb-fig-coarse) { display: none; }
   }
+  /* Screens: SkillSwap is a staggered board of bare screens, Doran is a set of framed devices.
+     Both keep each screenshot's real aspect ratio. */
+  .kb-shots { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 8px; align-items: start; }
+  @media (min-width: 30rem) { .kb-shots { gap: 12px; } }
+  .kb-board .kb-shot-wrap:nth-child(even) { margin-top: clamp(16px, 3vw, 44px); }
+  .kb-board .kb-screen { border: 1px solid var(--kb-rule-2); border-radius: 4px; overflow: clip; background: var(--kb-surface); }
+  .kb-devices { padding-top: clamp(28px, 4vw, 48px); }
+  .kb-devices .kb-shot-wrap:nth-child(2) { margin-top: clamp(20px, 4vw, 56px); margin-left: -6%; }
+  .kb-device { background: #000; border: 1px solid var(--kb-rule-2); border-radius: 14px; padding: 4px; box-shadow: 0 0 0 1px var(--kb-surface); overflow: clip; }
+  .kb-device .kb-shot { border-radius: 10px; }
+  .kb-shot-wrap { min-width: 0; }
   /* Screenshots sit slightly desaturated in the monochrome page and come to full colour on hover or focus. */
   .kb-shot { filter: grayscale(1) contrast(1.05); transition: filter var(--kb-dur-ui) var(--kb-ease-out), translate var(--kb-dur-ui) var(--kb-ease-out); transition-delay: calc(var(--k) * 40ms); }
   .kb-feature:has(.kb-feature-link:focus-visible) .kb-shot { filter: none; translate: 0 -6px; }

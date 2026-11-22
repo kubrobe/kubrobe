@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Section from '@/components/Section.astro';
+import { Image } from 'astro:assets';
 import EntryFigure from '@/components/EntryFigure.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
 import { workTypeLabel, pad, code } from '@/lib/entries';
@@ -12,16 +13,29 @@ const { featured, total } = Astro.props;
     {featured.map((w, i) => {
       const d = w.data;
       const flip = i % 2 === 1;
+      // The lead entry gets the widest figure. Real screenshots replace the generated figure when they exist.
+      const lead = i === 0;
+      const shots = d.gallery.slice(0, lead ? 3 : 2);
       return (
         <li data-reveal id={`kb-${d.number}`}>
           <article class="kb-feature group relative grid gap-6 border-t border-rule pt-5 md:grid-cols-12 md:gap-x-[var(--kb-gutter)] lg:pt-6" aria-labelledby={`kb-${d.number}-t`}>
-            <figure class:list={['md:col-span-5 md:row-span-2', flip && 'md:order-2 md:col-start-8']}>
-              <EntryFigure number={d.number} resolve class="w-full" />
+            <figure class:list={['md:row-span-2', lead ? 'md:col-span-7' : 'md:col-span-5', flip && 'md:order-2 md:col-start-8']}>
+              {shots.length > 0 ? (
+                <div class:list={['kb-shots grid gap-2 bg-raised p-3 sm:gap-3 sm:p-5', lead ? 'grid-cols-3' : 'grid-cols-2']}>
+                  {shots.map((g, k) => (
+                    <Image src={g.src} alt={g.alt} widths={[200, 320, 480]} sizes={lead ? '(min-width: 60rem) 16vw, 30vw' : '(min-width: 60rem) 14vw, 45vw'}
+                      loading={i === 0 && k === 0 ? 'eager' : 'lazy'} class="kb-shot block h-auto w-full" style={`--k:${k}`} />
+                  ))}
+                </div>
+              ) : (
+                <EntryFigure number={d.number} resolve class="w-full" />
+              )}
               <figcaption class="kb-meta mt-2 flex justify-between gap-4 text-ink-3">
-                <span>Fig. {code(d.number)}</span><span>Generated from the entry ID</span>
+                <span>Fig. {code(d.number)}</span>
+                <span>{shots.length > 0 ? 'Screenshots, demo data' : 'Generated from the entry ID'}</span>
               </figcaption>
             </figure>
-            <div class:list={['grid min-w-0 content-start gap-4 md:col-span-7', flip ? 'md:order-1 md:col-start-1 md:pr-[8%]' : 'md:pl-[8%]']}>
+            <div class:list={['grid min-w-0 content-start gap-4', lead ? 'md:col-span-5 md:pl-[6%]' : 'md:col-span-7', !lead && (flip ? 'md:order-1 md:col-start-1 md:pr-[8%]' : 'md:pl-[8%]')]}>
               <p class="kb-meta flex flex-wrap gap-x-3 text-ink-2">
                 <span class="text-ink">{code(d.number)}</span><span>{workTypeLabel[d.type]}</span><span>{d.year}</span>
               </p>
@@ -74,7 +88,14 @@ const { featured, total } = Astro.props;
     .kb-feature :global(.kb-fig-fine) { clip-path: none; }
     .kb-feature :global(.kb-fig-coarse) { display: none; }
   }
+  /* Screenshots sit slightly desaturated in the monochrome page and come to full colour on hover or focus. */
+  .kb-shot { filter: grayscale(1) contrast(1.05); transition: filter var(--kb-dur-ui) var(--kb-ease-out), translate var(--kb-dur-ui) var(--kb-ease-out); transition-delay: calc(var(--k) * 40ms); }
+  .kb-feature:has(.kb-feature-link:focus-visible) .kb-shot { filter: none; translate: 0 -6px; }
+  @media (hover: hover) { .kb-feature:hover .kb-shot { filter: none; translate: 0 -6px; } }
+  @media (hover: none), (pointer: coarse), (max-width: 59.99rem) { .kb-shot { filter: none; } }
+
   @media (prefers-reduced-motion: reduce) {
-    .kb-feature :global(.kb-fig-fine), .kb-feature :global(.kb-fig-coarse) { transition: none; }
+    .kb-feature :global(.kb-fig-fine), .kb-feature :global(.kb-fig-coarse), .kb-shot { transition: none; }
+    .kb-feature:hover .kb-shot, .kb-feature:has(.kb-feature-link:focus-visible) .kb-shot { translate: none; }
   }
 </style>

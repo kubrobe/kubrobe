@@ -19,6 +19,10 @@ Astro 7 (static) · Tailwind CSS v4 · strict TypeScript · no UI framework.
 See `src/content/README.md`. Personal details live in `src/data/profile.ts`.
 Anything empty is hidden. Placeholder fixtures never ship in a normal build.
 
+## Documentation
+
+`docs/PROJECT.md` (vision, stack, architecture), `docs/DECISIONS.md`, `docs/TASKS.md`, `docs/LAUNCH-CHECKLIST.md`, `docs/STAGE-E-AUDIT.md`, `docs/DESIGN-SYSTEM.md`.
+
 ## Decisions
 
 - **Navigation:** four primary destinations (Work, Writing, Certifications, About).

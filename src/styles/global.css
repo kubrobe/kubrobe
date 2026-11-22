@@ -210,6 +210,15 @@
   .kb-prose :where(pre) { font-family: var(--font-mono); font-size: 0.85rem; background: var(--kb-raised); padding: 16px; overflow-x: auto; border: 1px solid var(--kb-rule); }
   .kb-prose :where(blockquote) { border-left: 1px solid var(--kb-ink); padding-left: 1em; color: var(--kb-ink-2); }
   .kb-prose :where(img) { max-width: 100%; height: auto; }
+  .kb-prose :where(table) { width: 100%; border-collapse: collapse; font-size: var(--text-sm); display: block; overflow-x: auto; }
+  .kb-prose :where(th, td) { text-align: left; vertical-align: top; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--kb-rule); }
+  .kb-prose :where(th) { font-family: var(--font-mono); font-size: var(--text-micro); letter-spacing: 0.08em; text-transform: uppercase; color: var(--kb-ink-2); font-weight: 500; }
+  .kb-prose :where(td:first-child) { color: var(--kb-ink-2); white-space: nowrap; }
+  .kb-prose :where(.kb-diagram) { margin-block: 0.5em; border: 1px solid var(--kb-rule); background: var(--kb-raised); padding: 16px; color: var(--kb-ink); overflow-x: auto; }
+  .kb-prose :where(.kb-diagram svg) { display: block; width: 100%; min-width: 520px; height: auto; }
+  .kb-prose :where(.kb-diagram figcaption) { font-family: var(--font-mono); font-size: var(--text-meta); color: var(--kb-ink-2); margin-top: 10px; }
+  .kb-prose :where(.kb-diagram:focus-visible) { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
+  .kb-gallery:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
 }
 
 /* Subtle grain in dark only. Pure CSS, no image request. */

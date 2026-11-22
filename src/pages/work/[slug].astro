@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import PageHead from '@/components/PageHead.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
@@ -23,6 +24,25 @@ const spec = [
   <PageHead number={d.number} label={workTypeLabel[d.type]} title={d.title} lede={d.summary}>
     {d.placeholder && <span class="kb-ph-tag mt-4 inline-block">Placeholder</span>}
   </PageHead>
+  {d.gallery.length > 0 && (
+    <section class="kb-wrap pb-12 lg:pb-20" aria-label="Screens">
+      <div class="kb-grid">
+        <div class="kb-main">
+          <ul tabindex="0" aria-label="Screens, scroll sideways for more" class="kb-gallery -mx-[var(--kb-margin)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--kb-margin)] pb-3 lg:mx-0 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0">
+            {d.gallery.map((g, i) => (
+              <li class="w-[44vw] max-w-[220px] shrink-0 snap-start lg:w-auto lg:max-w-none">
+                <figure>
+                  <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 14vw, 44vw" loading={i < 3 ? 'eager' : 'lazy'} class="block h-auto w-full border border-rule" />
+                  {g.caption && <figcaption class="kb-meta mt-2 text-ink-2">{g.caption}</figcaption>}
+                </figure>
+              </li>
+            ))}
+          </ul>
+          {d.gallerySource && <p class="kb-meta mt-3 text-ink-3">{d.gallerySource}</p>}
+        </div>
+      </div>
+    </section>
+  )}
   <div class="kb-wrap pb-20">
     <div class="kb-grid">
       <aside class="kb-rail kb-meta lg:sticky lg:top-[calc(var(--kb-bar-h)+24px)] lg:self-start" aria-label="Spec sheet">
@@ -30,7 +50,7 @@ const spec = [
           {spec.map(([k, v]) => <><dt class="text-ink-3">{k}</dt><dd class="mb-2 text-ink-2">{v}</dd></>)}
           <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
         </dl>
-        {d.links.length > 0 && <ul class="mt-4 grid gap-1">{d.links.map((l) => <li><a class="kb-link" href={l.href}>{l.label} ↗</a></li>)}</ul>}
+        {d.links.length > 0 && <ul class="mt-4 grid gap-1">{d.links.map((l) => <li><a class="kb-link" href={l.href} rel="noopener">{l.label} ↗</a></li>)}</ul>}
       </aside>
       <article class="kb-main kb-prose mt-8 lg:mt-0"><Content /></article>
     </div>

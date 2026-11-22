@@ -1,0 +1,22 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHead from '@/components/PageHead.astro';
+import EntryHead from '@/components/EntryHead.astro';
+import EntryRow from '@/components/EntryRow.astro';
+import Empty from '@/components/Empty.astro';
+import { getWork, workTypeLabel, pad } from '@/lib/entries';
+const work = await getWork();
+---
+<Base title="Work" description="Index of projects and case studies.">
+  <PageHead number={100} label="Work" title="Work">
+    <p class="kb-meta mt-6 text-ink-2">{pad(work.length)} entries</p>
+  </PageHead>
+  <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main">
+    {work.length ? (
+      <>
+        <EntryHead />
+        <ol>{work.map((w) => <EntryRow href={`/work/${w.id}/`} number={w.data.number} title={w.data.title} kind="work" status={w.data.status} type={workTypeLabel[w.data.type]} year={w.data.year} placeholder={w.data.placeholder} />)}</ol>
+      </>
+    ) : <Empty />}
+  </div></div></div>
+</Base>

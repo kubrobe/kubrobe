@@ -1,0 +1,56 @@
+---
+import Wordmark from '@/components/Wordmark.astro';
+import { profile, profileIsPlaceholder } from '@/data/profile';
+import { code, isoDate, pad } from '@/lib/entries';
+import { emphasize } from '@/lib/text';
+import pkg from '../../../package.json';
+
+interface Props { entries: number; updated?: Date | undefined }
+const { entries, updated } = Astro.props;
+const clock = profile.showLocalTime && profile.timeZone ? profile.timeZone : undefined;
+const facts = [profile.role, profile.currently && `Currently: ${profile.currently}`, profile.openTo && `Open to: ${profile.openTo}`].filter(Boolean);
+const hasStatement = Boolean(profile.statement || facts.length);
+---
+<section class="kb-wrap pt-5 pb-12 min-[900px]:pt-8 min-[900px]:pb-20" aria-label="Introduction">
+  <div class="kb-grid kb-meta mb-4 text-ink-3 min-[900px]:mb-6">
+    <div class="kb-rail hidden min-[900px]:block"><span class="block text-ink-2">{code(0)}</span>Index</div>
+    <p class="kb-main flex flex-wrap justify-between gap-x-6 gap-y-1 border-t border-rule pt-2">
+      {profile.city && (
+        <span>{profile.city}{clock && <> · <time data-clock={clock}>--:--</time> local</>}</span>
+      )}
+      {entries > 0 && <span>Entries {pad(entries, 3)}</span>}
+      {updated && <span>Updated <time datetime={isoDate(updated)}>{isoDate(updated)}</time></span>}
+      <span>v{pkg.version}</span>
+    </p>
+  </div>
+
+  <Wordmark />
+
+  {hasStatement && (
+    <div class="kb-grid mt-8 min-[900px]:mt-14">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-3 min-[900px]:block">
+        <span class="text-ink-2 min-[900px]:block">{code(1)}</span><span>Statement</span>
+      </div>
+      {profile.statement && (
+        <p class:list={['min-w-0 text-[clamp(1.5rem,1.1rem+1.7vw,2.6rem)] leading-[1.15] font-[450] tracking-[-0.025em] min-[900px]:col-[3/10]', profileIsPlaceholder('statement') && 'text-ink-2']}>
+          <Fragment set:html={emphasize(profile.statement)} />
+        </p>
+      )}
+      {facts.length > 0 && (
+        <ul class="kb-meta self-end text-ink-2 min-[900px]:col-[10/13]">
+          {facts.map((f) => <li>{f}</li>)}
+        </ul>
+      )}
+    </div>
+  )}
+</section>
+{clock && (
+  <script>
+    document.querySelectorAll<HTMLTimeElement>('[data-clock]').forEach((el) => {
+      const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: el.dataset['clock'] });
+      const tick = () => { el.textContent = fmt.format(new Date()); };
+      tick();
+      setInterval(tick, 30_000);
+    });
+  </script>
+)}

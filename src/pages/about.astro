@@ -1,0 +1,22 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHead from '@/components/PageHead.astro';
+import Empty from '@/components/Empty.astro';
+import { profile } from '@/data/profile';
+const has = profile.about.length || profile.now.length || profile.interests.length;
+---
+<Base title="About">
+  <PageHead number={400} label="About" title="About" />
+  <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main grid gap-12">
+    {profile.about.length > 0 && <div class="kb-prose text-lg">{profile.about.map((p) => <p>{p}</p>)}</div>}
+    {profile.now.length > 0 && (
+      <section aria-labelledby="now-h"><h2 id="now-h" class="kb-label mb-3">Now</h2><ul class="grid gap-2 border-t border-rule pt-3">{profile.now.map((n) => <li>{n}</li>)}</ul></section>
+    )}
+    {profile.interests.length > 0 && (
+      <section aria-labelledby="int-h"><h2 id="int-h" class="kb-label mb-3">Interests</h2>
+        <ul>{profile.interests.map((i) => <li class="grid gap-0.5 border-t border-rule py-3"><span>{i.title}</span>{i.note && <span class="kb-meta text-ink-2">{i.note}</span>}</li>)}</ul>
+      </section>
+    )}
+    {!has && <Empty text="Nothing filed here yet." />}
+  </div></div></div>
+</Base>

@@ -1,0 +1,6 @@
+---
+import Glyph from './Glyph.astro';
+interface Props { text?: string }
+const { text = 'No entries filed yet.' } = Astro.props;
+---
+<p class="kb-meta border-t border-b border-rule py-6 text-ink-2"><Glyph status="planned" class="mr-2" />{text}</p>

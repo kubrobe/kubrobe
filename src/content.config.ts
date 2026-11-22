@@ -1,0 +1,68 @@
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+
+/**
+ * Every item on the site is an "entry": it has a catalogue number, a type and a status.
+ * Status is shared across collections and always rendered as a glyph:
+ *   complete ●  in-progress ◐  planned ○
+ *
+ * `placeholder: true` marks design-review fixtures. They are excluded from every build
+ * unless KB_SHOW_PLACEHOLDERS=true, and they are visibly labelled when shown.
+ */
+const status = z.enum(['complete', 'in-progress', 'planned']);
+
+const base = {
+  /** Catalogue number inside the collection's range, e.g. 101 for KB—101. */
+  number: z.number().int().min(0).max(999),
+  title: z.string().min(1),
+  status,
+  draft: z.boolean().default(false),
+  placeholder: z.boolean().default(false),
+};
+
+const link = z.object({ label: z.string().min(1), href: z.url() });
+
+const work = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/work' }),
+  schema: z.object({
+    ...base,
+    summary: z.string().min(1),
+    type: z.enum(['case-study', 'experiment', 'tool', 'site', 'study']),
+    year: z.number().int().min(1990).max(2100),
+    featured: z.boolean().default(false),
+    order: z.number().int().default(0),
+    role: z.string().optional(),
+    stack: z.array(z.string()).default([]),
+    timeline: z.string().optional(),
+    links: z.array(link).default([]),
+  }),
+});
+
+const writing = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/writing' }),
+  schema: z.object({
+    ...base,
+    status: status.default('complete'),
+    description: z.string().min(1),
+    date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
+  }),
+});
+
+const certifications = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/certifications' }),
+  schema: z.object({
+    ...base,
+    issuer: z.string().min(1),
+    /** Date earned (complete) or started (in-progress). Leave out if unknown. */
+    date: z.coerce.date().optional(),
+    /** Real progress only, 0–100. Leave out rather than guess. */
+    progress: z.number().min(0).max(100).optional(),
+    credentialUrl: z.url().optional(),
+    note: z.string().optional(),
+  }),
+});
+
+export const collections = { work, writing, certifications };

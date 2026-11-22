@@ -1,0 +1,25 @@
+---
+/** KUBROBE set full width. The O is the identity motif and carries data-o for later motion. */
+const letters = ['K', 'U', 'B', 'R', 'O', 'B', 'E'];
+---
+<h1 class="kb-wordmark select-none">
+  <span class="sr-only">KUBROBE</span>
+  <span aria-hidden="true" class="flex">
+    {letters.map((l, i) => <span class="kb-wm-l" data-o={i === 4 ? '' : undefined}>{l}</span>)}
+  </span>
+</h1>
+<style>
+  .kb-wordmark {
+    /* Fitted to the content width: 7 letters of Geist 640 at -5.5% ≈ 4.43em. */
+    font-size: calc((min(100vw, 1680px) - 2 * var(--kb-margin)) / 4.43);
+    font-weight: 640;
+    letter-spacing: -0.055em;
+    line-height: 0.78;
+    margin-left: -0.045em;
+    font-variation-settings: 'wght' 640;
+    padding-block: 0.04em 0.02em;
+    white-space: nowrap;
+    overflow: clip;
+  }
+  .kb-wm-l { display: block; }
+</style>

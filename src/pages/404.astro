@@ -1,0 +1,9 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHead from '@/components/PageHead.astro';
+---
+<Base title="Not found">
+  <PageHead number={404} label="Missing" title="No such *entry*" lede="This address is not in the index.">
+    <a href="/" class="kb-meta kb-link mt-8 inline-block text-ink-2 hover:text-ink">← Back to the index</a>
+  </PageHead>
+</Base>

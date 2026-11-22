@@ -1,0 +1,7 @@
+---
+interface Props { cols?: string[] }
+const { cols = ['ID', 'Title', 'Type', 'Year', 'Status'] } = Astro.props;
+---
+<div aria-hidden="true" class="kb-label hidden grid-cols-[7rem_minmax(0,1fr)_9rem_4rem_9rem] gap-x-4 pb-2 text-ink-3 min-[900px]:grid">
+  {cols.map((c) => <span>{c}</span>)}
+</div>

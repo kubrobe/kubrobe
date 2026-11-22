@@ -1,0 +1,203 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/geist/wght.css';
+@import '@fontsource-variable/geist-mono/wght.css';
+@import '@fontsource/instrument-serif/latin-400-italic.css';
+
+/* Theme is driven by [data-theme] on <html>. Dark is the default. */
+@custom-variant light (&:where([data-theme='light'], [data-theme='light'] *));
+
+:root {
+  /* Dark (default) */
+  --kb-surface: #0b0b0c;
+  --kb-raised: #131315;
+  --kb-ink: #ececea;      /* 16.6:1 */
+  --kb-ink-2: #9c9c98;    /* 7.1:1, body-safe */
+  --kb-ink-3: #6e6e6b;    /* 3.8:1, IDs and non-essential only */
+  --kb-rule: #26262a;
+  --kb-noise: 0.03;
+  color-scheme: dark;
+
+  --kb-ease-out: cubic-bezier(0.2, 0.7, 0, 1);
+  --kb-ease-move: cubic-bezier(0.7, 0, 0.2, 1);
+  --kb-dur-instant: 120ms;
+  --kb-dur-micro: 240ms;
+  --kb-dur-ui: 420ms;
+  --kb-dur-reveal: 900ms;
+
+  --kb-margin: max(16px, 4vw);
+  --kb-gutter: 20px;
+  --kb-bar-h: 52px;
+  --kb-mobile-bar-h: 0px;
+}
+
+:root[data-theme='light'] {
+  --kb-surface: #f3f2ef;
+  --kb-raised: #e9e8e4;
+  --kb-ink: #121212;      /* 16.7:1 */
+  --kb-ink-2: #5c5b57;    /* 6.1:1, body-safe */
+  --kb-ink-3: #878681;    /* 3.3:1, IDs and non-essential only */
+  --kb-rule: #d6d4cf;
+  --kb-noise: 0;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-surface: var(--kb-surface);
+  --color-raised: var(--kb-raised);
+  --color-ink: var(--kb-ink);
+  --color-ink-2: var(--kb-ink-2);
+  --color-ink-3: var(--kb-ink-3);
+  --color-rule: var(--kb-rule);
+
+  --font-sans: 'Geist Variable', 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  /* Fluid scale between 375px and 1440px */
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.6;
+  --text-sm: 0.875rem;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6;
+  --text-lg: clamp(1.0625rem, 0.996rem + 0.282vw, 1.25rem);
+  --text-h3: clamp(1.25rem, 1.162rem + 0.376vw, 1.5rem);
+  --text-h2: clamp(2rem, 1.648rem + 1.502vw, 3rem);
+  --text-h1: clamp(3rem, 1.944rem + 4.507vw, 6rem);
+}
+
+@layer base {
+  html {
+    background: var(--kb-surface);
+    color: var(--kb-ink);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--kb-bar-h) + 16px);
+  }
+  body {
+    min-height: 100dvh;
+    background: var(--kb-surface);
+    color: var(--kb-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    padding-bottom: var(--kb-mobile-bar-h);
+  }
+  ::selection {
+    background: var(--kb-ink);
+    color: var(--kb-surface);
+  }
+  :focus-visible {
+    outline: 2px solid var(--kb-ink);
+    outline-offset: 3px;
+  }
+  a {
+    color: inherit;
+  }
+  hr {
+    border-color: var(--kb-rule);
+  }
+}
+
+@layer components {
+  /* 12-column editorial grid. Columns 1–2 are the metadata rail. */
+  .kb-wrap {
+    padding-inline: max(var(--kb-margin), env(safe-area-inset-left)) max(var(--kb-margin), env(safe-area-inset-right));
+    max-width: 1680px;
+    margin-inline: auto;
+  }
+  .kb-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 12px;
+  }
+  @media (min-width: 900px) {
+    .kb-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--kb-gutter);
+    }
+    .kb-rail { grid-column: 1 / 3; }
+    .kb-main { grid-column: 3 / 13; }
+  }
+
+  .kb-meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .kb-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kb-ink-2);
+  }
+  /* The single serif-italic word: the human voice inside the system. */
+  .kb-em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-size: 1.08em;
+  }
+  .kb-link {
+    text-decoration-line: underline;
+    text-decoration-color: var(--kb-rule);
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color var(--kb-dur-micro) var(--kb-ease-out);
+  }
+  .kb-link:hover { text-decoration-color: var(--kb-ink); }
+
+  /* Visible marker for design-review fixtures. */
+  .kb-ph-tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px dashed currentColor;
+    padding: 0 4px;
+    color: var(--kb-ink-2);
+    white-space: nowrap;
+  }
+
+  .kb-prose {
+    max-width: 65ch;
+    display: grid;
+    gap: 1.1em;
+  }
+  .kb-prose :where(h2) { font-size: var(--text-h3); font-weight: 550; letter-spacing: -0.02em; margin-top: 1.2em; line-height: 1.25; }
+  .kb-prose :where(h3) { font-size: var(--text-lg); font-weight: 550; margin-top: 0.8em; }
+  .kb-prose :where(a) { text-decoration: underline; text-underline-offset: 0.2em; text-decoration-color: var(--kb-ink-3); }
+  .kb-prose :where(ul, ol) { padding-left: 1.2em; }
+  .kb-prose :where(ul) { list-style: square; }
+  .kb-prose :where(ol) { list-style: decimal; }
+  .kb-prose :where(code) { font-family: var(--font-mono); font-size: 0.88em; }
+  .kb-prose :where(pre) { font-family: var(--font-mono); font-size: 0.85rem; background: var(--kb-raised); padding: 16px; overflow-x: auto; border: 1px solid var(--kb-rule); }
+  .kb-prose :where(blockquote) { border-left: 1px solid var(--kb-ink); padding-left: 1em; color: var(--kb-ink-2); }
+  .kb-prose :where(img) { max-width: 100%; height: auto; }
+}
+
+/* Subtle grain in dark only. Pure CSS, no image request. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: var(--kb-noise);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

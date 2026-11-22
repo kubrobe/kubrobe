@@ -1,0 +1,32 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { pad } from '@/lib/entries';
+import type { NavItem } from '@/lib/nav';
+interface Props { nav: NavItem[] }
+const { nav } = Astro.props;
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href) || path === href.replace(/\/$/, '');
+---
+<header class="sticky top-0 z-50 border-b border-rule bg-surface pt-[env(safe-area-inset-top)]">
+  <div class="kb-wrap flex h-[var(--kb-bar-h)] items-center gap-6">
+    <a href="/" class="kb-meta font-semibold tracking-[0.06em] text-ink no-underline" aria-label="KUBROBE, home">KB</a>
+    {nav.length > 0 && (
+      <nav aria-label="Primary" class="mx-auto hidden min-[900px]:block">
+        <ul class="flex items-baseline gap-7 text-sm">
+          {nav.map((n) => (
+            <li>
+              <a
+                href={n.href}
+                class:list={['no-underline transition-colors hover:text-ink', isActive(n.href) ? 'text-ink' : 'text-ink-2']}
+                aria-current={isActive(n.href) ? 'page' : undefined}
+              >
+                {n.label}{n.count !== undefined && <sup class="kb-meta ml-0.5 text-[0.65rem] text-ink-3" aria-label={`, ${n.count} entries`}>{pad(n.count)}</sup>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+    <ThemeToggle class="ml-auto min-[900px]:ml-0" />
+  </div>
+</header>

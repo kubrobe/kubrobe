@@ -1,0 +1,11 @@
+---
+import Glyph from './Glyph.astro';
+import { statusLabel, type Kind, type Status } from '@/lib/entries';
+interface Props { kind: Kind; status: Status; /** Hide the word on small screens, keep it for screen readers. */ compact?: boolean }
+const { kind, status, compact = false } = Astro.props;
+const label = statusLabel(kind, status);
+---
+<span class="kb-meta inline-flex items-center gap-1.5 whitespace-nowrap text-ink-2">
+  <Glyph status={status} class="text-ink" />
+  <span class:list={[compact && 'sr-only min-[900px]:not-sr-only']}>{label}</span>
+</span>

@@ -1,0 +1,26 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHead from '@/components/PageHead.astro';
+import EntryHead from '@/components/EntryHead.astro';
+import EntryRow from '@/components/EntryRow.astro';
+import Empty from '@/components/Empty.astro';
+import Glyph from '@/components/Glyph.astro';
+import { getCertifications, pad } from '@/lib/entries';
+const certs = await getCertifications();
+---
+<Base title="Certifications" description="Ledger of completed, in-progress and planned certifications.">
+  <PageHead number={300} label="Credentials" title="Certifications">
+    <p class="kb-meta mt-6 text-ink-2">{pad(certs.length)} entries · <Glyph status="complete" /> completed · <Glyph status="in-progress" /> in progress · <Glyph status="planned" /> planned</p>
+  </PageHead>
+  <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main">
+    {certs.length ? (
+      <>
+        <EntryHead cols={['ID', 'Title', 'Issuer', 'Year', 'Status']} />
+        <ol>{certs.map((c) => (
+          <EntryRow href={c.data.credentialUrl ?? '/certifications/'} number={c.data.number} title={c.data.title} kind="certifications"
+            status={c.data.status} type={c.data.issuer} year={c.data.date?.getUTCFullYear()} placeholder={c.data.placeholder} />
+        ))}</ol>
+      </>
+    ) : <Empty />}
+  </div></div></div>
+</Base>

@@ -1,0 +1,29 @@
+---
+interface Props { email: string }
+const { email } = Astro.props;
+---
+<div class="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+  <a href={`mailto:${email}`} class="kb-link min-w-0 break-all text-h3 font-medium tracking-[-0.02em] min-[900px]:text-h2">{email}</a>
+  <button type="button" data-copy={email} class="kb-meta cursor-pointer border border-rule px-2.5 py-1 text-ink-2 transition-colors hover:border-ink hover:text-ink">
+    <span data-copy-label>Copy</span>
+  </button>
+  <span class="sr-only" aria-live="polite" data-copy-status></span>
+</div>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    const label = btn.querySelector('[data-copy-label]');
+    const status = btn.parentElement?.querySelector('[data-copy-status]');
+    let t: ReturnType<typeof setTimeout> | undefined;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset['copy'] ?? '');
+        if (label) label.textContent = 'Copied';
+        if (status) status.textContent = 'Email address copied';
+      } catch {
+        if (label) label.textContent = 'Copy failed';
+      }
+      clearTimeout(t);
+      t = setTimeout(() => { if (label) label.textContent = 'Copy'; if (status) status.textContent = ''; }, 1600);
+    });
+  });
+</script>

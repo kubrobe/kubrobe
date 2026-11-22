@@ -1,0 +1,35 @@
+---
+import StatusGlyph from './StatusGlyph.astro';
+import { code, type Kind, type Status } from '@/lib/entries';
+interface Props {
+  href: string;
+  number: number;
+  title: string;
+  kind: Kind;
+  status: Status;
+  type?: string | undefined;
+  year?: string | number | undefined;
+  placeholder?: boolean;
+}
+const { href, number, title, kind, status, type, year, placeholder = false } = Astro.props;
+---
+<li class="border-t border-rule last:border-b">
+  <a href={href} class="kb-row group grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1 py-4 no-underline min-[900px]:grid-cols-[7rem_minmax(0,1fr)_9rem_4rem_9rem] min-[900px]:py-5">
+    <span class="kb-meta text-ink-3 transition-colors group-hover:text-ink group-focus-visible:text-ink">{code(number)}</span>
+    <span class="kb-row-title min-w-0 text-h3 font-medium leading-tight tracking-[-0.025em]">
+      {title}{placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
+    </span>
+    <span class="kb-meta col-start-2 text-ink-2 min-[900px]:hidden">{[type, year].filter(Boolean).join(' · ')}</span>
+    <span class="kb-meta hidden text-ink-2 min-[900px]:inline">{type}</span>
+    <span class="kb-meta hidden text-ink-2 min-[900px]:inline">{year}</span>
+    <span class="col-start-3 row-start-1 justify-self-end min-[900px]:col-start-auto min-[900px]:row-start-auto min-[900px]:justify-self-start"><StatusGlyph kind={kind} status={status} compact /></span>
+  </a>
+</li>
+<style>
+  .kb-row-title { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) {
+    .kb-row:hover .kb-row-title { transform: translateX(16px); }
+  }
+  .kb-row:focus-visible { outline-offset: -2px; }
+  .kb-row:focus-visible .kb-row-title { transform: translateX(16px); }
+</style>

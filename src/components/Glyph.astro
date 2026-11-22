@@ -1,0 +1,14 @@
+---
+/**
+ * Status glyphs ● ◐ ○ drawn as SVG, so they render at the same size on every
+ * platform (Geist Mono has no geometric-shapes glyphs and Android fallbacks vary).
+ */
+import type { Status } from '@/lib/entries';
+interface Props { status: Status; class?: string }
+const { status, class: cls } = Astro.props;
+---
+<svg viewBox="0 0 10 10" aria-hidden="true" focusable="false" class:list={['inline-block size-[0.75em] align-[-0.05em]', cls]}>
+  {status === 'complete' && <circle cx="5" cy="5" r="4.25" fill="currentColor" />}
+  {status === 'in-progress' && (<><circle cx="5" cy="5" r="4.25" fill="none" stroke="currentColor" stroke-width="1.1" /><path d="M5 .75a4.25 4.25 0 0 1 0 8.5z" fill="currentColor" /></>)}
+  {status === 'planned' && <circle cx="5" cy="5" r="4.25" fill="none" stroke="currentColor" stroke-width="1.1" />}
+</svg>

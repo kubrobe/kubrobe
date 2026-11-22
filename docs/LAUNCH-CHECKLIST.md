@@ -40,3 +40,11 @@ Nothing is deployed and nothing has been pushed. Order matters: decisions first,
 - [ ] First writing entry (the Writing section appears in the nav and sitemap automatically).
 - [ ] Case study for Doran once real-device scoring is tested.
 - [ ] Decide on analytics. None is installed; the site sets no cookies.
+
+## 5. Stage F browser checks (needs a real deployment)
+
+- [ ] Safari and Firefox: popover viewer (open, Esc, stepping, focus return), Doran device stage, `:has()` states.
+- [ ] Cross-document view transitions: confirm the title morph in Chrome and that Safari/Firefox navigate instantly without glitches.
+- [ ] Scroll-driven reveals: in a browser without `animation-timeline`, all content is visible and static.
+- [ ] Real phone: swipe in the viewer, contents list, no parallax, 44 px targets.
+- [ ] Copy-email button once an address is public.

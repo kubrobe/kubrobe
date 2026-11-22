@@ -31,3 +31,7 @@ Design details live in `docs/DESIGN-SYSTEM.md`; the original audit in `docs/AUDI
 - Home, About: verified statement, bio, role, interests, GitHub link, city.
 - Work: SkillSwap (flagship case study, 6 screenshots, architecture diagram), Doran (app entry, 3 screenshots). E-Commerce Sales Analysis exists as a hidden draft.
 - Writing and Certifications: empty, hidden from navigation, `noindex`.
+
+## Motion layer (Stage F)
+
+All motion lives in `src/styles/motion.css` and is CSS-only: tokens, scroll-driven reveals under `@supports`, a first-arrival intro, and cross-document view transitions. Interactive pieces are `Gallery`, `DeviceStage` and `Lightbox` (native popover). No animation library is used. See `docs/STAGE-F-MOTION-REPORT.md`.

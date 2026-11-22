@@ -20,3 +20,11 @@ Short records of choices that are not obvious from the code. Newest last.
 | 14 | Empty Writing and Certifications stay reachable but `noindex` and out of the sitemap | Honest empty states without advertising thin pages. |
 | 15 | Social image is typographic (wordmark and statement) | No fabricated or recycled screenshots. |
 | 16 | No analytics, no cookies | Nothing to disclose; revisit after launch. |
+| 17 | Intro plays only on a fresh arrival at `/`, decided by an inline script and the referrer, nothing stored | Returning visitors and in-site navigation never wait; no cookies. (Stage F) |
+| 18 | Device stage is radio buttons plus `:has()`, not script | Works with no JavaScript and keyboard users get arrow-key behaviour free. |
+| 19 | Lightbox stepping buttons are scripted and hidden without JS; they must not be popover targets | A popover target opens a nested popover instead of replacing the current one. |
+| 20 | Theme switch is a time-limited class that fades colours, skipped under reduced motion | Interruptible, no view-transition snapshot cost, nothing left on the page afterwards. |
+| 21 | Custom cursor not built (judged, not prototyped) | Competes with the editorial calm and adds a permanent pointer listener. |
+| 22 | No GSAP or scroll library | Everything required is expressible in CSS; JS stays under 1.5 KB per page. |
+| 23 | Previous/next on case studies hides "Previous" when only two entries exist | Showing the same project twice is noise and duplicates a view-transition name. |
+| 24 | Parallax only with hover pointer and 60rem+ | No heavy motion on phones; avoids jank on touch. |

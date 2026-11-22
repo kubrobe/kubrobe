@@ -22,3 +22,5 @@ See `docs/LAUNCH-CHECKLIST.md` for the full list. The blockers are all informati
 - M-Launch: deploy preview, run the post-deploy checks, go public.
 - M-Writing: first entry, then the nav and sitemap pick it up on their own.
 - M-Work index: sortable list and a command palette, only if the work list grows past a handful.
+
+- Stage F: motion and interaction sprint. CSS-only motion layer, first-arrival intro, scroll storytelling, SkillSwap gallery and Doran device stage, popover viewer with stepping, case-study contents and previous/next, title morph between pages, theme cross-fade, shared micro-interaction patterns, work-row previews. See `docs/STAGE-F-MOTION-REPORT.md`.

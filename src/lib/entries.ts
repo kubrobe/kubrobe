@@ -19,6 +19,7 @@ export const statusLabel = (kind: Kind, s: Status) => labels[kind][s];
 
 export const workTypeLabel: Record<CollectionEntry<'work'>['data']['type'], string> = {
   'case-study': 'Case study',
+  app: 'App',
   experiment: 'Experiment',
   tool: 'Tool',
   site: 'Site',

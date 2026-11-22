@@ -25,10 +25,10 @@ const link = z.object({ label: z.string().min(1), href: z.url() });
 
 const work = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/work' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     ...base,
     summary: z.string().min(1),
-    type: z.enum(['case-study', 'experiment', 'tool', 'site', 'study']),
+    type: z.enum(['case-study', 'app', 'experiment', 'tool', 'site', 'study']),
     year: z.number().int().min(1990).max(2100),
     featured: z.boolean().default(false),
     order: z.number().int().default(0),
@@ -36,6 +36,15 @@ const work = defineCollection({
     stack: z.array(z.string()).default([]),
     timeline: z.string().optional(),
     links: z.array(link).default([]),
+    /**
+     * Real screenshots only. Each needs alt text and a source note; never mock-ups
+     * presented as a working product.
+     */
+    gallery: z
+      .array(z.object({ src: image(), alt: z.string().min(1), caption: z.string().optional() }))
+      .default([]),
+    /** Where the screenshots come from, shown under the gallery. */
+    gallerySource: z.string().optional(),
   }),
 });
 

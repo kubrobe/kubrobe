@@ -29,8 +29,24 @@ const schema = z.object({
 
 export type Profile = z.infer<typeof schema>;
 
+// Verified by the owner on 2026-11-22. Add email and other links only when provided.
 const real: z.input<typeof schema> = {
-  // Fill in real details here. Nothing below is shown until you do.
+  statement: 'I explore technology, build digital products, and turn ideas into practical *experiments*.',
+  role: 'IT-Business student, Ajou University in Tashkent',
+  currently: 'Building Doran, a Korean-learning app',
+  about: [
+    'IT-Business student at Ajou University in Tashkent. Interested in software development, AI, data, business and human behavior.',
+    'Working across technology, business and creativity, and building things independently.',
+  ],
+  interests: [
+    { title: 'Software development' },
+    { title: 'AI' },
+    { title: 'Data' },
+    { title: 'Business' },
+    { title: 'Human behavior' },
+  ],
+  links: [{ label: 'GitHub', href: 'https://github.com/kubrobe' }],
+  city: 'Tashkent',
 };
 
 const placeholder: z.input<typeof schema> = {

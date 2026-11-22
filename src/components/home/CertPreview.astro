@@ -7,11 +7,12 @@ interface Props { certs: CollectionEntry<'certifications'>[] }
 const { certs } = Astro.props;
 const statuses: Status[] = ['complete', 'in-progress', 'planned'];
 const counts = statuses.map((s) => ({ s, n: certs.filter((c) => c.data.status === s).length })).filter((c) => c.n > 0);
-const current = certs.filter((c) => c.data.status === 'in-progress').slice(0, 3);
+// Already ordered: in progress, then earned, then planned.
+const shown = certs.slice(0, 6);
 ---
-<Section number={300} label="Credentials" id="credentials" heading={"Certi\u00ADfications"}>
+<Section number={300} label="Credentials" id="credentials" heading={'Certi­fications'}>
   <div class="kb-grid gap-y-12 lg:!grid-cols-10">
-    <ul class="grid grid-cols-3 gap-x-4 md:col-span-6 lg:col-span-5" aria-label="Ledger summary">
+    <ul class="grid grid-cols-3 content-start gap-x-4 md:col-span-6 lg:col-span-4" aria-label="Ledger summary">
       {counts.map(({ s, n }) => (
         <li data-reveal class="grid gap-2 border-t border-rule pt-3">
           <span class="text-h2 leading-none font-[560] tracking-[-0.04em] tabular-nums">{pad(n)}</span>
@@ -19,29 +20,36 @@ const current = certs.filter((c) => c.data.status === 'in-progress').slice(0, 3)
         </li>
       ))}
     </ul>
-    {current.length > 0 && (
-      <div class="md:col-span-6 lg:col-[7/11]">
-        <h3 class="kb-label mb-3 flex items-center gap-1.5"><Glyph status="in-progress" class="text-ink" /> In progress</h3>
-        <ul>
-          {current.map((c) => (
-            <li data-reveal class="grid gap-1 border-t border-rule py-4">
-              <span class="kb-meta text-ink-3">{code(c.data.number)} · {c.data.issuer}</span>
-              <span class="text-lg font-medium tracking-[-0.015em]">
-                {c.data.title}{c.data.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
-              </span>
-              {c.data.progress !== undefined && (
-                <span class="mt-1 flex items-center gap-3">
-                  <span class="h-px flex-1 bg-rule" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={c.data.progress} aria-label={`${c.data.title} progress`}>
-                    <span class="block h-px bg-ink" style={`width:${c.data.progress}%`} />
-                  </span>
-                  <span class="kb-meta text-ink-2">{Math.round(c.data.progress)}%</span>
+    <ol class="md:col-span-6 lg:col-[5/11]">
+      {shown.map((c) => {
+        const d = c.data;
+        const href = d.credentialUrl ?? `/certifications/#kb-${d.number}`;
+        return (
+          <li data-reveal class="border-t border-rule last:border-b">
+            <a href={href} class="group grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-1 py-4 no-underline" rel={d.credentialUrl ? 'noopener' : undefined}>
+              <Glyph status={d.status} class="text-ink" />
+              <span class="min-w-0">
+                <span class="block text-lg font-medium tracking-[-0.015em] transition-transform duration-[var(--kb-dur-ui)] ease-[var(--kb-ease-out)] group-hover:translate-x-2 group-focus-visible:translate-x-2">
+                  {d.title}{d.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
                 </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+                <span class="kb-meta mt-1 block text-ink-2">
+                  {code(d.number)} · {d.issuer} · {statusLabel('certifications', d.status)}{d.date && <> · {d.date.getUTCFullYear()}</>}
+                </span>
+                {d.progress !== undefined && (
+                  <span class="mt-2 flex items-center gap-3">
+                    <span class="h-px flex-1 bg-rule" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={d.progress} aria-label={`${d.title} progress`}>
+                      <span class="block h-px bg-ink" style={`width:${d.progress}%`} />
+                    </span>
+                    <span class="kb-meta text-ink-2">{Math.round(d.progress)}%</span>
+                  </span>
+                )}
+              </span>
+              <span class="kb-meta text-ink-2" aria-hidden="true">{d.credentialUrl ? '↗' : '→'}</span>
+            </a>
+          </li>
+        );
+      })}
+    </ol>
   </div>
-  <a href="/certifications/" class="kb-draw kb-meta mt-8 inline-block text-ink-2 hover:text-ink">Full ledger →</a>
+  <a href="/certifications/" class="kb-draw kb-meta mt-8 inline-block text-ink-2 hover:text-ink">Full ledger ({pad(certs.length)}) →</a>
 </Section>

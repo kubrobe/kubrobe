@@ -1,0 +1,9 @@
+---
+import { ditherPath, FIG_W, FIG_H } from '@/lib/dither';
+interface Props { number: number; class?: string }
+const { number, class: cls } = Astro.props;
+---
+<svg viewBox={`0 0 ${FIG_W} ${FIG_H}`} aria-hidden="true" focusable="false" shape-rendering="crispEdges"
+  class:list={['block aspect-[4/3] bg-raised text-ink', cls]}>
+  <path d={ditherPath(number)} fill="currentColor" />
+</svg>

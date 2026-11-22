@@ -253,6 +253,7 @@ body::after {
 
   /* Cross-document page transitions, no JS. */
   @view-transition { navigation: auto; }
+  ::view-transition-group(kb-nav-ind), ::view-transition-group(kb-nav-ind-m) { animation-duration: var(--kb-dur-ui); animation-timing-function: var(--kb-ease-mask); }
   ::view-transition-old(root) { animation: 240ms var(--kb-ease-mask) both kb-vt-out; }
   ::view-transition-new(root) { animation: 420ms var(--kb-ease-out) both kb-vt-in; }
   @keyframes kb-vt-out { to { opacity: 0; } }

@@ -9,7 +9,7 @@ const isActive = (href: string) => path === href || path.startsWith(href) || pat
 ---
 <header class="kb-header sticky top-0 z-50 border-b border-rule bg-surface pt-[env(safe-area-inset-top)]">
   <div class="kb-wrap flex h-[var(--kb-bar-h)] items-center gap-6">
-    <a href="/" class="kb-meta font-semibold tracking-[0.06em] text-ink no-underline" aria-label="KUBROBE, home">KB</a>
+    <a href="/" class="kb-meta inline-flex min-h-11 min-w-11 items-center font-semibold tracking-[0.06em] text-ink no-underline" aria-label="KUBROBE, home">KB</a>
     {nav.length > 0 && (
       <nav aria-label="Primary" class="mx-auto hidden lg:block">
         <ul class="flex items-baseline gap-7 text-sm">
@@ -17,9 +17,10 @@ const isActive = (href: string) => path === href || path.startsWith(href) || pat
             <li>
               <a
                 href={n.href}
-                class:list={['kb-draw pb-0.5 hover:text-ink', isActive(n.href) ? 'text-ink' : 'text-ink-2']}
+                class:list={['relative inline-flex min-h-11 items-center hover:text-ink', isActive(n.href) ? 'text-ink' : 'kb-draw-nav text-ink-2']}
                 aria-current={isActive(n.href) ? 'page' : undefined}
               >
+                {isActive(n.href) && <span class="kb-nav-ind absolute inset-x-0 bottom-2.5 h-px bg-ink" aria-hidden="true" />}
                 {n.label}{n.count !== undefined && <sup class="kb-meta ml-0.5 text-[0.65rem] text-ink-3" aria-hidden="true">{pad(n.count)}</sup><span class="sr-only">, {n.count} entries</span>}
               </a>
             </li>
@@ -32,4 +33,17 @@ const isActive = (href: string) => path === href || path.startsWith(href) || pat
 </header>
 <style>
   .kb-header { view-transition-name: kb-header; }
+  /* Active underline travels between items across page loads (cross-document view transition). */
+  .kb-nav-ind { view-transition-name: kb-nav-ind; }
+  .kb-draw-nav::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 10px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--kb-dur-ui) var(--kb-ease-out);
+  }
+  .kb-draw-nav:hover::after, .kb-draw-nav:focus-visible::after { transform: scaleX(1); transform-origin: left; }
 </style>

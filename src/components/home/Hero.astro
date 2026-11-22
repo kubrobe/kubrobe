@@ -1,15 +1,22 @@
 ---
 import Wordmark from '@/components/Wordmark.astro';
-import { profile } from '@/data/profile';
+import { profile, profileIsPlaceholder } from '@/data/profile';
 import { code, isoDate, pad } from '@/lib/entries';
+import { emphasize } from '@/lib/text';
+import type { NavItem } from '@/lib/nav';
 import pkg from '../../../package.json';
 
-interface Props { entries: number; updated?: Date | undefined; next?: string | undefined }
-const { entries, updated, next } = Astro.props;
+interface Props { entries: number; updated?: Date | undefined; nav: NavItem[]; hasContact: boolean }
+const { entries, updated, nav, hasContact } = Astro.props;
 const clock = profile.showLocalTime && profile.timeZone ? profile.timeZone : undefined;
+// Hero navigation: only destinations that exist, with real counts.
+const links = [
+  ...nav.map((n) => ({ href: n.href, label: n.label, count: n.count })),
+  ...(hasContact ? [{ href: '#contact', label: 'Contact', count: undefined }] : []),
+];
 ---
-<section class="kb-hero kb-wrap flex flex-col pt-5 pb-8 lg:pt-8 lg:pb-12" aria-label="Introduction">
-  <div class="kb-grid kb-meta text-ink-2">
+<section class="kb-hero kb-wrap flex flex-col pt-5 pb-10 lg:pt-8 lg:pb-14" aria-labelledby="kb-wordmark">
+  <div class="kb-grid kb-meta kb-in text-ink-2" style="--i:0">
     <div class="kb-rail hidden lg:block"><span class="block text-ink">{code(0)}</span>Index</div>
     <p class="kb-main flex flex-wrap justify-between gap-x-6 gap-y-1 border-t border-rule pt-2">
       {profile.city && (
@@ -21,24 +28,60 @@ const clock = profile.showLocalTime && profile.timeZone ? profile.timeZone : und
     </p>
   </div>
 
-  <div class="mt-auto pt-[clamp(96px,30vw,160px)] lg:pt-24">
+  <div class="mt-auto pt-[clamp(88px,26vw,160px)] lg:pt-20">
     <Wordmark />
   </div>
 
-  <div class="kb-grid kb-meta mt-6 items-baseline text-ink-2 lg:mt-8">
-    <p class="kb-rail hidden lg:block">{code(0)}</p>
-    <p class="col-span-2 md:col-span-4 lg:col-[3/9]">An index of work, writing and credentials.</p>
-    {next && (
-      <a href={next} class="kb-draw col-span-2 justify-self-end whitespace-nowrap text-ink md:col-span-2 lg:col-[11/13]">
-        Enter the index <span aria-hidden="true">↓</span>
-      </a>
+  <div class="kb-grid mt-8 gap-y-10 lg:mt-12">
+    <div class="kb-rail kb-meta kb-in hidden text-ink-2 lg:block lg:pt-2" style="--i:6">
+      <span class="block text-ink">{code(1)}</span>Statement
+    </div>
+    {profile.statement ? (
+      <p class:list={['kb-in min-w-0 text-[clamp(1.5rem,1.05rem+1.9vw,2.75rem)] leading-[1.12] font-[450] tracking-[-0.025em] md:col-span-5 lg:col-[3/10]', profileIsPlaceholder('statement') && 'text-ink-2']} style="--i:7">
+        <Fragment set:html={emphasize(profile.statement)} />
+      </p>
+    ) : (
+      <p class="kb-in kb-meta text-ink-2 md:col-span-4 lg:col-[3/9]" style="--i:7">An index of work, writing and credentials.</p>
+    )}
+    {links.length > 0 && (
+      <nav aria-label="Index" class="kb-in md:col-span-6 lg:col-[10/13] lg:self-end" style="--i:8">
+        <ol class="border-b border-rule">
+          {links.map((l, i) => (
+            <li class="border-t border-rule">
+              <a href={l.href} class="kb-hero-link group flex min-h-11 items-baseline justify-between gap-4 py-2 no-underline">
+                <span class="flex items-baseline gap-3">
+                  <span class="kb-meta text-ink-3">{pad(i + 1)}</span>
+                  <span class="kb-hero-label text-lg">{l.label}</span>
+                </span>
+                <span class="kb-meta text-ink-2">
+                  {l.count !== undefined && <span>{pad(l.count)} <span class="sr-only">entries</span></span>}
+                  <span aria-hidden="true" class="kb-hero-arrow ml-2 inline-block">→</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
     )}
   </div>
 </section>
 <style>
-  /* The hero fills the first screen so the wordmark lands on the fold. */
+  /* The hero fills the first screen on tablets and up so the wordmark lands on the fold. */
   @media (min-width: 48rem) and (min-height: 521px) {
     .kb-hero { min-height: calc(100svh - var(--kb-bar-h) - var(--kb-mobile-bar-h) - env(safe-area-inset-top)); }
+  }
+  .kb-hero-label, .kb-hero-arrow { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-hero-link:focus-visible { outline-offset: -2px; }
+  @media (hover: hover) {
+    .kb-hero-link:hover .kb-hero-label { transform: translateX(8px); }
+    .kb-hero-link:hover .kb-hero-arrow { transform: translateX(4px); }
+  }
+  .kb-hero-link:focus-visible .kb-hero-label { transform: translateX(8px); }
+
+  /* Staggered entrance after the wordmark. Without motion (or without support) everything is simply visible. */
+  @media (prefers-reduced-motion: no-preference) {
+    .kb-in { animation: kb-hero-in 700ms var(--kb-ease-out) both; animation-delay: calc(var(--i) * 90ms); }
+    @keyframes kb-hero-in { from { opacity: 0; transform: translateY(14px); } }
   }
 </style>
 {clock && (

@@ -13,7 +13,7 @@ interface Props {
 }
 const { href, number, title, kind, status, type, year, placeholder = false } = Astro.props;
 ---
-<li data-reveal class="border-t border-rule last:border-b">
+<li data-reveal id={`kb-${number}`} class="border-t border-rule last:border-b">
   <a href={href} data-entry-row data-number={number} data-code={code(number)} class="kb-row group grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1 py-4 no-underline lg:grid-cols-[7rem_minmax(0,1fr)_9rem_4rem_9rem] lg:py-6">
     <span class="kb-meta text-ink-3 transition-colors group-hover:text-ink group-focus-visible:text-ink">{code(number)}</span>
     <span class="kb-row-title min-w-0 text-h3 font-medium leading-tight tracking-[-0.025em]">

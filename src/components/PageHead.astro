@@ -4,10 +4,10 @@ import { emphasize } from '@/lib/text';
 interface Props { number: number; label: string; title: string; lede?: string | undefined }
 const { number, label, title, lede } = Astro.props;
 ---
-<header class="kb-wrap pt-10 pb-10 min-[900px]:pt-20 min-[900px]:pb-14">
+<header class="kb-wrap pt-10 pb-10 lg:pt-20 lg:pb-14">
   <div class="kb-grid">
-    <div class="kb-rail kb-meta flex gap-3 text-ink-3 min-[900px]:block">
-      <span class="text-ink-2 min-[900px]:block">{code(number)}</span><span>{label}</span>
+    <div class="kb-rail kb-meta flex gap-3 text-ink-3 lg:block">
+      <span class="text-ink-2 lg:block">{code(number)}</span><span>{label}</span>
     </div>
     <div class="kb-main min-w-0">
       <h1 class="text-h1 font-semibold leading-[0.95] tracking-[-0.04em] break-words"><Fragment set:html={emphasize(title)} /></h1>

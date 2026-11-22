@@ -7,20 +7,22 @@ interface Props {
   id?: string;
   /** Visible heading. Leave out when the label alone is enough. */
   heading?: string;
+  /** Extra classes for the heading, e.g. to offset it asymmetrically. */
+  headingClass?: string;
   class?: string;
 }
-const { number, label, id, heading, class: cls } = Astro.props;
+const { number, label, id, heading, headingClass, class: cls } = Astro.props;
 const headingId = id ? `${id}-h` : undefined;
 ---
-<section id={id} aria-labelledby={headingId} class:list={['kb-wrap border-t border-rule py-12 min-[900px]:py-20', cls]}>
+<section id={id} aria-labelledby={headingId} class:list={['kb-wrap kb-section border-t border-rule', cls]}>
   <div class="kb-grid">
-    <div class="kb-rail kb-meta flex gap-3 text-ink-3 min-[900px]:block">
-      <span class="text-ink-2 min-[900px]:block">{code(number)}</span>
+    <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
+      <span class="text-ink lg:block">{code(number)}</span>
       <span>{label}</span>
     </div>
     <div class="kb-main min-w-0">
       {heading
-        ? <h2 id={headingId} class="mb-8 text-h2 font-[550] leading-[1.05] tracking-[-0.03em]"><Fragment set:html={emphasize(heading)} /></h2>
+        ? <h2 id={headingId} data-reveal="mask" class:list={['mb-[var(--kb-space-block)] text-h2 font-[560] leading-[0.98] tracking-[-0.035em]', headingClass]}><Fragment set:html={emphasize(heading)} /></h2>
         : <h2 id={headingId} class="sr-only">{label}</h2>}
       <slot />
     </div>

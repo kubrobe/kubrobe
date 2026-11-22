@@ -14,10 +14,10 @@ const posts = await getWriting();
       <ol>
         {posts.map((p) => (
           <li class="border-t border-rule last:border-b">
-            <a href={`/writing/${p.id}/`} class="grid gap-1 py-5 no-underline hover:text-ink min-[900px]:grid-cols-[7rem_minmax(0,1fr)_7rem] min-[900px]:items-baseline min-[900px]:gap-x-4">
+            <a href={`/writing/${p.id}/`} class="grid gap-1 py-5 no-underline hover:text-ink lg:grid-cols-[7rem_minmax(0,1fr)_7rem] lg:items-baseline lg:gap-x-4">
               <time class="kb-meta text-ink-3" datetime={isoDate(p.data.date)}>{isoDate(p.data.date)}</time>
               <span class="text-h3 font-medium leading-tight tracking-[-0.025em]">{p.data.title}{p.data.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}</span>
-              <span class="kb-meta text-ink-2 min-[900px]:text-right">{readingMinutes(p.body)} min read</span>
+              <span class="kb-meta text-ink-2 lg:text-right">{readingMinutes(p.body)} min read</span>
             </a>
           </li>
         ))}

@@ -25,14 +25,14 @@ const spec = [
   </PageHead>
   <div class="kb-wrap pb-20">
     <div class="kb-grid">
-      <aside class="kb-rail kb-meta min-[900px]:sticky min-[900px]:top-[calc(var(--kb-bar-h)+24px)] min-[900px]:self-start" aria-label="Spec sheet">
-        <dl class="grid grid-cols-[auto_1fr] gap-x-4 border-t border-rule pt-3 min-[900px]:grid-cols-1">
+      <aside class="kb-rail kb-meta lg:sticky lg:top-[calc(var(--kb-bar-h)+24px)] lg:self-start" aria-label="Spec sheet">
+        <dl class="grid grid-cols-[auto_1fr] gap-x-4 border-t border-rule pt-3 lg:grid-cols-1">
           {spec.map(([k, v]) => <><dt class="text-ink-3">{k}</dt><dd class="mb-2 text-ink-2">{v}</dd></>)}
           <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
         </dl>
         {d.links.length > 0 && <ul class="mt-4 grid gap-1">{d.links.map((l) => <li><a class="kb-link" href={l.href}>{l.label} ↗</a></li>)}</ul>}
       </aside>
-      <article class="kb-main kb-prose mt-8 min-[900px]:mt-0"><Content /></article>
+      <article class="kb-main kb-prose mt-8 lg:mt-0"><Content /></article>
     </div>
   </div>
 </Base>

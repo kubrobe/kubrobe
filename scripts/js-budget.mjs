@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 
-const dist = 'dist';
+const dist = process.argv[2] ?? 'dist';
 const BUDGET = 50 * 1024;
 const walk = (d) => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)]));
 const pages = walk(dist).filter((f) => f.endsWith('.html'));

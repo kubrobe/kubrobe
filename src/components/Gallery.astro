@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Shot { src: ImageMetadata; alt: string; caption?: string | undefined }
+interface Props { shots: Shot[]; source?: string | undefined; id: string }
+const { shots, source, id } = Astro.props;
+---
+<!--
+  Screens scroll sideways on small screens and sit in one row on large ones.
+  Each screen opens full size in a native popover: no script, closes with Esc, a click
+  outside or the Close button, and returns focus to the screen that opened it.
+-->
+<section class="kb-gallery-wrap" aria-labelledby={`${id}-h`}>
+  <div class="mb-3 flex items-baseline justify-between gap-4">
+    <h2 id={`${id}-h`} class="kb-label">Screens</h2>
+    <p class="kb-meta text-ink-3"><span class="lg:hidden">Swipe for more · </span>{shots.length} screens · tap to enlarge</p>
+  </div>
+  <ul class="kb-gallery" role="list" tabindex="0" aria-label="Screens, scroll sideways for more">
+    {shots.map((g, i) => (
+      <li class="kb-gallery-item">
+        <figure>
+          <button type="button" popovertarget={`${id}-p${i}`} class="kb-shot-btn" aria-label={`Enlarge: ${g.caption ?? g.alt}`}>
+            <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 14vw, 56vw" loading={i < 3 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} class="block h-auto w-full" />
+          </button>
+          {g.caption && <figcaption class="kb-meta mt-2 text-ink-2">{g.caption}</figcaption>}
+        </figure>
+        <div popover="auto" id={`${id}-p${i}`} class="kb-lightbox" aria-label={g.caption ?? 'Screen'}>
+          <Image src={g.src} alt={g.alt} widths={[480, 900]} sizes="(min-width: 48rem) 450px, 90vw" loading="lazy" class="block h-auto max-h-[80vh] w-auto max-w-full object-contain" />
+          <div class="kb-meta mt-3 flex items-center justify-between gap-6 text-ink-2">
+            <span>{g.caption}</span>
+            <button type="button" popovertarget={`${id}-p${i}`} popovertargetaction="hide" class="kb-lightbox-close">Close</button>
+          </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+  {source && <p class="kb-meta mt-3 text-ink-3">{source}</p>}
+</section>
+<style>
+  .kb-gallery { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; margin-inline: calc(var(--kb-margin) * -1); padding: 0 var(--kb-margin) 12px; scroll-padding-inline: var(--kb-margin); list-style: none; }
+  .kb-gallery:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
+  .kb-gallery-item { flex: none; width: min(56vw, 240px); scroll-snap-align: start; }
+  .kb-shot-btn { display: block; width: 100%; padding: 0; border: 1px solid var(--kb-rule); background: var(--kb-raised); cursor: zoom-in; transition: border-color var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-shot-btn:hover, .kb-shot-btn:focus-visible { border-color: var(--kb-ink); }
+  .kb-shot-btn:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 3px; }
+  @media (min-width: 60rem) {
+    .kb-gallery { display: grid; grid-template-columns: repeat(6, 1fr); overflow: visible; margin-inline: 0; padding: 0; }
+    .kb-gallery-item { width: auto; }
+  }
+  .kb-lightbox { margin: auto; max-width: min(92vw, 520px); max-height: 94vh; padding: 16px; border: 1px solid var(--kb-rule-2); background: var(--kb-surface); color: var(--kb-ink); }
+  .kb-lightbox::backdrop { background: rgb(0 0 0 / 0.78); }
+  .kb-lightbox-close { min-height: 44px; min-width: 64px; padding: 0 14px; border: 1px solid var(--kb-rule-2); color: var(--kb-ink); cursor: pointer; }
+  .kb-lightbox-close:hover, .kb-lightbox-close:focus-visible { border-color: var(--kb-ink); }
+</style>

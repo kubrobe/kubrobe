@@ -210,12 +210,30 @@
   .kb-prose :where(pre) { font-family: var(--font-mono); font-size: 0.85rem; background: var(--kb-raised); padding: 16px; overflow-x: auto; border: 1px solid var(--kb-rule); }
   .kb-prose :where(blockquote) { border-left: 1px solid var(--kb-ink); padding-left: 1em; color: var(--kb-ink-2); }
   .kb-prose :where(img) { max-width: 100%; height: auto; }
-  .kb-prose :where(table) { width: 100%; border-collapse: collapse; font-size: var(--text-sm); display: block; overflow-x: auto; }
+  .kb-prose :where(table) { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
   .kb-prose :where(th, td) { text-align: left; vertical-align: top; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--kb-rule); }
   .kb-prose :where(th) { font-family: var(--font-mono); font-size: var(--text-micro); letter-spacing: 0.08em; text-transform: uppercase; color: var(--kb-ink-2); font-weight: 500; }
-  .kb-prose :where(td:first-child) { color: var(--kb-ink-2); white-space: nowrap; }
+  .kb-prose :where(td:first-child) { color: var(--kb-ink-2); width: 28%; padding-right: 20px; }
+  /* A three-column table is a status ledger (Area, Status, Basis): keep the status on one line. */
+  .kb-prose :where(td:nth-child(2):not(:last-child)) { white-space: nowrap; padding-right: 20px; color: var(--kb-ink); }
+  /* Narrow screens: each row becomes a small stacked card instead of a clipped table. */
+  @media (max-width: 47.99rem) {
+    .kb-prose :where(thead) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .kb-prose :where(table, tbody, tr, td) { display: block; width: auto; }
+    .kb-prose :where(tr) { border-bottom: 1px solid var(--kb-rule); padding: 12px 0; }
+    .kb-prose :where(td) { border: 0; padding: 0 !important; white-space: normal !important; }
+    .kb-prose :where(td:first-child) { color: var(--kb-ink); font-weight: 550; margin-bottom: 4px; width: auto; }
+    .kb-prose :where(td:nth-child(2):not(:last-child)) { font-family: var(--font-mono); font-size: var(--text-meta); margin-bottom: 4px; }
+    .kb-prose :where(td:nth-child(2):not(:last-child))::before { content: 'Status · '; color: var(--kb-ink-3); }
+    .kb-prose :where(td:last-child:not(:first-child):not(:nth-child(2))), .kb-prose :where(td:nth-child(2):last-child) { color: var(--kb-ink-2); }
+  }
   .kb-prose :where(.kb-diagram) { margin-block: 0.5em; border: 1px solid var(--kb-rule); background: var(--kb-raised); padding: 16px; color: var(--kb-ink); overflow-x: auto; }
-  .kb-prose :where(.kb-diagram svg) { display: block; width: 100%; min-width: 520px; height: auto; }
+  .kb-prose :where(.kb-diagram svg) { display: block; width: 100%; height: auto; }
+  .kb-prose :where(.kb-diagram .d-tall) { display: none; max-width: 380px; margin-inline: auto; }
+  @media (max-width: 39.99rem) {
+    .kb-prose :where(.kb-diagram .d-wide) { display: none; }
+    .kb-prose :where(.kb-diagram .d-tall) { display: block; }
+  }
   .kb-prose :where(.kb-diagram figcaption) { font-family: var(--font-mono); font-size: var(--text-meta); color: var(--kb-ink-2); margin-top: 10px; }
   .kb-prose :where(.kb-diagram:focus-visible) { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
   .kb-gallery:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }

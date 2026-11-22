@@ -1,10 +1,10 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
-import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import PageHead from '@/components/PageHead.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
+import Gallery from '@/components/Gallery.astro';
 import { getWork, workTypeLabel, code } from '@/lib/entries';
 
 export const getStaticPaths = (async () => (await getWork()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
@@ -24,24 +24,25 @@ const spec = [
   <PageHead number={d.number} label={workTypeLabel[d.type]} title={d.title} lede={d.summary}>
     {d.placeholder && <span class="kb-ph-tag mt-4 inline-block">Placeholder</span>}
   </PageHead>
-  {d.gallery.length > 0 && (
-    <section class="kb-wrap pb-12 lg:pb-20" aria-label="Screens">
-      <div class="kb-grid">
-        <div class="kb-main">
-          <ul tabindex="0" aria-label="Screens, scroll sideways for more" class="kb-gallery -mx-[var(--kb-margin)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--kb-margin)] pb-3 lg:mx-0 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0">
-            {d.gallery.map((g, i) => (
-              <li class="w-[44vw] max-w-[220px] shrink-0 snap-start lg:w-auto lg:max-w-none">
-                <figure>
-                  <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 14vw, 44vw" loading={i < 3 ? 'eager' : 'lazy'} class="block h-auto w-full border border-rule" />
-                  {g.caption && <figcaption class="kb-meta mt-2 text-ink-2">{g.caption}</figcaption>}
-                </figure>
-              </li>
-            ))}
-          </ul>
-          {d.gallerySource && <p class="kb-meta mt-3 text-ink-3">{d.gallerySource}</p>}
-        </div>
-      </div>
+  {d.facts.length > 0 && (
+    <section class="kb-wrap pb-10 lg:pb-14" aria-label="At a glance">
+      <div class="kb-grid"><div class="kb-main">
+        <dl class="kb-facts grid grid-cols-2 border-t border-rule md:grid-cols-4">
+          {d.facts.map((f) => (
+            <div class="kb-fact grid content-start border-b border-rule py-4 pr-4">
+              <dt class="kb-meta order-2 mt-2 text-ink-2">{f.label}</dt>
+              <dd class="order-1 text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-none font-[560] tracking-[-0.04em]">{f.value}</dd>
+              {f.note && <dd class="kb-meta order-3 mt-1 text-ink-3">{f.note}</dd>}
+            </div>
+          ))}
+        </dl>
+      </div></div>
     </section>
+  )}
+  {d.gallery.length > 0 && (
+    <div class="kb-wrap pb-12 lg:pb-20">
+      <div class="kb-grid"><div class="kb-main"><Gallery id="screens" shots={d.gallery} source={d.gallerySource} /></div></div>
+    </div>
   )}
   <div class="kb-wrap pb-20">
     <div class="kb-grid">
@@ -50,7 +51,7 @@ const spec = [
           {spec.map(([k, v]) => <><dt class="text-ink-3">{k}</dt><dd class="mb-2 text-ink-2">{v}</dd></>)}
           <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
         </dl>
-        {d.links.length > 0 && <ul class="mt-4 grid gap-1">{d.links.map((l) => <li><a class="kb-link" href={l.href} rel="noopener">{l.label} ↗</a></li>)}</ul>}
+        {d.links.length > 0 && <ul class="mt-2 grid">{d.links.map((l) => <li><a class="kb-link inline-flex min-h-11 items-center" href={l.href} rel="noopener">{l.label} ↗</a></li>)}</ul>}
       </aside>
       <article class="kb-main kb-prose mt-8 lg:mt-0"><Content /></article>
     </div>

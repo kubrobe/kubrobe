@@ -45,6 +45,8 @@ const work = defineCollection({
       .default([]),
     /** Where the screenshots come from, shown under the gallery. */
     gallerySource: z.string().optional(),
+    /** Verified headline numbers shown above the write-up. Each needs a source in `note`. */
+    facts: z.array(z.object({ value: z.string(), label: z.string(), note: z.string().optional() })).default([]),
   }),
 });
 

@@ -35,9 +35,9 @@ const nav = await getNav();
     <a href="#main" class="sr-only z-[60] bg-ink px-3 py-2 text-surface focus:not-sr-only focus:fixed focus:top-2 focus:left-2">Skip to content</a>
     <IndexBar nav={nav} />
     {showPlaceholders && (
-      <div class="kb-wrap kb-meta border-b border-dashed border-ink-3 py-2 text-ink-2" role="note">
+      <aside aria-label="Preview notice" class="kb-wrap kb-meta border-b border-dashed border-ink-3 py-2 text-ink-2">
         Placeholder preview. Bracketed items are fixtures, not real content, and this build is not indexed.
-      </div>
+      </aside>
     )}
     <main id="main" tabindex="-1" class="outline-none">
       <slot />

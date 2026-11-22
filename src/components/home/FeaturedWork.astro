@@ -1,7 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Section from '@/components/Section.astro';
-import EntryHead from '@/components/EntryHead.astro';
 import EntryFigure from '@/components/EntryFigure.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
 import { workTypeLabel, pad, code } from '@/lib/entries';
@@ -9,51 +8,73 @@ interface Props { featured: CollectionEntry<'work'>[]; total: number }
 const { featured, total } = Astro.props;
 ---
 <Section number={100} label="Selected work" id="work" heading="Selected *work*">
-  <EntryHead />
-  <ol>
-    {featured.map((w) => {
+  <ol class="grid gap-[var(--kb-space-block)]">
+    {featured.map((w, i) => {
       const d = w.data;
+      const flip = i % 2 === 1;
       return (
-        <li data-reveal id={`kb-${d.number}`} class="kb-proj relative border-t border-rule last:border-b">
-          <a href={`/work/${w.id}/`} class="kb-proj-link group grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-4 gap-y-2 py-5 no-underline md:grid-cols-[8rem_minmax(0,1fr)] lg:grid-cols-[7rem_minmax(0,1fr)_9rem_4rem_9rem] lg:items-baseline lg:py-7">
-            <span class="kb-meta hidden text-ink-3 transition-colors group-hover:text-ink group-focus-visible:text-ink lg:inline">{code(d.number)}</span>
-            <span class="row-span-2 lg:hidden"><EntryFigure number={d.number} class="w-full" /></span>
-            <span class="grid min-w-0 content-start gap-1.5">
-              <span class="kb-meta text-ink-3 lg:hidden">{code(d.number)} · {workTypeLabel[d.type]} · {d.year}</span>
-              <span class="kb-proj-title text-h3 leading-[1.08] font-medium tracking-[-0.025em]">
-                {d.title}{d.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
-              </span>
-              <span class="line-clamp-2 max-w-[52ch] text-sm text-ink-2 lg:text-body">{d.summary}</span>
-            </span>
-            <span class="kb-meta hidden text-ink-2 lg:inline">{workTypeLabel[d.type]}</span>
-            <span class="kb-meta hidden text-ink-2 lg:inline">{d.year}</span>
-            <span class="col-start-2 lg:col-start-auto"><StatusGlyph kind="work" status={d.status} /></span>
-          </a>
-          <!-- Desktop: the same generated figure, revealed through a mask on hover or keyboard focus. CSS only. -->
-          <figure class="kb-proj-fig pointer-events-none absolute top-1/2 right-[26rem] z-10 hidden w-[min(20%,240px)] lg:block" aria-hidden="true">
-            <EntryFigure number={d.number} class="w-full" />
-            <figcaption class="kb-meta mt-2 text-ink-2">Fig. {code(d.number)} · generated</figcaption>
-          </figure>
+        <li data-reveal id={`kb-${d.number}`}>
+          <article class="kb-feature group relative grid gap-6 border-t border-rule pt-5 md:grid-cols-12 md:gap-x-[var(--kb-gutter)] lg:pt-6" aria-labelledby={`kb-${d.number}-t`}>
+            <figure class:list={['md:col-span-5 md:row-span-2', flip && 'md:order-2 md:col-start-8']}>
+              <EntryFigure number={d.number} resolve class="w-full" />
+              <figcaption class="kb-meta mt-2 flex justify-between gap-4 text-ink-3">
+                <span>Fig. {code(d.number)}</span><span>Generated from the entry ID</span>
+              </figcaption>
+            </figure>
+            <div class:list={['grid min-w-0 content-start gap-4 md:col-span-7', flip ? 'md:order-1 md:col-start-1 md:pr-[8%]' : 'md:pl-[8%]']}>
+              <p class="kb-meta flex flex-wrap gap-x-3 text-ink-2">
+                <span class="text-ink">{code(d.number)}</span><span>{workTypeLabel[d.type]}</span><span>{d.year}</span>
+              </p>
+              <h3 id={`kb-${d.number}-t`} class="text-[clamp(2rem,1.4rem+2.6vw,3.75rem)] leading-[0.98] font-[560] tracking-[-0.035em] text-balance">
+                <a href={`/work/${w.id}/`} class="kb-feature-link no-underline">
+                  <span class="kb-feature-title inline-block">{d.title}</span>
+                </a>
+                {d.placeholder && <span class="kb-ph-tag ml-2 align-middle text-[0.6rem]">Placeholder</span>}
+              </h3>
+              <p class="max-w-[46ch] text-lg text-ink-2">{d.summary}</p>
+              <dl class="kb-meta grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 border-t border-rule pt-3 sm:max-w-[28rem]">
+                <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
+                {d.role && <><dt class="text-ink-3">Role</dt><dd class="text-ink-2">{d.role}</dd></>}
+                {d.stack.length > 0 && <><dt class="text-ink-3">Stack</dt><dd class="text-ink-2">{d.stack.join(', ')}</dd></>}
+              </dl>
+              <span class="kb-meta text-ink" aria-hidden="true">Open case study <span class="kb-feature-arrow inline-block">→</span></span>
+            </div>
+          </article>
         </li>
       );
     })}
   </ol>
-  <a href="/work/" class="kb-draw kb-meta mt-8 inline-block text-ink-2 hover:text-ink">All {pad(total)} entries →</a>
+  {total > featured.length && (
+    <a href="/work/" class="kb-draw kb-meta mt-[var(--kb-space-block)] inline-block text-ink-2 hover:text-ink">All {pad(total)} entries →</a>
+  )}
 </Section>
 <style>
-  .kb-proj-title { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
-  .kb-proj-link:focus-visible { outline-offset: -2px; }
-  .kb-proj-fig {
-    opacity: 0;
-    translate: 0 -50%;
-    clip-path: inset(0 0 100% 0);
-    transition: opacity var(--kb-dur-micro), clip-path var(--kb-dur-ui) var(--kb-ease-mask);
-  }
+  /* The title link stretches over the whole feature, so the figure and text are one target. */
+  .kb-feature-link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+  .kb-feature-link:focus-visible { outline: none; }
+  .kb-feature:has(.kb-feature-link:focus-visible) { outline: 2px solid var(--kb-ink); outline-offset: 8px; }
+
+  .kb-feature-title, .kb-feature-arrow { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+
+  /* Figures resolve from coarse to fine on desktop hover or keyboard focus. */
+  .kb-feature :global(.kb-fig-fine) { clip-path: inset(0 0 100% 0); transition: clip-path var(--kb-dur-reveal) var(--kb-ease-mask); }
+  .kb-feature :global(.kb-fig-coarse) { transition: opacity var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-feature:has(.kb-feature-link:focus-visible) :global(.kb-fig-fine) { clip-path: inset(0 0 0 0); }
+  .kb-feature:has(.kb-feature-link:focus-visible) :global(.kb-fig-coarse) { opacity: 0; }
+  .kb-feature:has(.kb-feature-link:focus-visible) .kb-feature-title { transform: translateX(12px); }
+  .kb-feature:has(.kb-feature-link:focus-visible) .kb-feature-arrow { transform: translateX(6px); }
   @media (hover: hover) {
-    .kb-proj-link:hover .kb-proj-title { transform: translateX(16px); }
-    .kb-proj:has(.kb-proj-link:hover) .kb-proj-fig { opacity: 1; clip-path: inset(0 0 0 0); }
+    .kb-feature:hover :global(.kb-fig-fine) { clip-path: inset(0 0 0 0); }
+    .kb-feature:hover :global(.kb-fig-coarse) { opacity: 0; }
+    .kb-feature:hover .kb-feature-title { transform: translateX(12px); }
+    .kb-feature:hover .kb-feature-arrow { transform: translateX(6px); }
   }
-  .kb-proj-link:focus-visible .kb-proj-title { transform: translateX(16px); }
-  .kb-proj:has(.kb-proj-link:focus-visible) .kb-proj-fig { opacity: 1; clip-path: inset(0 0 0 0); }
-  @media (prefers-reduced-motion: reduce) { .kb-proj-fig { transition: none; } }
+  /* Phones, tablets and touch screens show the fine figure directly. */
+  @media (hover: none), (pointer: coarse), (max-width: 59.99rem) {
+    .kb-feature :global(.kb-fig-fine) { clip-path: none; }
+    .kb-feature :global(.kb-fig-coarse) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kb-feature :global(.kb-fig-fine), .kb-feature :global(.kb-fig-coarse) { transition: none; }
+  }
 </style>

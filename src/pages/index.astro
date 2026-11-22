@@ -10,7 +10,7 @@ import { getNav } from '@/lib/nav';
 import { getWork, getWriting, getCertifications, getLastUpdated } from '@/lib/entries';
 
 const [work, writing, certs, updated, nav] = await Promise.all([getWork(), getWriting(), getCertifications(), getLastUpdated(), getNav()]);
-const featured = (work.some((w) => w.data.featured) ? work.filter((w) => w.data.featured) : work).slice(0, 6);
+const featured = (work.some((w) => w.data.featured) ? work.filter((w) => w.data.featured) : work).slice(0, 4);
 const latest = writing.slice(0, 3);
 const total = work.length + writing.length + certs.length;
 const hasContact = Boolean(profile.email || profile.links.length);

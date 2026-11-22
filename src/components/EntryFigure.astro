@@ -1,9 +1,15 @@
 ---
 import { ditherPath, FIG_W, FIG_H } from '@/lib/dither';
-interface Props { number: number; class?: string }
-const { number, class: cls } = Astro.props;
+interface Props {
+  number: number;
+  class?: string;
+  /** Adds a coarse layer that resolves to the fine figure on hover/focus (styled by the parent). */
+  resolve?: boolean;
+}
+const { number, class: cls, resolve = false } = Astro.props;
 ---
 <svg viewBox={`0 0 ${FIG_W} ${FIG_H}`} aria-hidden="true" focusable="false" shape-rendering="crispEdges"
-  class:list={['block aspect-[4/3] bg-raised text-ink', cls]}>
-  <path d={ditherPath(number)} fill="currentColor" />
+  class:list={['kb-fig block aspect-[4/3] bg-raised text-ink', cls]}>
+  {resolve && <path class="kb-fig-coarse" transform="scale(2)" d={ditherPath(number, FIG_W / 2, FIG_H / 2)} fill="currentColor" />}
+  <path class="kb-fig-fine" d={ditherPath(number)} fill="currentColor" />
 </svg>

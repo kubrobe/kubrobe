@@ -235,8 +235,10 @@ body::after {
 
   /* Scroll-linked reveals. No JS; browsers without support show content statically. */
   @supports (animation-timeline: view()) {
-    [data-reveal] {
-      animation: kb-rise linear both;
+    [data-reveal] { animation: kb-rise linear both; }
+    /* Kept in its own rule: the CSS minifier would otherwise fold the timeline into the
+       animation shorthand, which browsers reject, silently disabling the reveal. */
+    [data-reveal]:is([data-reveal]) {
       animation-timeline: view();
       animation-range: entry 0% entry 55%;
     }

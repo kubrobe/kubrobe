@@ -28,26 +28,25 @@ const links = [
     </p>
   </div>
 
-  <div class="mt-auto pt-[clamp(88px,26vw,160px)] lg:pt-20">
+  <div class="mt-auto pt-[clamp(72px,20vw,120px)] lg:pt-16">
     <Wordmark />
   </div>
 
-  <div class="kb-grid mt-8 gap-y-10 lg:mt-12">
-    <div class="kb-rail kb-meta kb-in hidden text-ink-2 lg:block lg:pt-2" style="--i:6">
-      <span class="block text-ink">{code(1)}</span>Statement
+  {(profile.statement || links.length > 0) && (
+  <div class="kb-grid mt-[clamp(28px,4vw,56px)] gap-y-10 border-t border-rule pt-5 lg:pt-6">
+    <div class="kb-rail kb-meta kb-in hidden text-ink-2 lg:block" style="--i:6">
+      <span class="block text-ink">{code(1)}</span>{profile.statement ? 'Statement' : 'Contents'}
     </div>
-    {profile.statement ? (
-      <p class:list={['kb-in min-w-0 text-[clamp(1.5rem,1.05rem+1.9vw,2.75rem)] leading-[1.12] font-[450] tracking-[-0.025em] md:col-span-5 lg:col-[3/10]', profileIsPlaceholder('statement') && 'text-ink-2']} style="--i:7">
+    {profile.statement && (
+      <p class:list={['kb-in min-w-0 text-[clamp(1.75rem,1.15rem+2.5vw,3.5rem)] leading-[1.06] font-[460] tracking-[-0.03em] text-balance md:col-span-6 lg:col-[3/9]', profileIsPlaceholder('statement') && 'text-ink-2']} style="--i:7">
         <Fragment set:html={emphasize(profile.statement)} />
       </p>
-    ) : (
-      <p class="kb-in kb-meta text-ink-2 md:col-span-4 lg:col-[3/9]" style="--i:7">An index of work, writing and credentials.</p>
     )}
     {links.length > 0 && (
-      <nav aria-label="Index" class="kb-in md:col-span-6 lg:col-[10/13] lg:self-end" style="--i:8">
-        <ol class="border-b border-rule">
+      <nav aria-label="Contents" class:list={['kb-in md:col-span-6', profile.statement ? 'lg:col-[10/13] lg:self-end' : 'lg:col-[3/13]']} style="--i:8">
+        <ol class:list={['border-b border-rule', !profile.statement && 'lg:grid lg:grid-cols-5 lg:gap-x-[var(--kb-gutter)] lg:border-b-0', 'md:max-lg:grid md:max-lg:grid-cols-2 md:max-lg:gap-x-[var(--kb-gutter)] md:max-lg:border-t md:max-lg:border-b-0']}>
           {links.map((l, i) => (
-            <li class="border-t border-rule">
+            <li class="border-t border-rule md:max-lg:border-t-0 md:max-lg:border-b">
               <a href={l.href} class="kb-hero-link group flex min-h-11 items-baseline justify-between gap-4 py-2 no-underline">
                 <span class="flex items-baseline gap-3">
                   <span class="kb-meta text-ink-3">{pad(i + 1)}</span>
@@ -64,10 +63,11 @@ const links = [
       </nav>
     )}
   </div>
+  )}
 </section>
 <style>
   /* The hero fills the first screen on tablets and up so the wordmark lands on the fold. */
-  @media (min-width: 48rem) and (min-height: 521px) {
+  @media (min-width: 60rem) and (min-height: 600px) {
     .kb-hero { min-height: calc(100svh - var(--kb-bar-h) - var(--kb-mobile-bar-h) - env(safe-area-inset-top)); }
   }
   .kb-hero-label, .kb-hero-arrow { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }

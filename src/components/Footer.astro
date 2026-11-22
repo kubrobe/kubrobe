@@ -6,14 +6,14 @@ import pkg from '../../package.json';
 const sha = import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 const hasContact = Boolean(profile.email || profile.links.length);
 ---
-<footer id="contact" class="kb-wrap border-t border-rule pt-[var(--kb-space-section)] pb-10" aria-labelledby={hasContact ? 'contact-h' : undefined}>
+<footer id="contact" class:list={['kb-wrap border-t border-rule pb-6 lg:pb-10', hasContact ? 'pt-[var(--kb-space-section)]' : 'pt-5']} aria-labelledby={hasContact ? 'contact-h' : undefined}>
   {hasContact && (
-    <div class="kb-grid mb-[var(--kb-space-section)] gap-y-10">
+    <div class="kb-grid mb-[clamp(48px,8vw,128px)] gap-y-8 lg:gap-y-10">
       <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
         <span class="text-ink lg:block">{code(900)}</span><span>Contact</span>
       </div>
       <!-- Full-width closing moment: the heading breaks out of the rail. -->
-      <h2 id="contact-h" data-reveal="mask" class="kb-close-h text-[clamp(3.5rem,0.9rem+11.2vw,13rem)] leading-[0.86] font-semibold tracking-[-0.055em] lg:!col-[1/13]">
+      <h2 id="contact-h" data-reveal="mask" class="kb-close-h text-[clamp(3rem,0.9rem+11.2vw,13rem)] leading-[0.86] font-semibold tracking-[-0.055em] lg:!col-[1/13]">
         Get in <em class="kb-em">touch</em>
       </h2>
       {profile.email && <div data-reveal class="md:col-span-6 lg:col-[3/10]"><CopyEmail email={profile.email} /></div>}
@@ -32,14 +32,13 @@ const hasContact = Boolean(profile.email || profile.links.length);
       {showPlaceholders && <span class="kb-ph-tag w-fit lg:col-[3/13]">Placeholder contact</span>}
     </div>
   )}
-  <div class="kb-grid kb-meta border-t border-rule pt-4 text-ink-2">
-    <div class="kb-rail">{code(0)} Colophon</div>
-    <p class="kb-main flex flex-wrap gap-x-6 gap-y-1">
-      <span>KUBROBE v{pkg.version}</span>
-      {sha && <span>Build {sha}</span>}
-      <span>Set in Geist, Geist Mono and Instrument Serif</span>
-      <span>Built with Astro</span>
-      <a href="#main" class="kb-draw ml-auto text-ink">Back to top <span aria-hidden="true">↑</span></a>
+  <div class:list={['kb-grid kb-meta gap-y-1 text-ink-2', hasContact && 'border-t border-rule pt-4']}>
+    <p class="kb-rail hidden lg:block">{code(0)} Colophon</p>
+    <p class="col-span-3 md:col-span-5 lg:col-[3/12] lg:flex lg:flex-wrap lg:gap-x-6">
+      <span class="text-ink">KUBROBE v{pkg.version}</span>
+      {sha && <span> · Build {sha}</span>}
+      <span class="block text-ink-3 lg:inline">Geist, Geist Mono, Instrument Serif · Astro</span>
     </p>
+    <a href="#main" class="kb-draw col-span-1 inline-flex min-h-11 items-start justify-self-end whitespace-nowrap text-ink lg:col-[12/13] lg:items-center">Top <span aria-hidden="true" class="ml-1">↑</span></a>
   </div>
 </footer>

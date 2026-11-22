@@ -5,7 +5,7 @@ import Empty from '@/components/Empty.astro';
 import { profile } from '@/data/profile';
 const has = profile.about.length || profile.now.length || profile.interests.length;
 ---
-<Base title="About">
+<Base title="About" description={profile.about[0]}>
   <PageHead number={400} label="About" title="About" />
   <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main grid gap-12">
     {profile.about.length > 0 && <div class="kb-prose text-lg">{profile.about.map((p) => <p>{p}</p>)}</div>}

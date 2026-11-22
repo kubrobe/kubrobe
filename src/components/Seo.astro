@@ -1,4 +1,6 @@
 ---
+import { profile } from '@/data/profile';
+
 interface Props {
   title?: string | undefined;
   description?: string | undefined;
@@ -6,18 +8,33 @@ interface Props {
   type?: 'website' | 'article' | undefined;
 }
 const SITE = 'KUBROBE';
-const { title, description = 'KUBROBE: a catalogued archive of work, writing and credentials.', noindex = false, type = 'website' } = Astro.props;
+// Plain-text version of the verified statement; never invent a tagline.
+const fallback = [profile.statement?.replaceAll('*', ''), profile.role].filter(Boolean).join(' ');
+const { title, description = fallback || SITE, noindex = false, type = 'website' } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE}` : SITE;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// Absolute URLs only exist once a real domain is configured (SITE_URL, or Vercel's production URL).
+// Until then canonical, og:url and og:image are omitted rather than pointing at localhost.
+const site = Astro.site;
+const hasDomain = Boolean(site && !['localhost', '127.0.0.1'].includes(site.hostname));
+const canonical = hasDomain && site ? new URL(Astro.url.pathname, site) : undefined;
+const image = hasDomain && site ? new URL('/og.png', site) : undefined;
 ---
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical} />
-{noindex && <meta name="robots" content="noindex" />}
+{canonical && !noindex && <link rel="canonical" href={canonical} />}
+{noindex && <meta name="robots" content="noindex, nofollow" />}
 <meta property="og:site_name" content={SITE} />
 <meta property="og:type" content={type} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={canonical} />
-<meta name="twitter:card" content="summary" />
-<link rel="sitemap" href="/sitemap-index.xml" />
+<meta property="og:locale" content="en" />
+{canonical && <meta property="og:url" content={canonical} />}
+{image && !noindex && <meta property="og:image" content={image} />}
+{image && !noindex && <meta property="og:image:width" content="1200" />}
+{image && !noindex && <meta property="og:image:height" content="630" />}
+{image && !noindex && <meta property="og:image:alt" content="KUBROBE, set in large white letters on black." />}
+<meta name="twitter:card" content={image && !noindex ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+{image && !noindex && <meta name="twitter:image" content={image} />}

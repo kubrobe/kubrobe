@@ -1,0 +1,35 @@
+---
+import Section from '@/components/Section.astro';
+import { profile } from '@/data/profile';
+---
+<Section number={400} label="About · Now" id="about" heading="About">
+  <div class="kb-grid gap-y-12 lg:!grid-cols-10">
+    {profile.about.length > 0 && (
+      <div data-reveal class="grid content-start gap-5 md:col-span-6 lg:col-span-6">
+        {profile.about.slice(0, 2).map((p) => <p class="text-lead leading-[1.3] tracking-[-0.015em]">{p}</p>)}
+        <a href="/about/" class="kb-draw kb-meta w-fit text-ink-2 hover:text-ink">More about →</a>
+      </div>
+    )}
+    <div class="grid content-start gap-10 md:col-span-6 lg:col-[7/11]">
+      {profile.now.length > 0 && (
+        <div data-reveal>
+          <h3 class="kb-label mb-3">Now</h3>
+          <ul class="grid gap-2 border-t border-rule pt-3">{profile.now.map((n) => <li>{n}</li>)}</ul>
+        </div>
+      )}
+      {profile.interests.length > 0 && (
+        <div data-reveal>
+          <h3 class="kb-label mb-3">Interests</h3>
+          <ul>
+            {profile.interests.map((i) => (
+              <li class="grid gap-0.5 border-t border-rule py-3">
+                <span>{i.title}</span>
+                {i.note && <span class="kb-meta text-ink-2">{i.note}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  </div>
+</Section>

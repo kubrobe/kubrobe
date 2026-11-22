@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Section from '@/components/Section.astro';
+import EntryHead from '@/components/EntryHead.astro';
+import EntryRow from '@/components/EntryRow.astro';
+import { workTypeLabel, pad, code } from '@/lib/entries';
+interface Props { featured: CollectionEntry<'work'>[]; total: number }
+const { featured, total } = Astro.props;
+---
+<Section number={100} label="Selected work" id="work" heading="Selected *work*">
+  <div class="relative" data-preview-root>
+    <EntryHead />
+    <ol>
+      {featured.map((w) => (
+        <EntryRow href={`/work/${w.id}/`} number={w.data.number} title={w.data.title} kind="work"
+          status={w.data.status} type={workTypeLabel[w.data.type]} year={w.data.year} placeholder={w.data.placeholder} />
+      ))}
+    </ol>
+    <!-- Desktop-only figure. Generated from the entry number, so it never stands in for a real image. -->
+    <figure class="kb-preview pointer-events-none absolute right-[26rem] z-10 hidden w-[min(22%,260px)] lg:block" aria-hidden="true" data-preview>
+      <canvas width="176" height="132" class="block aspect-[4/3] w-full bg-raised"></canvas>
+      <figcaption class="kb-meta mt-2 text-ink-2" data-preview-cap>{featured[0] && code(featured[0].data.number)}</figcaption>
+    </figure>
+  </div>
+  <a href="/work/" class="kb-draw kb-meta mt-8 inline-block text-ink-2 hover:text-ink">All {pad(total)} entries →</a>
+</Section>
+<style>
+  .kb-preview {
+    top: 0;
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transition: opacity var(--kb-dur-micro), clip-path var(--kb-dur-ui) var(--kb-ease-mask), top var(--kb-dur-ui) var(--kb-ease-out);
+  }
+  .kb-preview.is-on { opacity: 1; clip-path: inset(0 0 0 0); }
+  @media (prefers-reduced-motion: reduce) { .kb-preview { transition: none; } }
+</style>
+<script>
+  // 1-bit ordered-dither figure seeded by the entry number: a filed "O" study per entry.
+  const root = document.querySelector<HTMLElement>('[data-preview-root]');
+  const fig = root?.querySelector<HTMLElement>('[data-preview]');
+  const canvas = fig?.querySelector('canvas');
+  const cap = fig?.querySelector('[data-preview-cap]');
+  const ctx = canvas?.getContext('2d');
+  if (root && fig && canvas && ctx && matchMedia('(min-width: 60rem)').matches) {
+    const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+    const draw = (seed: number) => {
+      const { width: W, height: H } = canvas;
+      const ink = getComputedStyle(document.documentElement).getPropertyValue('--kb-ink').trim();
+      const rnd = (n: number) => { const x = Math.sin(seed * 9301 + n * 49297) * 233280; return x - Math.floor(x); };
+      const cx = W * (0.3 + rnd(1) * 0.4), cy = H * (0.3 + rnd(2) * 0.4);
+      const r = Math.min(W, H) * (0.25 + rnd(3) * 0.2), ring = r * (0.28 + rnd(4) * 0.25), ang = rnd(5) * Math.PI;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = ink;
+      for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) {
+        const d = Math.hypot(x - cx, y - cy);
+        const band = 1 - Math.min(Math.abs(d - r) / ring, 1);
+        const sweep = 0.5 + 0.5 * Math.cos(Math.atan2(y - cy, x - cx) - ang);
+        const v = band * (0.35 + 0.65 * sweep);
+        if (v * 16 > (bayer[((y >> 1) % 4) * 4 + ((x >> 1) % 4)] ?? 0)) ctx.fillRect(x, y, 1, 1);
+      }
+    };
+    const show = (row: HTMLElement) => {
+      const n = Number(row.dataset['number'] ?? 0);
+      const top = row.offsetTop + row.offsetHeight / 2 - fig.offsetHeight / 2;
+      fig.style.top = `${Math.max(0, top)}px`;
+      if (cap) cap.textContent = row.dataset['code'] ?? '';
+      draw(n);
+      fig.classList.add('is-on');
+    };
+    const hide = () => fig.classList.remove('is-on');
+    root.querySelectorAll<HTMLElement>('[data-entry-row]').forEach((row) => {
+      row.addEventListener('pointerenter', () => show(row));
+      row.addEventListener('focus', () => show(row));
+      row.addEventListener('blur', hide);
+    });
+    root.addEventListener('pointerleave', hide);
+  }
+</script>

@@ -6,25 +6,25 @@ import pkg from '../../package.json';
 const sha = import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 const hasContact = Boolean(profile.email || profile.links.length);
 ---
-<footer id="contact" class="kb-wrap border-t border-rule pt-12 pb-10 min-[900px]:pt-20" aria-labelledby={hasContact ? 'contact-h' : undefined}>
+<footer id="contact" class="kb-wrap border-t border-rule pt-[var(--kb-space-section)] pb-10" aria-labelledby={hasContact ? 'contact-h' : undefined}>
   {hasContact && (
-    <div class="kb-grid mb-16">
-      <div class="kb-rail kb-meta flex gap-3 text-ink-3 min-[900px]:block">
-        <span class="text-ink-2 min-[900px]:block">{code(900)}</span><span>Contact</span>
+    <div class="kb-grid mb-[var(--kb-space-section)]">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
+        <span class="text-ink lg:block">{code(900)}</span><span>Contact</span>
       </div>
       <div class="kb-main grid gap-8">
-        <h2 id="contact-h" class="sr-only">Contact</h2>
+        <h2 id="contact-h" data-reveal="mask" class="text-h1 leading-[0.92] font-semibold tracking-[-0.045em]">Get in <em class="kb-em">touch</em></h2>
         {profile.email && <CopyEmail email={profile.email} />}
         {profile.links.length > 0 && (
           <ul class="kb-meta flex flex-wrap gap-x-6 gap-y-2">
-            {profile.links.map((l) => <li><a href={l.href} class="kb-link text-ink-2 hover:text-ink" rel="me noopener">{l.label} ↗</a></li>)}
+            {profile.links.map((l) => <li><a href={l.href} class="kb-draw text-ink-2 hover:text-ink" rel="me noopener">{l.label} ↗</a></li>)}
           </ul>
         )}
         {showPlaceholders && <span class="kb-ph-tag w-fit">Placeholder contact</span>}
       </div>
     </div>
   )}
-  <div class="kb-grid kb-meta text-ink-3">
+  <div class="kb-grid kb-meta border-t border-rule pt-4 text-ink-2">
     <div class="kb-rail">{code(0)} Colophon</div>
     <p class="kb-main flex flex-wrap gap-x-6 gap-y-1">
       <span>KUBROBE v{pkg.version}</span>

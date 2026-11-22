@@ -1,124 +1,35 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Hero from '@/components/home/Hero.astro';
-import Section from '@/components/Section.astro';
-import EntryHead from '@/components/EntryHead.astro';
-import EntryRow from '@/components/EntryRow.astro';
-import Glyph from '@/components/Glyph.astro';
+import Intro from '@/components/home/Intro.astro';
+import FeaturedWork from '@/components/home/FeaturedWork.astro';
+import CertPreview from '@/components/home/CertPreview.astro';
+import WritingPreview from '@/components/home/WritingPreview.astro';
+import AboutPreview from '@/components/home/AboutPreview.astro';
 import { profile } from '@/data/profile';
-import {
-  getWork, getWriting, getCertifications, getLastUpdated,
-  workTypeLabel, statusLabel, code, isoDate, pad, readingMinutes, type Status,
-} from '@/lib/entries';
+import { getWork, getWriting, getCertifications, getLastUpdated } from '@/lib/entries';
 
 const [work, writing, certs, updated] = await Promise.all([getWork(), getWriting(), getCertifications(), getLastUpdated()]);
 const featured = (work.some((w) => w.data.featured) ? work.filter((w) => w.data.featured) : work).slice(0, 6);
 const latest = writing.slice(0, 3);
-const statuses: Status[] = ['complete', 'in-progress', 'planned'];
-const certCounts = statuses.map((s) => ({ s, n: certs.filter((c) => c.data.status === s).length })).filter((c) => c.n > 0);
-const current = certs.filter((c) => c.data.status === 'in-progress').slice(0, 2);
-const hasAbout = profile.about.length || profile.now.length || profile.interests.length;
+const hasIntro = Boolean(profile.statement || profile.role || profile.currently || profile.openTo);
+const hasAbout = Boolean(profile.about.length || profile.now.length || profile.interests.length);
 const total = work.length + writing.length + certs.length;
+
+// "Enter the index" points at the first section that actually renders.
+const next = [
+  hasIntro && '#intro',
+  featured.length && '#work',
+  certs.length && '#credentials',
+  latest.length && '#writing',
+  hasAbout && '#about',
+].find(Boolean) || undefined;
 ---
 <Base>
-  <Hero entries={total} updated={updated} />
-
-  {featured.length > 0 && (
-    <Section number={100} label="Selected work" id="work" heading="Selected work">
-      <EntryHead />
-      <ol>
-        {featured.map((w) => (
-          <EntryRow href={`/work/${w.id}/`} number={w.data.number} title={w.data.title} kind="work"
-            status={w.data.status} type={workTypeLabel[w.data.type]} year={w.data.year} placeholder={w.data.placeholder} />
-        ))}
-      </ol>
-      <a href="/work/" class="kb-meta kb-link mt-6 inline-block text-ink-2 hover:text-ink">All {pad(work.length)} entries →</a>
-    </Section>
-  )}
-
-  {certs.length > 0 && (
-    <Section number={300} label="Credentials" id="credentials" heading="Certifications">
-      <div class="grid gap-8 min-[900px]:grid-cols-10 min-[900px]:gap-x-5">
-        <ul class="kb-meta flex flex-wrap gap-x-8 gap-y-2 border-t border-rule pt-3 text-ink-2 min-[900px]:col-span-5" aria-label="Ledger summary">
-          {certCounts.map(({ s, n }) => (
-            <li><Glyph status={s} class="mr-1.5 text-ink" /><span class="text-ink">{n}</span> {statusLabel('certifications', s).toLowerCase()}</li>
-          ))}
-        </ul>
-        {current.length > 0 && (
-          <ul class="grid gap-4 border-t border-rule pt-3 min-[900px]:col-span-5">
-            {current.map((c) => (
-              <li class="grid gap-2">
-                <span class="kb-meta text-ink-3">{code(c.data.number)} · {c.data.issuer}</span>
-                <span class="text-lg font-medium tracking-[-0.015em]">
-                  {c.data.title}{c.data.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
-                </span>
-                {c.data.progress !== undefined && (
-                  <span class="flex items-center gap-3">
-                    <span class="h-px flex-1 bg-rule" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={c.data.progress} aria-label={`${c.data.title} progress`}>
-                      <span class="block h-px bg-ink" style={`width:${c.data.progress}%`} />
-                    </span>
-                    <span class="kb-meta text-ink-2">{Math.round(c.data.progress)}%</span>
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <a href="/certifications/" class="kb-meta kb-link mt-6 inline-block text-ink-2 hover:text-ink">Full ledger →</a>
-    </Section>
-  )}
-
-  {latest.length > 0 && (
-    <Section number={200} label="Writing" id="writing" heading="Latest writing">
-      <ol>
-        {latest.map((p) => (
-          <li class="border-t border-rule last:border-b">
-            <a href={`/writing/${p.id}/`} class="kb-row group grid gap-1 py-5 no-underline min-[900px]:grid-cols-[7rem_minmax(0,1fr)_7rem] min-[900px]:items-baseline min-[900px]:gap-x-4">
-              <time class="kb-meta text-ink-3" datetime={isoDate(p.data.date)}>{isoDate(p.data.date)}</time>
-              <span class="kb-row-title min-w-0 text-h3 font-medium leading-tight tracking-[-0.025em]">
-                {p.data.title}{p.data.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
-              </span>
-              <span class="kb-meta text-ink-2 min-[900px]:text-right">{readingMinutes(p.body)} min read</span>
-            </a>
-          </li>
-        ))}
-      </ol>
-      <a href="/writing/" class="kb-meta kb-link mt-6 inline-block text-ink-2 hover:text-ink">All writing →</a>
-    </Section>
-  )}
-
-  {hasAbout ? (
-    <Section number={400} label="About · Now" id="about" heading="About">
-      <div class="grid gap-10 min-[900px]:grid-cols-10 min-[900px]:gap-x-5">
-        {profile.about.length > 0 && (
-          <div class="kb-prose text-lg text-ink min-[900px]:col-span-6">
-            {profile.about.map((p) => <p>{p}</p>)}
-            <a href="/about/" class="kb-meta kb-link text-ink-2 hover:text-ink">More about →</a>
-          </div>
-        )}
-        <div class="grid content-start gap-8 min-[900px]:col-span-4">
-          {profile.now.length > 0 && (
-            <div>
-              <h3 class="kb-label mb-3">Now</h3>
-              <ul class="grid gap-2 border-t border-rule pt-3">{profile.now.map((n) => <li>{n}</li>)}</ul>
-            </div>
-          )}
-          {profile.interests.length > 0 && (
-            <div>
-              <h3 class="kb-label mb-3">Interests</h3>
-              <ul>
-                {profile.interests.map((i) => (
-                  <li class="grid gap-0.5 border-t border-rule py-3">
-                    <span>{i.title}</span>
-                    {i.note && <span class="kb-meta text-ink-2">{i.note}</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
-    </Section>
-  ) : null}
+  <Hero entries={total} updated={updated} next={next} />
+  <Intro />
+  {featured.length > 0 && <FeaturedWork featured={featured} total={work.length} />}
+  {certs.length > 0 && <CertPreview certs={certs} />}
+  {latest.length > 0 && <WritingPreview posts={latest} />}
+  {hasAbout && <AboutPreview />}
 </Base>

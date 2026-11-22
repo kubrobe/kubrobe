@@ -3,7 +3,7 @@ interface Props { email: string }
 const { email } = Astro.props;
 ---
 <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2">
-  <a href={`mailto:${email}`} class="kb-link min-w-0 break-all text-h3 font-medium tracking-[-0.02em] min-[900px]:text-h2">{email}</a>
+  <a href={`mailto:${email}`} class="kb-draw min-w-0 break-all text-h3 font-medium tracking-[-0.02em] lg:text-[clamp(2rem,1rem+2.5vw,3.5rem)]">{email}</a>
   <button type="button" data-copy={email} class="kb-meta cursor-pointer border border-rule px-2.5 py-1 text-ink-2 transition-colors hover:border-ink hover:text-ink">
     <span data-copy-label>Copy</span>
   </button>

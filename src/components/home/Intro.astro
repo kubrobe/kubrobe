@@ -1,0 +1,30 @@
+---
+import { profile, profileIsPlaceholder } from '@/data/profile';
+import { code } from '@/lib/entries';
+import { emphasize } from '@/lib/text';
+const facts = [
+  profile.role && ['Role', profile.role],
+  profile.currently && ['Currently', profile.currently],
+  profile.openTo && ['Open to', profile.openTo],
+].filter((f): f is [string, string] => Boolean(f));
+const show = Boolean(profile.statement || facts.length);
+---
+{show && (
+  <section id="intro" class="kb-wrap kb-section border-t border-rule" aria-labelledby="intro-h">
+    <div class="kb-grid gap-y-10">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
+        <span class="text-ink lg:block">{code(1)}</span><span id="intro-h">Introduction</span>
+      </div>
+      {profile.statement && (
+        <p data-reveal class:list={['kb-serif text-[clamp(2rem,1.3rem+3vw,4.25rem)] leading-[1.04] tracking-[-0.02em] lg:col-[4/12]', profileIsPlaceholder('statement') && 'text-ink-2']}>
+          <Fragment set:html={emphasize(profile.statement)} />
+        </p>
+      )}
+      {facts.length > 0 && (
+        <dl data-reveal class="kb-meta grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-rule pt-4 md:col-span-4 lg:col-[8/12]">
+          {facts.map(([k, v]) => <><dt class="text-ink-3">{k}</dt><dd class="text-ink">{v}</dd></>)}
+        </dl>
+      )}
+    </div>
+  </section>
+)}

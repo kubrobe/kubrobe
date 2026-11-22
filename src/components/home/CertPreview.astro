@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Section from '@/components/Section.astro';
+import Glyph from '@/components/Glyph.astro';
+import { statusLabel, code, pad, type Status } from '@/lib/entries';
+interface Props { certs: CollectionEntry<'certifications'>[] }
+const { certs } = Astro.props;
+const statuses: Status[] = ['complete', 'in-progress', 'planned'];
+const counts = statuses.map((s) => ({ s, n: certs.filter((c) => c.data.status === s).length })).filter((c) => c.n > 0);
+const current = certs.filter((c) => c.data.status === 'in-progress').slice(0, 3);
+---
+<Section number={300} label="Credentials" id="credentials" heading={"Certi\u00ADfications"}>
+  <div class="kb-grid gap-y-12 lg:!grid-cols-10">
+    <ul class="grid grid-cols-3 gap-x-4 md:col-span-6 lg:col-span-5" aria-label="Ledger summary">
+      {counts.map(({ s, n }) => (
+        <li data-reveal class="grid gap-2 border-t border-rule pt-3">
+          <span class="text-h2 leading-none font-[560] tracking-[-0.04em] tabular-nums">{pad(n)}</span>
+          <span class="kb-meta flex items-center gap-1.5 text-ink-2"><Glyph status={s} class="text-ink" />{statusLabel('certifications', s)}</span>
+        </li>
+      ))}
+    </ul>
+    {current.length > 0 && (
+      <div class="md:col-span-6 lg:col-[7/11]">
+        <h3 class="kb-label mb-3 flex items-center gap-1.5"><Glyph status="in-progress" class="text-ink" /> In progress</h3>
+        <ul>
+          {current.map((c) => (
+            <li data-reveal class="grid gap-1 border-t border-rule py-4">
+              <span class="kb-meta text-ink-3">{code(c.data.number)} · {c.data.issuer}</span>
+              <span class="text-lg font-medium tracking-[-0.015em]">
+                {c.data.title}{c.data.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
+              </span>
+              {c.data.progress !== undefined && (
+                <span class="mt-1 flex items-center gap-3">
+                  <span class="h-px flex-1 bg-rule" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={c.data.progress} aria-label={`${c.data.title} progress`}>
+                    <span class="block h-px bg-ink" style={`width:${c.data.progress}%`} />
+                  </span>
+                  <span class="kb-meta text-ink-2">{Math.round(c.data.progress)}%</span>
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+  <a href="/certifications/" class="kb-draw kb-meta mt-8 inline-block text-ink-2 hover:text-ink">Full ledger →</a>
+</Section>

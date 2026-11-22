@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Section from '@/components/Section.astro';
+import { isoDate, readingMinutes } from '@/lib/entries';
+interface Props { posts: CollectionEntry<'writing'>[] }
+const { posts } = Astro.props;
+---
+<Section number={200} label="Writing" id="writing" heading="Latest *writing*">
+  <ol>
+    {posts.map((p) => (
+      <li data-reveal class="border-t border-rule last:border-b">
+        <a href={`/writing/${p.id}/`} class="kb-row group grid gap-2 py-6 no-underline lg:grid-cols-[7rem_minmax(0,1fr)_7rem] lg:items-baseline lg:gap-x-4 lg:py-8">
+          <time class="kb-meta text-ink-3" datetime={isoDate(p.data.date)}>{isoDate(p.data.date)}</time>
+          <span class="min-w-0">
+            <span class="kb-row-title kb-serif block text-[clamp(1.75rem,1.3rem+1.9vw,3rem)] leading-[1.05]">{p.data.title}</span>
+            {p.data.placeholder && <span class="kb-ph-tag mt-2 inline-block">Placeholder</span>}
+            <span class="mt-2 block max-w-[60ch] text-ink-2">{p.data.description}</span>
+          </span>
+          <span class="kb-meta text-ink-2 lg:text-right">{readingMinutes(p.body)} min read</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+  <a href="/writing/" class="kb-draw kb-meta mt-8 inline-block text-ink-2 hover:text-ink">All writing →</a>
+</Section>
+<style>
+  .kb-row-title { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-row:hover .kb-row-title { transform: translateX(16px); } }
+  .kb-row:focus-visible .kb-row-title { transform: translateX(16px); }
+</style>

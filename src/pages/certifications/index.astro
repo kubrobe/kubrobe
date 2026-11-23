@@ -9,7 +9,7 @@ import { getCertifications, pad } from '@/lib/entries';
 const certs = await getCertifications();
 ---
 <Base title="Certifications" description="Ledger of completed, in-progress and planned certifications." noindex={certs.length === 0}>
-  <PageHead number={300} label="Credentials" title="Certifications">
+  <PageHead marker="Archive" label="Credentials" title="Certifications">
     <p class="kb-meta mt-6 text-ink-2">{certs.length ? `${pad(certs.length)} entries` : 'Nothing listed yet'} · <Glyph status="complete" /> completed · <Glyph status="in-progress" /> in progress · <Glyph status="planned" /> planned</p>
   </PageHead>
   <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main">

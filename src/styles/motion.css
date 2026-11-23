@@ -84,12 +84,23 @@
   /* ---------- Cross-document page transitions (no JavaScript) ---------- */
   @view-transition { navigation: auto; }
   ::view-transition-group(kb-nav-ind), ::view-transition-group(kb-nav-ind-m) { animation-duration: var(--kb-dur-ui); animation-timing-function: var(--kb-ease-mask); }
-  ::view-transition-old(root) { animation: 200ms var(--kb-ease-mask) both kb-vt-out; }
-  ::view-transition-new(root) { animation: 380ms var(--kb-ease-out) both kb-vt-in; }
+  /* Route change: the old page settles up and fades quickly; the new one rises into place. Under 0.7 s in total. */
+  ::view-transition-old(root) { animation: 220ms var(--kb-ease-mask) both kb-vt-out; }
+  ::view-transition-new(root) { animation: 520ms var(--kb-ease-out) 60ms both kb-vt-in; }
   /* A project title travels from the list to its case study. */
   ::view-transition-group(*.kb-title) { animation-duration: 520ms; animation-timing-function: var(--kb-ease-mask); }
-  @keyframes kb-vt-out { to { opacity: 0; } }
-  @keyframes kb-vt-in { from { opacity: 0; transform: translateY(12px); } }
+  @keyframes kb-vt-out { to { opacity: 0; transform: translateY(-8px); } }
+  @keyframes kb-vt-in { from { opacity: 0; transform: translateY(16px); } }
+
+  /* Theme switch: the new theme opens as a circle from the toggle (the O of the status glyph).
+     ThemeToggle sets --kb-vt-x/--kb-vt-y and the kb-vt-theme class for the length of the switch. */
+  html.kb-vt-theme * { view-transition-name: none !important; }
+  html.kb-vt-theme::view-transition-old(root) { animation: none; }
+  html.kb-vt-theme::view-transition-new(root) { animation: kb-theme-in 640ms var(--kb-ease-mask) both; }
+  @keyframes kb-theme-in {
+    from { clip-path: circle(0 at var(--kb-vt-x, 100%) var(--kb-vt-y, 0)); }
+    to { clip-path: circle(150vmax at var(--kb-vt-x, 100%) var(--kb-vt-y, 0)); }
+  }
 }
 
 /* ---------- Static pieces of the motion vocabulary ---------- */
@@ -110,3 +121,13 @@
 
 /* Screens inside featured work and galleries drift inside a clipping frame. */
 .kb-frame { overflow: clip; }
+
+/* ---------- Reading progress on long case studies ---------- */
+/* A 2px jade line under the header that fills with the page's scroll. Without scroll timelines it stays hidden. */
+.kb-progress { position: fixed; z-index: 51; left: 0; right: 0; top: calc(var(--kb-bar-h) + env(safe-area-inset-top)); height: 2px; pointer-events: none; transform-origin: left center; transform: scaleX(0); background: var(--kb-jade); opacity: 0; }
+@supports (animation-timeline: scroll()) {
+  .kb-progress { opacity: 1; animation: kb-progress linear both; }
+  .kb-progress:is(.kb-progress) { animation-timeline: scroll(root block); }
+  @keyframes kb-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+@media print { .kb-progress { display: none; } }

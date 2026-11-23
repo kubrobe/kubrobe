@@ -1,13 +1,14 @@
 ---
 import { code } from '@/lib/entries';
 import { emphasize } from '@/lib/text';
-interface Props { number: number; label: string; title: string; lede?: string | undefined; /** Shared-element name: the same title on another page morphs into this one. */ vtName?: string | undefined; crumb?: { href: string; label: string } | undefined }
-const { number, label, title, lede, vtName, crumb } = Astro.props;
+interface Props { number?: number | undefined; /** Structural index instead of a catalogue code. */ marker?: string | undefined; label: string; title: string; lede?: string | undefined; /** Shared-element name: the same title on another page morphs into this one. */ vtName?: string | undefined; crumb?: { href: string; label: string } | undefined }
+const { number, marker, label, title, lede, vtName, crumb } = Astro.props;
+const mark = marker ?? (number !== undefined ? code(number) : undefined);
 ---
 <header class="kb-wrap pt-10 pb-10 lg:pt-20 lg:pb-14">
   <div class="kb-grid">
     <div class="kb-rail kb-meta flex gap-3 text-ink-3 lg:block">
-      <span class="text-ink-2 lg:block">{code(number)}</span><span>{label}</span>
+      {mark && <span class="text-ink-2 lg:block">{mark}</span>}<span>{label}</span>
     </div>
     <div class="kb-main min-w-0">
       {crumb && <a href={crumb.href} class="kb-crumb kb-meta mb-6 inline-flex min-h-11 items-center gap-2 text-ink-2 no-underline hover:text-ink"><span class="kb-crumb-a" aria-hidden="true">←</span> <span class="kb-draw">{crumb.label}</span></a>}

@@ -1,30 +1,55 @@
 ---
+/**
+ * Email address with a copy action. Without JavaScript the address is still a mailto link and
+ * the button stays hidden (it only appears once the script has run). If the clipboard is
+ * unavailable, the address is selected instead so it can be copied by hand; the label says so.
+ */
 interface Props { email: string }
 const { email } = Astro.props;
 ---
-<div class="flex flex-wrap items-baseline gap-x-5 gap-y-2">
-  <a href={`mailto:${email}`} class="kb-draw min-w-0 break-all text-h3 font-medium tracking-[-0.02em] lg:text-[clamp(2rem,1rem+2.5vw,3.5rem)]">{email}</a>
-  <button type="button" data-copy={email} class="kb-btn min-w-20">
-    <span data-copy-label>Copy</span>
+<div class="kb-copy flex flex-wrap items-center gap-x-5 gap-y-3" data-copy-wrap>
+  <a href={`mailto:${email}`} class="kb-copy-addr kb-draw min-w-0 break-all font-medium" data-copy-text>{email}</a>
+  <button type="button" data-copy={email} class="kb-btn kb-copy-btn" hidden>
+    <span class="kb-copy-swap" aria-hidden="true"><span data-copy-label>Copy</span><span class="kb-copy-done">Copied ✓</span></span>
+    <span class="sr-only">Copy email address</span>
   </button>
   <span class="sr-only" aria-live="polite" data-copy-status></span>
 </div>
+<style>
+  .kb-copy-addr { font-size: clamp(1.375rem, 0.9rem + 2.2vw, 2.75rem); line-height: 1.15; letter-spacing: -0.025em; }
+  .kb-copy-btn { min-width: 6.5rem; overflow: clip; }
+  .kb-copy-swap { display: grid; }
+  .kb-copy-swap > * { grid-area: 1 / 1; transition: transform var(--kb-dur-micro) var(--kb-ease-out), opacity var(--kb-dur-micro) var(--kb-ease-out); }
+  .kb-copy-done { transform: translateY(110%); opacity: 0; color: var(--kb-jade); }
+  .kb-copy-btn[data-done] { border-color: var(--kb-jade); }
+  .kb-copy-btn[data-done] [data-copy-label] { transform: translateY(-110%); opacity: 0; }
+  .kb-copy-btn[data-done] .kb-copy-done { transform: none; opacity: 1; }
+  @media (hover: hover) { .kb-copy-btn[data-done]:hover .kb-copy-done { color: var(--kb-surface); } }
+  .kb-copy-btn[data-done]:focus-visible .kb-copy-done { color: var(--kb-surface); }
+  @media (prefers-reduced-motion: reduce) { .kb-copy-swap > * { transition: none; } }
+</style>
 <script>
-  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
-    const label = btn.querySelector('[data-copy-label]');
-    const status = btn.parentElement?.querySelector('[data-copy-status]');
+  document.querySelectorAll<HTMLElement>('[data-copy-wrap]').forEach((wrap) => {
+    const btn = wrap.querySelector<HTMLButtonElement>('[data-copy]');
+    const label = wrap.querySelector('[data-copy-label]');
+    const status = wrap.querySelector('[data-copy-status]');
+    const text = wrap.querySelector('[data-copy-text]');
+    if (!btn || !label) return;
+    btn.hidden = false;
     let t: ReturnType<typeof setTimeout> | undefined;
     btn.addEventListener('click', async () => {
+      clearTimeout(t);
       try {
         await navigator.clipboard.writeText(btn.dataset['copy'] ?? '');
-        if (label) label.textContent = 'Copied';
         btn.dataset['done'] = '';
         if (status) status.textContent = 'Email address copied';
       } catch {
-        if (label) label.textContent = 'Copy failed';
+        // No clipboard access: select the address so it can be copied by hand.
+        if (text) { const r = document.createRange(); r.selectNodeContents(text); const s = getSelection(); s?.removeAllRanges(); s?.addRange(r); }
+        label.textContent = 'Selected';
+        if (status) status.textContent = 'Email address selected. Copy it with your keyboard.';
       }
-      clearTimeout(t);
-      t = setTimeout(() => { if (label) label.textContent = 'Copy'; delete btn.dataset['done']; if (status) status.textContent = ''; }, 1600);
+      t = setTimeout(() => { delete btn.dataset['done']; label.textContent = 'Copy'; if (status) status.textContent = ''; }, 2200);
     });
   });
 </script>

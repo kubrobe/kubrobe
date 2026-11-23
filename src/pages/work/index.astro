@@ -8,7 +8,7 @@ import { getWork, workTypeLabel, pad } from '@/lib/entries';
 const work = await getWork();
 ---
 <Base title="Work" description="Projects and case studies by Kubrobe: SkillSwap, a skill-exchange platform, and Doran, an offline Korean-learning app.">
-  <PageHead number={100} label="Work" title="Work">
+  <PageHead marker="Archive" label="Work" title="Work">
     <p class="kb-meta mt-6 text-ink-2">{pad(work.length)} entries</p>
   </PageHead>
   <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main">

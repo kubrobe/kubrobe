@@ -5,7 +5,7 @@ import { isoDate, readingMinutes } from '@/lib/entries';
 interface Props { posts: CollectionEntry<'writing'>[] }
 const { posts } = Astro.props;
 ---
-<Section number={200} label="Writing" id="writing" heading="Latest *writing*">
+<Section marker="—" label="Writing" id="writing" heading="Latest *writing*">
   <ol>
     {posts.map((p) => (
       <li data-reveal class="border-t border-rule last:border-b">

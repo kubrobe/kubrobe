@@ -1,0 +1,29 @@
+---
+/** Interests in three groups, so they read as directions rather than a tag cloud. */
+import { profile } from '@/data/profile';
+interface Props { class?: string; /** Heading level for the group labels. */ level?: 3 | 4 }
+const { class: cls, level = 3 } = Astro.props;
+const H = `h${level}` as 'h3' | 'h4';
+---
+<div class:list={['kb-int grid gap-y-10 md:grid-cols-3 md:gap-x-[var(--kb-gutter)]', cls]}>
+  {profile.interests.map((g) => (
+    <section data-reveal aria-label={g.label}>
+      <H class="kb-label mb-3">{g.label}</H>
+      <ul class="border-t border-rule">
+        {g.items.map((i) => (
+          <li class="border-b border-rule">
+            {i.href
+              ? <a href={i.href} class="kb-int-a group grid gap-1 py-3 no-underline"><span class="kb-int-t">{i.title}<span class="kb-arrow ml-2 text-ink-3" data-dir="e" aria-hidden="true">→</span></span>{i.note && <span class="kb-meta text-ink-2">{i.note}</span>}</a>
+              : <div class="grid gap-1 py-3"><span class="kb-int-t">{i.title}</span>{i.note && <span class="kb-meta text-ink-2">{i.note}</span>}</div>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>
+<style>
+  .kb-int-t { font-size: var(--text-lg); line-height: 1.35; display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-int-a:hover .kb-int-t { transform: translateX(6px); } }
+  .kb-int-a:focus-visible { outline-offset: 2px; }
+  .kb-int-a:focus-visible .kb-int-t { transform: translateX(6px); }
+</style>

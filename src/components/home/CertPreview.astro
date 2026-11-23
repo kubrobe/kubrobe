@@ -10,7 +10,7 @@ const counts = statuses.map((s) => ({ s, n: certs.filter((c) => c.data.status ==
 // Already ordered: in progress, then earned, then planned.
 const shown = certs.slice(0, 6);
 ---
-<Section number={300} label="Credentials" id="credentials" heading={'Certi­fications'}>
+<Section marker="—" label="Credentials" id="credentials" heading={'Certi­fications'}>
   <div class="kb-grid gap-y-12 lg:!grid-cols-10">
     <ul class="grid grid-cols-3 content-start gap-x-4 md:col-span-6 lg:col-span-4" aria-label="Ledger summary">
       {counts.map(({ s, n }) => (

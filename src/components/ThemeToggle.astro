@@ -32,8 +32,22 @@ const { class: cls = '' } = Astro.props;
       clearTimeout(timer);
       timer = setTimeout(() => root.classList.remove('kb-theming'), 360);
     }
-    root.dataset['theme'] = next;
-    try { localStorage.setItem('kb-theme', next); } catch { /* storage unavailable */ }
-    sync();
+    const apply = () => {
+      root.dataset['theme'] = next;
+      try { localStorage.setItem('kb-theme', next); } catch { /* storage unavailable */ }
+      sync();
+    };
+    // Where supported, the new theme opens as a circle from the toggle; otherwise the short cross-fade above.
+    const vt = (document as Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void> } }).startViewTransition;
+    if (vt && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const r = (btn as HTMLElement).getBoundingClientRect();
+      root.style.setProperty('--kb-vt-x', `${Math.round(r.left + r.width / 2)}px`);
+      root.style.setProperty('--kb-vt-y', `${Math.round(r.top + r.height / 2)}px`);
+      root.classList.remove('kb-theming');
+      root.classList.add('kb-vt-theme');
+      vt.call(document, apply).finished.finally(() => root.classList.remove('kb-vt-theme'));
+    } else {
+      apply();
+    }
   });
 </script>

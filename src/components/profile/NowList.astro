@@ -1,0 +1,23 @@
+---
+/** Current activities, each with its status glyph and, where one exists, a link to the evidence. */
+import Glyph from '@/components/Glyph.astro';
+import { profile } from '@/data/profile';
+---
+<ol class="kb-now">
+  {profile.now.map((n) => (
+    <li class="kb-now-li" data-reveal>
+      <Glyph status={n.status ?? 'in-progress'} class="kb-now-g" />
+      {n.href
+        ? <a href={n.href} class="kb-now-a">{n.text}<span class="kb-arrow ml-2 text-ink-3" data-dir="e" aria-hidden="true">→</span></a>
+        : <span>{n.text}</span>}
+    </li>
+  ))}
+</ol>
+<style>
+  .kb-now { display: grid; border-top: 1px solid var(--kb-rule); }
+  .kb-now-li { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: 10px; align-items: baseline; padding-block: 14px; border-bottom: 1px solid var(--kb-rule); font-size: var(--text-lg); line-height: 1.45; text-wrap: pretty; }
+  .kb-now-li :global(.kb-now-g) { color: var(--kb-jade); transform: translateY(1px); }
+  .kb-now-a { text-decoration: none; transition: color var(--kb-dur-micro) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-now-a:hover { color: var(--kb-ink); } .kb-now-a:hover .kb-arrow { color: var(--kb-ink); } }
+  .kb-now-a:focus-visible { outline-offset: 4px; }
+</style>

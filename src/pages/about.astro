@@ -1,22 +1,137 @@
 ---
 import Base from '@/layouts/Base.astro';
 import PageHead from '@/components/PageHead.astro';
-import Empty from '@/components/Empty.astro';
-import { profile } from '@/data/profile';
-const has = profile.about.length || profile.now.length || profile.interests.length;
+import Facts from '@/components/profile/Facts.astro';
+import NowList from '@/components/profile/NowList.astro';
+import Interests from '@/components/profile/Interests.astro';
+import StatusGlyph from '@/components/StatusGlyph.astro';
+import { profile, yearLabel } from '@/data/profile';
+import { contact } from '@/data/site';
+import { getWork, workTypeLabel, code } from '@/lib/entries';
+
+const work = await getWork();
+const e = profile.education;
+const sections = [
+  { id: 'bio', n: '01', label: 'Biography' },
+  { id: 'education', n: '02', label: 'Education' },
+  { id: 'now', n: '03', label: 'Now' },
+  { id: 'work', n: '04', label: 'Work and tools' },
+  { id: 'interests', n: '05', label: 'Interests' },
+];
+const rail = (id: string) => sections.find((s) => s.id === id)!;
 ---
-<Base title="About" description={profile.about[0]}>
-  <PageHead number={400} label="About" title="About" />
-  <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main grid gap-12">
-    {profile.about.length > 0 && <div class="kb-prose text-lg">{profile.about.map((p) => <p>{p}</p>)}</div>}
-    {profile.now.length > 0 && (
-      <section aria-labelledby="now-h"><h2 id="now-h" class="kb-label mb-3">Now</h2><ul class="grid gap-2 border-t border-rule pt-3">{profile.now.map((n) => <li>{n}</li>)}</ul></section>
-    )}
-    {profile.interests.length > 0 && (
-      <section aria-labelledby="int-h"><h2 id="int-h" class="kb-label mb-3">Interests</h2>
-        <ul>{profile.interests.map((i) => <li class="grid gap-0.5 border-t border-rule py-3"><span>{i.title}</span>{i.note && <span class="kb-meta text-ink-2">{i.note}</span>}</li>)}</ul>
-      </section>
-    )}
-    {!has && <Empty text="Nothing filed here yet." />}
-  </div></div></div>
+<Base title="About" description={profile.intro}>
+  <PageHead marker="About" label="Profile" title={`${profile.givenName} *${profile.familyName}*`} lede={profile.intro}>
+    <nav aria-label="On this page" class="kb-about-toc kb-meta mt-8">
+      <ol class="flex flex-wrap gap-x-5 gap-y-1">
+        {sections.map((s) => <li><a href={`#${s.id}`} class="kb-draw inline-flex min-h-11 items-center gap-2 text-ink-2 hover:text-ink"><span class="text-ink-3">{s.n}</span>{s.label}</a></li>)}
+      </ol>
+    </nav>
+  </PageHead>
+
+  <!-- 01 Biography, with the identity card beside it -->
+  <section id="bio" class="kb-wrap kb-about-sec kb-rule" aria-labelledby="bio-h">
+    <div class="kb-grid gap-y-8">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3"><span class="text-ink lg:block">{rail('bio').n}</span><span>{rail('bio').label}</span></div>
+      <h2 id="bio-h" class="sr-only">Biography</h2>
+      <div class="grid min-w-0 content-start gap-5 text-lg md:col-span-6 lg:col-[3/9]">
+        {profile.about.map((p, i) => <p data-reveal class:list={[i === 0 ? 'text-ink' : 'text-ink-2', 'max-w-[60ch] text-pretty']}>{p}</p>)}
+      </div>
+      <aside class="md:col-span-6 lg:col-[9/13] lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:self-start" aria-label="At a glance">
+        <p class="kb-label mb-3">At a glance</p>
+        <Facts only={['Name', 'Age', 'Based']} />
+        {contact.channels.length > 0 && (
+          <ul class="kb-meta border-b border-rule">
+            {contact.channels.map((c) => (
+              <li class="border-t border-rule first:border-t-0">
+                <a href={c.href} rel={c.external ? 'me noopener' : undefined} class="kb-about-ch grid min-h-11 grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 no-underline">
+                  <span class="text-ink-3">{c.label}</span><span class="truncate">{c.handle}</span><span class="kb-arrow text-ink-2" data-dir={c.external ? 'ne' : 'e'} aria-hidden="true">{c.external ? '↗' : '→'}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  <!-- 02 Education -->
+  <section id="education" class="kb-wrap kb-about-sec kb-rule" aria-labelledby="edu-h">
+    <div class="kb-grid gap-y-6">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3"><span class="text-ink lg:block">{rail('education').n}</span><span>{rail('education').label}</span></div>
+      <div class="kb-main grid gap-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)] lg:gap-x-[var(--kb-gutter)]">
+        <h2 id="edu-h" data-reveal="mask" class="text-h2 font-[560] leading-[0.98] tracking-[-0.035em]">{e.institution}</h2>
+        <dl data-reveal class="kb-meta grid content-start grid-cols-[7rem_minmax(0,1fr)] border-t border-rule lg:mt-3">
+          {[['Degree', e.degree], ['Programme', e.major], ['Year', yearLabel(e.year)], ['Expected', e.expectedGraduation && `Graduation, ${e.expectedGraduation}`], ['City', profile.location.studyCity]]
+            .filter((r): r is [string, string] => Boolean(r[1]))
+            .map(([k, v]) => <><dt class="border-b border-rule py-2.5 text-ink-3">{k}</dt><dd class="border-b border-rule py-2.5">{v}</dd></>)}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Now -->
+  <section id="now" class="kb-wrap kb-about-sec kb-rule" aria-labelledby="now-h">
+    <div class="kb-grid gap-y-6">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3"><span class="text-ink lg:block">{rail('now').n}</span><span>{rail('now').label}</span></div>
+      <div class="kb-main grid gap-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,6fr)] lg:gap-x-[var(--kb-gutter)]">
+        <h2 id="now-h" data-reveal="mask" class="text-h3 font-[560] tracking-[-0.02em]">Currently <em class="kb-em">working on</em></h2>
+        <NowList />
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Work and tools -->
+  <section id="work" class="kb-wrap kb-about-sec kb-rule" aria-labelledby="work-h">
+    <div class="kb-grid gap-y-6">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3"><span class="text-ink lg:block">{rail('work').n}</span><span>{rail('work').label}</span></div>
+      <div class="kb-main grid gap-10">
+        <h2 id="work-h" data-reveal="mask" class="text-h3 font-[560] tracking-[-0.02em]">Projects and <em class="kb-em">my part</em> in them</h2>
+        <ul class="border-t border-rule">
+          {work.map((w) => (
+            <li data-reveal class="border-b border-rule">
+              <a href={`/work/${w.id}/`} class="kb-about-w group grid gap-x-[var(--kb-gutter)] gap-y-1 py-4 no-underline md:grid-cols-[7rem_minmax(0,1fr)_auto]">
+                <span class="kb-meta text-ink-3">{code(w.data.number)}</span>
+                <span class="grid gap-1">
+                  <span class="kb-about-wt text-xl font-[560] tracking-[-0.02em]">{w.data.title}<span class="kb-arrow ml-2 text-ink-3" data-dir="e" aria-hidden="true">→</span></span>
+                  {w.data.role && <span class="text-ink-2">{w.data.role}</span>}
+                </span>
+                <span class="kb-meta flex items-center gap-3 text-ink-2 md:justify-end"><span>{workTypeLabel[w.data.type]} · {w.data.year}</span><StatusGlyph kind="work" status={w.data.status} /></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div>
+          <h3 class="kb-label mb-1">Tools in the repositories</h3>
+          <p class="kb-meta mb-4 text-ink-3">Where each tool was used. Not a rating of skill.</p>
+          <dl class="border-t border-rule">
+            {profile.tools.map((t) => (
+              <div data-reveal class="grid gap-1 border-b border-rule py-3 md:grid-cols-[minmax(0,4fr)_minmax(0,6fr)] md:gap-x-[var(--kb-gutter)]">
+                <dt>{t.tools.join(', ')}</dt>
+                <dd class="kb-meta flex flex-wrap gap-x-4 text-ink-2">{t.where.map((w) => w.href ? <a class="kb-draw inline-flex min-h-11 items-center md:min-h-0" href={w.href}>{w.label}</a> : <span>{w.label}</span>)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Interests -->
+  <section id="interests" class="kb-wrap kb-about-sec kb-rule" aria-labelledby="int-h">
+    <div class="kb-grid gap-y-6">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3"><span class="text-ink lg:block">{rail('interests').n}</span><span>{rail('interests').label}</span></div>
+      <div class="kb-main grid gap-8">
+        <h2 id="int-h" data-reveal="mask" class="text-h3 font-[560] tracking-[-0.02em]">Interests, in <em class="kb-em">three directions</em></h2>
+        <Interests />
+      </div>
+    </div>
+  </section>
 </Base>
+<style>
+  .kb-about-sec { padding-block: clamp(48px, 7vw, 112px); }
+  .kb-about-wt { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-about-w:hover .kb-about-wt { transform: translateX(6px); } .kb-about-ch:hover .kb-arrow { color: var(--kb-jade); } }
+  .kb-about-w:focus-visible .kb-about-wt { transform: translateX(6px); }
+  .kb-about-w:focus-visible, .kb-about-ch:focus-visible { outline-offset: 2px; }
+</style>

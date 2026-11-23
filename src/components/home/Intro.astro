@@ -1,55 +1,18 @@
 ---
+import Facts from '@/components/profile/Facts.astro';
 import { profile } from '@/data/profile';
-import { code } from '@/lib/entries';
-/** The person behind KUBROBE. Every part is hidden when its profile field is empty. */
-const facts = [
-  profile.role && ['Role', profile.role],
-  profile.currently && ['Currently', profile.currently],
-  profile.openTo && ['Open to', profile.openTo],
-].filter((f): f is [string, string] => Boolean(f));
-const [lead, ...rest] = profile.about;
-const show = Boolean(profile.about.length || facts.length || profile.now.length || profile.interests.length);
+/** Who is behind KUBROBE: the approved introduction beside the identity card. */
 ---
-{show && (
-  <section id="about" class="kb-wrap kb-section kb-rule" aria-labelledby="intro-h">
-    <div class="kb-grid gap-y-12">
-      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:block lg:self-start lg:pt-3">
-        <span class="text-ink lg:block">{code(2)}</span><span>Introduction</span>
-      </div>
-      <h2 id="intro-h" class="sr-only">Introduction</h2>
-      {lead && (
-        <div class="grid content-start gap-6 md:col-span-6 lg:col-[4/12]">
-          <p data-reveal class="kb-serif text-[clamp(2rem,1.3rem+3vw,4.25rem)] leading-[1.04] tracking-[-0.02em]">{lead}</p>
-          {rest.length > 0 && (
-            <div class="grid max-w-[60ch] gap-4 text-lg text-ink-2 lg:ml-[16.666%]">{rest.map((p) => <p data-reveal>{p}</p>)}</div>
-          )}
-        </div>
-      )}
-      {facts.length > 0 && (
-        <dl data-reveal class="kb-meta grid grid-cols-[auto_1fr] content-start gap-x-6 gap-y-2 border-t border-rule pt-4 md:col-span-3 lg:col-[3/7]">
-          {facts.map(([k, v]) => <><dt class="text-ink-3">{k}</dt><dd class="text-ink">{v}</dd></>)}
-        </dl>
-      )}
-      {profile.now.length > 0 && (
-        <div data-reveal class="md:col-span-3 lg:col-[8/11]">
-          <h3 class="kb-label mb-3">Now</h3>
-          <ul class="grid gap-2 border-t border-rule pt-3">{profile.now.map((n) => <li>{n}</li>)}</ul>
-        </div>
-      )}
-      {profile.interests.length > 0 && (
-        <div data-reveal class="md:col-span-6 lg:col-[3/13]">
-          <h3 class="kb-label mb-3">Interests</h3>
-          <ul class="grid gap-x-[var(--kb-gutter)] md:grid-cols-2 lg:grid-cols-3">
-            {profile.interests.map((i) => (
-              <li class="grid gap-0.5 border-t border-rule py-3">
-                <span>{i.title}</span>
-                {i.note && <span class="kb-meta text-ink-2">{i.note}</span>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {profile.about.length > 0 && <a href="/about/" class="kb-draw kb-meta inline-flex min-h-11 w-fit items-center text-ink-2 hover:text-ink lg:col-[3/13]">More about →</a>}
+<section id="about" class="kb-wrap kb-section kb-rule" aria-labelledby="intro-h">
+  <div class="kb-grid gap-y-10">
+    <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:block lg:self-start lg:pt-3">
+      <span class="text-ink lg:block">02</span><span>Introduction</span>
     </div>
-  </section>
-)}
+    <h2 id="intro-h" class="sr-only">Introduction</h2>
+    <p data-reveal class="kb-serif min-w-0 text-[clamp(1.875rem,1.25rem+2.7vw,3.75rem)] leading-[1.06] tracking-[-0.015em] text-pretty md:col-span-6 lg:col-[3/10]">{profile.intro}</p>
+    <div class="grid content-start gap-6 md:col-span-4 lg:col-[3/8]">
+      <Facts />
+      <a href="/about/" class="kb-btn kb-btn--line w-fit gap-3" data-reveal>More about me <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>

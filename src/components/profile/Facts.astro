@@ -1,0 +1,34 @@
+---
+/** The identity card: one row per verified fact, read from src/data/profile.ts. Empty facts are skipped. */
+import { profile, yearLabel } from '@/data/profile';
+interface Props { class?: string; /** Limit to these rows, in this order. */ only?: string[] }
+const { class: cls, only } = Astro.props;
+const e = profile.education;
+const facts = [
+  ['Name', profile.name],
+  ['Age', profile.age !== undefined ? String(profile.age) : undefined],
+  ['Based', profile.location.display],
+  ['University', e.institution],
+  ['Study', [e.degree, e.major].filter(Boolean).join(', ')],
+  ['Year', [yearLabel(e.year), e.expectedGraduation && `graduating ${e.expectedGraduation}`].filter(Boolean).join(' · ')],
+].filter((f): f is [string, string] => Boolean(f[1]))
+  .filter(([k]) => !only || only.includes(k))
+  .sort((a, b) => (only ? only.indexOf(a[0]) - only.indexOf(b[0]) : 0));
+---
+<dl class:list={['kb-facts kb-meta', cls]}>
+  {facts.map(([k, v]) => (
+    <div class="kb-fact">
+      <dt>{k}</dt>
+      <dd>{v}</dd>
+    </div>
+  ))}
+</dl>
+<style>
+  .kb-facts { display: grid; border-top: 1px solid var(--kb-rule); }
+  .kb-fact {
+    display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 12px; align-items: baseline;
+    padding-block: 10px; border-bottom: 1px solid var(--kb-rule);
+  }
+  .kb-fact dt { color: var(--kb-ink-3); }
+  .kb-fact dd { color: var(--kb-ink); text-wrap: pretty; }
+</style>

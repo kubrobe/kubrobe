@@ -8,7 +8,7 @@ import { profile } from '@/data/profile';
  */
 export async function getNav() {
   const counts = await getCounts();
-  const hasAbout = Boolean(profile.about.length || profile.now.length || profile.interests.length);
+  const hasAbout = Boolean(profile.intro || profile.about.length || profile.now.length);
   return [
     { href: '/work/', label: 'Work', count: counts.work, show: counts.work > 0 },
     { href: '/writing/', label: 'Writing', count: counts.writing, show: counts.writing > 0 },

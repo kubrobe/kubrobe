@@ -1,44 +1,71 @@
 ---
 import CopyEmail from './CopyEmail.astro';
-import { profile, showPlaceholders } from '@/data/profile';
-import { code } from '@/lib/entries';
+import { contact } from '@/data/site';
+import { profile } from '@/data/profile';
 import pkg from '../../package.json';
 const sha = import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
-const hasContact = Boolean(profile.email || profile.links.length);
+const others = contact.channels.filter((c) => c.label !== 'Email');
+const hasContact = contact.channels.length > 0;
+const year = new Date().getFullYear();
 ---
-<footer id="contact" class:list={['kb-wrap border-t border-rule pb-6 lg:pb-10', hasContact ? 'pt-[var(--kb-space-section)]' : 'pt-5']} aria-labelledby={hasContact ? 'contact-h' : undefined}>
+<footer id="contact" class="kb-foot kb-wrap border-t border-rule pb-6 lg:pb-8" aria-labelledby={hasContact ? 'contact-h' : undefined}>
   {hasContact && (
-    <div class="kb-grid mb-[clamp(48px,8vw,128px)] gap-y-8 lg:gap-y-10">
+    <div class="kb-grid gap-y-8 pt-[clamp(56px,9vw,128px)] pb-[clamp(48px,7vw,104px)] lg:gap-y-12">
       <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
-        <span class="text-ink lg:block">{code(900)}</span><span>Contact</span>
+        <span class="text-ink lg:block">@</span><span>Contact</span>
       </div>
-      <!-- Full-width closing moment: the heading breaks out of the rail. -->
-      <h2 id="contact-h" data-reveal="mask" class="kb-close-h text-[clamp(3rem,0.9rem+11.2vw,13rem)] leading-[0.86] font-semibold tracking-[-0.055em] lg:!col-[1/13]">
-        Get in <em class="kb-em">touch</em>
-      </h2>
-      {profile.email && <div data-reveal class="md:col-span-6 lg:col-[3/10]"><CopyEmail email={profile.email} /></div>}
-      {profile.links.length > 0 && (
-        <ul data-reveal class="border-b border-rule md:col-span-6 lg:col-[10/13] lg:self-end">
-          {profile.links.map((l) => (
-            <li class="border-t border-rule">
-              <a href={l.href} class="group flex min-h-11 items-center justify-between gap-4 py-2 no-underline" rel="me noopener">
-                <span class="transition-transform duration-[var(--kb-dur-ui)] ease-[var(--kb-ease-out)] group-hover:translate-x-2 group-focus-visible:translate-x-2">{l.label}</span>
-                <span class="kb-meta kb-arrow text-ink-2" data-dir="ne" aria-hidden="true">↗</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-      {showPlaceholders && <span class="kb-ph-tag w-fit lg:col-[3/13]">Placeholder contact</span>}
+      <h2 id="contact-h" data-reveal="mask" class="kb-close-h kb-main">Get in <em class="kb-em">touch</em></h2>
+
+      <div class="grid content-start gap-4 md:col-span-6 lg:col-[3/9]" data-reveal>
+        <p class="kb-label">Email</p>
+        {contact.email && <CopyEmail email={contact.email} />}
+        <p class="max-w-[48ch] text-ink-2">Questions about a project, or anything else on this site.</p>
+      </div>
+
+      <div class="grid content-start gap-6 md:col-span-6 lg:col-[9/13]" data-reveal>
+        {others.length > 0 && (
+          <div>
+            <p class="kb-label mb-3">Elsewhere</p>
+            <ul class="border-t border-rule">
+              {others.map((c) => (
+                <li class="border-b border-rule">
+                  <a href={c.href} class="kb-ch group grid min-h-12 grid-cols-[6rem_minmax(0,1fr)_auto] items-center gap-3 py-2 no-underline" rel={c.external ? 'me noopener' : undefined}>
+                    <span class="kb-ch-l">{c.label}</span>
+                    <span class="kb-meta truncate text-ink-2">{c.handle}</span>
+                    <span class="kb-meta kb-arrow text-ink-2" data-dir="ne" aria-hidden="true">↗</span>
+                    {c.external && <span class="sr-only">(opens another site)</span>}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <dl class="kb-meta grid grid-cols-[6rem_minmax(0,1fr)] gap-x-3 gap-y-1 text-ink-2">
+          <dt class="text-ink-3">Based</dt><dd>{profile.location.display}</dd>
+          <dt class="text-ink-3">Time zone</dt><dd>Tashkent, UTC+5</dd>
+        </dl>
+      </div>
     </div>
   )}
-  <div class:list={['kb-grid kb-meta gap-y-1 text-ink-2', hasContact && 'border-t border-rule pt-4']}>
-    <p class="kb-rail hidden lg:block">{code(0)} Colophon</p>
-    <p class="col-span-3 md:col-span-5 lg:col-[3/12] lg:flex lg:flex-wrap lg:gap-x-6">
-      <span class="text-ink">KUBROBE v{pkg.version}</span>
-      {sha && <span> · Build {sha}</span>}
-      <span class="block text-ink-3 lg:inline">Geist, Geist Mono, Instrument Serif · Astro</span>
-    </p>
-    <a href="#main" class="kb-draw col-span-1 inline-flex min-h-11 items-start justify-self-end whitespace-nowrap text-ink lg:col-[12/13] lg:items-center">Top <span aria-hidden="true" class="kb-arrow ml-1" data-dir="n">↑</span></a>
+
+  <div class="kb-colophon kb-meta border-t border-rule pt-4 text-ink-2">
+    <p class="text-ink">© {year} {profile.name}</p>
+    <nav aria-label="Footer">
+      <ul class="flex flex-wrap gap-x-5">
+        <li><a class="kb-draw inline-flex min-h-11 items-center" href="/work/">Work</a></li>
+        <li><a class="kb-draw inline-flex min-h-11 items-center" href="/about/">About</a></li>
+        <li><a class="kb-draw inline-flex min-h-11 items-center" href="#main">Top <span aria-hidden="true" class="kb-arrow ml-1" data-dir="n">↑</span></a></li>
+      </ul>
+    </nav>
+    <p class="text-ink-3">{profile.brand} v{pkg.version}{sha && <> · {sha}</>} · Geist, Geist Mono, Instrument Serif · Astro</p>
   </div>
 </footer>
+<style>
+  .kb-close-h { font-size: clamp(3rem, 1.2rem + 8vw, 9.5rem); line-height: 0.88; font-weight: 600; letter-spacing: -0.05em; }
+  .kb-ch-l { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-ch:hover .kb-ch-l { transform: translateX(6px); } .kb-ch:hover .kb-arrow { color: var(--kb-jade); } }
+  .kb-ch:focus-visible { outline-offset: 2px; }
+  .kb-ch:focus-visible .kb-ch-l { transform: translateX(6px); }
+  .kb-colophon { display: grid; gap: 4px 24px; align-items: center; }
+  @media (min-width: 48rem) { .kb-colophon { grid-template-columns: auto auto minmax(0, 1fr); } .kb-colophon > :last-child { justify-self: end; text-align: right; } }
+</style>

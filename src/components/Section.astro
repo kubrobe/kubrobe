@@ -2,7 +2,10 @@
 import { code } from '@/lib/entries';
 import { emphasize } from '@/lib/text';
 interface Props {
-  number: number;
+  /** Catalogue number (KB—101). Use only for real entries; sections use `marker`. */
+  number?: number;
+  /** Structural index shown in the rail instead of a catalogue code, e.g. "02". */
+  marker?: string;
   label: string;
   id?: string;
   /** Visible heading. Leave out when the label alone is enough. */
@@ -11,13 +14,14 @@ interface Props {
   headingClass?: string;
   class?: string;
 }
-const { number, label, id, heading, headingClass, class: cls } = Astro.props;
+const { number, marker, label, id, heading, headingClass, class: cls } = Astro.props;
+const mark = marker ?? (number !== undefined ? code(number) : undefined);
 const headingId = id ? `${id}-h` : undefined;
 ---
 <section id={id} aria-labelledby={headingId} class:list={['kb-wrap kb-section kb-rule', cls]}>
   <div class="kb-grid">
     <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:block lg:self-start lg:pt-3">
-      <span class="text-ink lg:block">{code(number)}</span>
+      {mark && <span class="text-ink lg:block">{mark}</span>}
       <span>{label}</span>
     </div>
     <div class="kb-main min-w-0">

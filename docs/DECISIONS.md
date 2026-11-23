@@ -47,3 +47,9 @@ Short records of choices that are not obvious from the code. Newest last.
 | 41 | Favicon, touch icon and social image are generated from the Geist wordmark (`scripts/brand/`) and share one palette | The previous set was inconsistent (ring SVG, broken 180 px touch icon). Typography only. |
 | 42 | Home title "KUBROBE · Najmiddin Kurganov"; home description is the approved supporting introduction, verbatim (`src/data/site.ts`) | V3 positioning; name publication approved 2026-11-23. Supersedes 26. |
 | 43 | `theme-color` follows the real surfaces (`#080808` / `#F3F1EC`) and is set before first paint for a stored light theme | The old values did not match the page. |
+| 44 | V3 Phase 1: all personal facts in `src/data/profile.ts`, contact channels in `src/data/site.ts` (`null` hides a channel; LinkedIn stays `null`) | One place to edit; nothing guessed. Placeholder profile mode removed now that real data exists. |
+| 45 | Section rails use structural markers (01–05, Archive, @) instead of KB— codes; KB— codes stay only on real entries (101, 102) | V3 brief: no invented catalogue codes. |
+| 46 | Home: hero (name, location, statement), introduction with identity card, selected work with a three-screen contact sheet per project, Now and interests, contact | Identity is clear in the first screen; the page ends on what is happening now, then contact. |
+| 47 | Theme switch opens the new theme as a circle from the toggle (View Transitions API); falls back to the colour cross-fade; instant under reduced motion | Uses the O/status-glyph motif; no dependency. |
+| 48 | Case studies show a 2px jade reading-progress line (CSS scroll timeline; hidden where unsupported) | Brief: subtle progress on long case studies, no JavaScript. |
+| 49 | Copy-email button appears only after its script runs; if the clipboard is blocked it selects the address and says so | No control pretends to work without JavaScript. |

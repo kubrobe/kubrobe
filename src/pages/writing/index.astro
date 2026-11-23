@@ -6,7 +6,7 @@ import { getWriting, isoDate, pad, readingMinutes } from '@/lib/entries';
 const posts = await getWriting();
 ---
 <Base title="Writing" description="Notes and articles by Kubrobe." noindex={posts.length === 0}>
-  <PageHead number={200} label="Writing" title="Writing">
+  <PageHead marker="Archive" label="Writing" title="Writing">
     <p class="kb-meta mt-6 text-ink-2">{posts.length ? `${pad(posts.length)} entries` : 'Nothing published yet'}</p>
   </PageHead>
   <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main">

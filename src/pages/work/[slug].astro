@@ -25,6 +25,7 @@ const spec = [
 ].filter((r): r is [string, string] => Boolean(r[1]));
 ---
 <Base title={d.title} description={d.summary} type="article">
+  <div class="kb-progress" aria-hidden="true"></div>
   <PageHead number={d.number} label={workTypeLabel[d.type]} title={d.title} lede={d.summary} vtName={`kb-t-${d.number}`} crumb={{ href: '/work/', label: `Work · ${String(at + 1).padStart(2, '0')} / ${String(work.length).padStart(2, '0')}` }}>
     {d.placeholder && <span class="kb-ph-tag mt-4 inline-block">Placeholder</span>}
   </PageHead>

@@ -2,11 +2,12 @@
 import type { CollectionEntry } from 'astro:content';
 import Section from '@/components/Section.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
+import { Image } from 'astro:assets';
 import { workTypeLabel, pad } from '@/lib/entries';
 interface Props { featured: CollectionEntry<'work'>[]; total: number }
 const { featured, total } = Astro.props;
 ---
-<Section number={100} label="Selected work" id="work" heading="Selected *work*">
+<Section marker="03" label="Selected work" id="work" heading="Selected *work*">
   <!--
     A text index, not a gallery: the screens live on each case study. The whole row is one link.
     Everything that matters (type, year, status) is visible without hover.
@@ -29,6 +30,15 @@ const { featured, total } = Astro.props;
               <span>{workTypeLabel[d.type]} · {d.year}</span>
               <StatusGlyph kind="work" status={d.status} />
             </span>
+            {d.gallery.length > 0 && (
+              <span class="kb-ix-sheet" aria-hidden="true">
+                {d.gallery.slice(0, 3).map((g, j) => (
+                  <span class="kb-ix-shot" style={`--j:${j}`}>
+                    <Image src={g.src} alt="" width={180} widths={[120, 180, 270]} sizes="(min-width: 60rem) 5.5rem, 30vw" loading="lazy" decoding="async" />
+                  </span>
+                ))}
+              </span>
+            )}
             <span class="kb-arrow kb-ix-arrow" data-dir="e" aria-hidden="true">→</span>
           </a>
         </li>
@@ -43,7 +53,7 @@ const { featured, total } = Astro.props;
   .kb-ix { margin: 0; padding: 0; list-style: none; }
   .kb-ix-a {
     position: relative; display: grid; gap: 6px 16px; align-items: start; text-decoration: none; color: inherit;
-    grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: 'n meta arrow' 'title title title';
+    grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: 'n meta arrow' 'title title title' 'sheet sheet sheet';
     padding: 20px 0 24px;
     /* A faint fill rises from the bottom edge on hover or focus. */
     background: linear-gradient(var(--kb-raised), var(--kb-raised)) no-repeat 0 100% / 100% 0;
@@ -59,13 +69,18 @@ const { featured, total } = Astro.props;
     background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 2px; padding-bottom: 0.08em;
     transition: transform var(--kb-dur-ui) var(--kb-ease-out), background-size var(--kb-dur-ui) var(--kb-ease-mask);
   }
+  /* Contact sheet: three real screens, cropped from the top, as a quiet preview of the case study. */
+  .kb-ix-sheet { grid-area: sheet; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; max-width: 26rem; }
+  .kb-ix-shot { display: block; aspect-ratio: 3 / 4; overflow: clip; background: var(--kb-raised); border: 1px solid var(--kb-rule); }
+  .kb-ix-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0.82; transition: opacity var(--kb-dur-ui) var(--kb-ease-out), transform var(--kb-dur-ui) var(--kb-ease-out); transition-delay: calc(var(--j) * 40ms); }
   .kb-ix-sum { max-width: 44ch; font-size: 1.125rem; line-height: 1.5; color: var(--kb-ink-2); }
   .kb-ix-a:focus-visible { outline: 2px solid var(--kb-jade); outline-offset: 4px; }
 
   @media (min-width: 60rem) {
     .kb-ix-a {
-      grid-template-columns: 3.5rem minmax(0, 1fr) 13rem 2.5rem; grid-template-areas: 'n title meta arrow'; padding: 36px 14px 40px; margin-inline: -14px; align-items: start;
+      grid-template-columns: 3.5rem minmax(0, 1fr) 11rem 17.5rem 2.5rem; grid-template-areas: 'n title meta sheet arrow'; padding: 36px 14px 40px; margin-inline: -14px; align-items: start;
     }
+    .kb-ix-sheet { margin-top: 0; max-width: none; padding-top: 0.4rem; }
     .kb-ix-n { padding-top: 1.1rem; }
     .kb-ix-meta { flex-direction: column; align-items: flex-end; padding-top: 1.1rem; gap: 6px; }
     .kb-ix-arrow { padding-top: 1rem; justify-self: end; font-size: 1.25rem; }
@@ -74,10 +89,12 @@ const { featured, total } = Astro.props;
     .kb-ix-a:hover { background-size: 100% 100%; }
     .kb-ix-a:hover .kb-ix-title { transform: translateX(14px); background-size: 100% 2px; }
     .kb-ix-a:hover .kb-ix-meta { color: var(--kb-ink); }
+    .kb-ix-a:hover .kb-ix-shot img { opacity: 1; transform: scale(1.04); }
   }
+  .kb-ix-a:focus-visible .kb-ix-shot img { opacity: 1; transform: scale(1.04); }
   .kb-ix-a:focus-visible { background-size: 100% 100%; }
   .kb-ix-a:focus-visible .kb-ix-title { transform: translateX(14px); background-size: 100% 2px; }
   .kb-ix-a:focus-visible .kb-ix-meta { color: var(--kb-ink); }
   .kb-ix-a:active { background-size: 100% 100%; }
-  @media (prefers-reduced-motion: reduce) { .kb-ix-a, .kb-ix-title { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .kb-ix-a, .kb-ix-title, .kb-ix-shot img { transition: none; } }
 </style>

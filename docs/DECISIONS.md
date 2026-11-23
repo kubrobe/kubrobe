@@ -28,3 +28,9 @@ Short records of choices that are not obvious from the code. Newest last.
 | 22 | No GSAP or scroll library | Everything required is expressible in CSS; JS stays under 1.5 KB per page. |
 | 23 | Previous/next on case studies hides "Previous" when only two entries exist | Showing the same project twice is noise and duplicates a view-transition name. |
 | 24 | Parallax only with hover pointer and 60rem+ | No heavy motion on phones; avoids jank on touch. |
+| 25 | Blank mobile areas were a full-page-capture artifact, not a bug; reveal ranges capped in pixels anyway | Scroll timelines never advance in full-page captures. Capping protects tall elements in short viewports. (Stage G) |
+| 26 | Home page gets a descriptive title; other pages stay "Page · KUBROBE" | "KUBROBE" alone says nothing in a result list. |
+| 27 | `WebSite` JSON-LD only when a real domain is set; no `Person` data | No real name provided; nothing is invented. |
+| 28 | All CSS inlined; CSP allows inline script and style | Saves a request on a tiny site; inline theme script must run before first paint. |
+| 29 | `vercel.json` carries build, headers, CSP and cache rules | Deployment is reproducible from the repository. |
+| 30 | Local performance tests use a compressing server | A plain `http.server` sends uncompressed HTML and overstated LCP. |

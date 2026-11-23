@@ -35,3 +35,7 @@ Design details live in `docs/DESIGN-SYSTEM.md`; the original audit in `docs/AUDI
 ## Motion layer (Stage F)
 
 All motion lives in `src/styles/motion.css` and is CSS-only: tokens, scroll-driven reveals under `@supports`, a first-arrival intro, and cross-document view transitions. Interactive pieces are `Gallery`, `DeviceStage` and `Lightbox` (native popover). No animation library is used. See `docs/STAGE-F-MOTION-REPORT.md`.
+
+## Release readiness (Stage G)
+
+Deployment config is `vercel.json`; steps are in `docs/PRODUCTION-DEPLOYMENT.md`, open items in `docs/FINAL-CHECKLIST.md`, evidence in `docs/STAGE-G-AUDIT.md`. Production needs one variable, `SITE_URL`.

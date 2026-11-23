@@ -24,3 +24,5 @@ See `docs/LAUNCH-CHECKLIST.md` for the full list. The blockers are all informati
 - M-Work index: sortable list and a command palette, only if the work list grows past a handful.
 
 - Stage F: motion and interaction sprint. CSS-only motion layer, first-arrival intro, scroll storytelling, SkillSwap gallery and Doran device stage, popover viewer with stepping, case-study contents and previous/next, title morph between pages, theme cross-fade, shared micro-interaction patterns, work-row previews. See `docs/STAGE-F-MOTION-REPORT.md`.
+
+- Stage G: production readiness. Mobile blank-space investigation (capture artifact, reveal ranges hardened), animation QA, SEO fixes, LCP tuning, vercel.json with CSP, README, deployment docs. See `docs/STAGE-G-AUDIT.md`, `docs/PRODUCTION-DEPLOYMENT.md`, `docs/FINAL-CHECKLIST.md`. Remaining: owner items and Firefox, Safari and phone checks after first deploy.

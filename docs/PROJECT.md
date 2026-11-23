@@ -39,3 +39,7 @@ All motion lives in `src/styles/motion.css` and is CSS-only: tokens, scroll-driv
 ## Release readiness (Stage G)
 
 Deployment config is `vercel.json`; steps are in `docs/PRODUCTION-DEPLOYMENT.md`, open items in `docs/FINAL-CHECKLIST.md`, evidence in `docs/STAGE-G-AUDIT.md`. Production needs one variable, `SITE_URL`.
+
+## Stage H changes
+
+The homepage lists work as text; screens appear only on case studies (`Exhibit` for SkillSwap, `DeviceStage` for Doran). The case study video is configured in `src/data/media.ts` (`videos.skillswap.url`) and renders only when a real URL is set. Details: `docs/STAGE-H-REPORT.md`.

@@ -49,3 +49,11 @@ Status as of Stage G. ✓ = done and checked here. ☐ = open.
 - ☐ Search Console sitemap submission.
 - ☐ First writing entry (appears in nav and sitemap by itself).
 - ☐ Revisit CSP if inline scripts are moved to files.
+
+## F. Stage H: video and media (owner)
+
+- ☐ Set `videos.skillswap.url` in `src/data/media.ts` (YouTube unlisted, Vimeo, or `/media/<file>.mp4`). Until then the section stays hidden.
+- ☐ Confirm the video caption and description wording, and that the video shows demo data only.
+- ☐ Optional: poster frame and WebVTT captions in `public/media/`.
+- ☐ After deploy: press play on the real video in Chrome, Firefox and Safari (iOS too); confirm no provider request before play.
+- ☐ Decide whether the two unused SkillSwap screens should be added.

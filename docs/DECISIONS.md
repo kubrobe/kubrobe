@@ -34,3 +34,10 @@ Short records of choices that are not obvious from the code. Newest last.
 | 28 | All CSS inlined; CSP allows inline script and style | Saves a request on a tiny site; inline theme script must run before first paint. |
 | 29 | `vercel.json` carries build, headers, CSP and cache rules | Deployment is reproducible from the repository. |
 | 30 | Local performance tests use a compressing server | A plain `http.server` sends uncompressed HTML and overstated LCP. |
+| 31 | Homepage Selected Work is a text index; screens live only on case studies | A curated index reads faster and loads less than a gallery. (Stage H) |
+| 32 | SkillSwap gallery is an exhibit with groups taken from a `group` field on each screenshot | Groups only where the screenshots support them (Website, Android app). |
+| 33 | Gallery state is a radio group, not script | Works without JavaScript; keyboard behaviour is native. |
+| 34 | Video is one config field (`src/data/media.ts`), hidden until set, click-to-load, no autoplay | No provider request before play; nothing fake can ship. |
+| 35 | Duration shown is 3:58, from the owner's player screenshot, not "about five minutes" | Use the real figure. |
+| 36 | Test video URLs are honoured only in the design-review build | A stray variable can never publish media. |
+| 37 | Hero statistics reduced in scale | The project name leads. |

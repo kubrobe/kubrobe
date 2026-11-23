@@ -66,6 +66,40 @@ facts:
   - value: "1"
     label: Backend, two clients
     note: Website and Android app
+detail:
+  overview: A skill exchange where time is the currency. Students list what they can teach and what they want to learn, get matched, and pay for one-hour lessons with time-bank credits instead of money. A mobile-first website and a native Android app share one server and one database.
+  problem: Students know useful things other students want to learn, such as a language, a tool or an instrument. Paid tutoring prices many of them out, and informal favours are hard to arrange and easy to abandon.
+  solution: A time bank. One hour taught earns one credit and one hour learned spends one, with every change written to a ledger. Matching puts two-way matches first, lessons are booked into real time slots, and a lesson only counts once the learner enters the teacher's check-in code.
+  audience: University students who can teach one practical skill and want to learn another.
+  responsibilities:
+    - "The Android app: architecture, Room cache, networking and screens"
+    - The app's three interface languages and its unit tests
+    - The release APK
+    - The website's front end
+  process: Began as a course project (a database-backed website for a Big Data course) and was extended by a team of three for a university hackathon. The commit history runs from 7 to 17 November 2026. Much of the code was written in AI-assisted sessions, and those commits are attributed in the history.
+  features:
+    - title: Time bank
+      text: Credits are rows in a server ledger (welcome, booked, refund, taught). A balance is their sum, so every credit traces back to a lesson.
+    - title: Matching
+      text: Search by skill, category or city. On Android, swipe through a card deck where a two-way match shows "It's a swap!".
+    - title: Lessons and swaps
+      text: Teachers publish weekly free slots; a learner books one for a credit. Direct swaps have their own request flow and status history.
+    - title: Check-in code
+      text: Each booking has a secret four-digit code, shown to the teacher as digits and a QR code. The credit moves only when it matches.
+    - title: Video lessons
+      text: Device-to-device video over WebRTC, with the server relaying only the connection messages.
+    - title: Live updates
+      text: Credits, notifications and the activity feed update over server-sent events on both clients.
+  decisions:
+    - One sessions table for both clients. The website sends the token as an httpOnly cookie and the app as a bearer header, which avoided two parallel sign-in systems.
+    - Booking is a single database transaction that locks the time slot, so two phones tapping at once can never book the same hour.
+    - The server is the single source of truth. On the phone, Room is only a read cache, replaced in one transaction on every sync.
+  challenges:
+    - Getting video through proxies and NAT, with short-lived TURN credentials requested per room.
+    - Keeping ordinary phones smooth during live sync, and respecting the phone's animation-scale setting.
+  results: "Website: 80 of 80 automated tests passed on 22 Nov 2026 against a fresh PostgreSQL 16 database. The Android app and the live deployment have not been independently verified for this page. All demo accounts are fictional; there are no real users yet."
+  related:
+    - doran
 ---
 
 ## Overview

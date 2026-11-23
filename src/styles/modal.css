@@ -1,0 +1,196 @@
+/*
+ * Modal window (Modal.astro + scripts/modal.ts).
+ *
+ * The <dialog> covers the viewport and is transparent; the panel inside it is the window.
+ * A click on the dialog box outside the panel closes it. Desktop: centred window. Below 48rem:
+ * a near-full-screen sheet rising from the bottom, with a second Close button within thumb reach.
+ *
+ * Motion: panel rises and settles (560ms), backdrop dims and blurs, a jade hairline draws across the
+ * top edge, then content blocks marked [data-m] rise in a short stagger. Closing is quicker (240ms).
+ * Reduced motion: no movement, instant open and close.
+ */
+
+html:has(dialog.kb-modal[open]) { overflow: hidden; }
+html { scrollbar-gutter: stable; }
+
+.kb-modal {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--kb-ink);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+.kb-modal[open] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+  padding: clamp(16px, 5vh, 56px) var(--kb-margin);
+}
+.kb-modal::backdrop {
+  background: var(--kb-scrim);
+  -webkit-backdrop-filter: blur(10px) saturate(0.7);
+  backdrop-filter: blur(10px) saturate(0.7);
+}
+
+.kb-modal-panel {
+  --w: 780px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, var(--w));
+  max-height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: var(--kb-surface);
+  border: 1px solid var(--kb-rule-2);
+  box-shadow: var(--kb-shadow);
+  /* Fixes a 1px backdrop bleed on some GPUs. */
+  isolation: isolate;
+}
+.kb-modal[data-size='lg'] .kb-modal-panel { --w: 1080px; }
+/* The jade hairline on the top edge: the window's one coloured line. */
+.kb-modal-panel::before {
+  content: '';
+  position: absolute;
+  inset: -1px -1px auto -1px;
+  height: 2px;
+  background: var(--kb-jade);
+  transform-origin: left center;
+}
+
+.kb-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px clamp(18px, 3vw, 36px) 16px;
+  border-bottom: 1px solid var(--kb-rule);
+  flex: none;
+}
+.kb-modal-eyebrow { display: flex; align-items: center; gap: 8px; color: var(--kb-ink-2); margin-bottom: 6px; }
+.kb-modal-title { font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem); line-height: 1; font-weight: 560; letter-spacing: -0.035em; text-wrap: balance; }
+.kb-modal-close { flex: none; gap: 10px; }
+.kb-modal-x { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+@media (hover: hover) { .kb-modal-close:hover .kb-modal-x { transform: rotate(90deg); } }
+.kb-modal-close:focus-visible .kb-modal-x { transform: rotate(90deg); }
+
+.kb-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px clamp(18px, 3vw, 36px) 32px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--kb-rule-2) transparent;
+}
+.kb-modal-lede { font-size: var(--text-lg); color: var(--kb-ink-2); max-width: 58ch; margin-bottom: 28px; }
+
+.kb-modal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 12px clamp(18px, 3vw, 36px) calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--kb-rule);
+  flex: none;
+}
+/* The bottom Close is for thumbs; on wide screens the header one is enough. */
+.kb-modal-close-b { margin-left: auto; }
+@media (min-width: 48rem) {
+  .kb-modal-close-b { display: none; }
+  .kb-modal-foot--min { display: none; }
+}
+
+/* Phones: a sheet that fills the screen below a thin strip of the page. */
+@media (max-width: 47.99rem) {
+  .kb-modal[open] { place-items: end stretch; padding: max(10px, env(safe-area-inset-top)) 0 0; }
+  .kb-modal-panel { width: 100%; height: 100%; border-inline: 0; border-bottom: 0; }
+  .kb-modal-head { padding-top: 16px; }
+  .kb-modal-close-b { flex: 1 1 100%; }
+}
+
+/* ---------- Motion ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .kb-modal[open]:not([data-swap-in]) .kb-modal-panel { animation: kb-modal-in 560ms var(--kb-ease-out) both; }
+  .kb-modal[data-swap-in] .kb-modal-panel { animation: kb-modal-swap 380ms var(--kb-ease-out) both; }
+  .kb-modal[open] .kb-modal-panel::before { animation: kb-draw-x 700ms var(--kb-ease-mask) 120ms both; }
+  .kb-modal[open]::backdrop { animation: kb-backdrop-in 420ms var(--kb-ease-out) both; }
+  .kb-modal[data-swap-in]::backdrop { animation: none; }
+  .kb-modal[data-closing] .kb-modal-panel { animation: kb-modal-out 240ms var(--kb-ease-mask) both; }
+  .kb-modal[data-closing]::backdrop { animation: kb-backdrop-out 260ms var(--kb-ease-out) both; }
+  .kb-modal[open] [data-m] { animation: kb-m-rise 620ms var(--kb-ease-out) both; animation-delay: calc(160ms + min(var(--i, 0), 10) * 55ms); }
+  .kb-modal[data-closing] [data-m] { animation: none; }
+
+  @media (max-width: 47.99rem) {
+    .kb-modal[open]:not([data-swap-in]) .kb-modal-panel { animation-name: kb-sheet-in; animation-duration: 520ms; }
+    .kb-modal[data-closing] .kb-modal-panel { animation-name: kb-sheet-out; }
+  }
+}
+@keyframes kb-modal-in { from { opacity: 0; transform: translateY(32px) scale(0.98); } }
+@keyframes kb-modal-swap { from { opacity: 0; transform: translateX(18px); } }
+@keyframes kb-modal-out { to { opacity: 0; transform: translateY(16px) scale(0.985); } }
+@keyframes kb-sheet-in { from { transform: translateY(100%); } }
+@keyframes kb-sheet-out { to { transform: translateY(100%); } }
+@keyframes kb-backdrop-in { from { opacity: 0; } }
+@keyframes kb-backdrop-out { to { opacity: 0; } }
+@keyframes kb-m-rise { from { opacity: 0; transform: translateY(14px); } }
+
+/* ---------- Without JavaScript: the same window as a :target overlay ---------- */
+html:not(.js) .kb-modal:target {
+  display: block;
+  position: fixed;
+  z-index: 200;
+  overflow-y: auto;
+  padding: 24px var(--kb-margin);
+  background: var(--kb-scrim);
+}
+html:not(.js) .kb-modal:target .kb-modal-panel { margin-inline: auto; max-height: none; }
+html:not(.js) .kb-modal:target .kb-modal-body { overflow: visible; }
+
+/* ---------- Shared pieces used inside modal content ---------- */
+.kb-m-section + .kb-m-section { margin-top: 32px; }
+.kb-m-h { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--kb-ink-2); display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.kb-m-h::after { content: ''; flex: 1; height: 1px; background: var(--kb-rule); }
+.kb-m-grid { display: grid; border-top: 1px solid var(--kb-rule); border-left: 1px solid var(--kb-rule); }
+.kb-m-grid > * { border-right: 1px solid var(--kb-rule); border-bottom: 1px solid var(--kb-rule); }
+@media (min-width: 40rem) { .kb-m-grid[data-cols='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 60rem) { .kb-m-grid[data-cols='3'] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 40rem) and (max-width: 59.99rem) { .kb-m-grid[data-cols='3'] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kb-m-cell { background: var(--kb-surface); padding: 16px 18px 18px; min-width: 0; }
+.kb-m-tag {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 0 8px;
+  font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.02em;
+  border: 1px solid var(--kb-rule-2); color: var(--kb-ink-2); max-width: 100%; overflow-wrap: anywhere; padding-block: 3px;
+}
+.kb-m-tag[data-tone='jade'] { border-color: var(--kb-jade-line); color: var(--kb-jade); background: var(--kb-jade-dim); }
+.kb-m-list { display: grid; gap: 8px; }
+.kb-m-list > li { position: relative; padding-left: 18px; }
+.kb-m-list > li::before { content: ''; position: absolute; left: 0; top: 0.72em; width: 8px; height: 1px; background: var(--kb-ink-3); }
+.kb-m-dl { display: grid; grid-template-columns: minmax(7rem, max-content) minmax(0, 1fr); gap: 8px 20px; }
+.kb-m-dl dt { font-family: var(--font-mono); font-size: var(--text-meta); color: var(--kb-ink-3); padding-top: 0.2em; }
+.kb-m-link {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--kb-ink);
+  text-decoration: underline; text-decoration-color: var(--kb-jade-line); text-underline-offset: 0.25em; text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--kb-dur-micro) var(--kb-ease-out), color var(--kb-dur-micro);
+}
+.kb-m-link:hover { text-decoration-color: var(--kb-jade); color: var(--kb-jade); }
+.kb-m-empty { border: 1px dashed var(--kb-rule-2); padding: 18px; color: var(--kb-ink-2); }
+.kb-bar { height: 4px; background: var(--kb-rule); position: relative; overflow: hidden; }
+.kb-bar > span { position: absolute; inset: 0 auto 0 0; background: var(--kb-jade); transform-origin: left; }
+@media (prefers-reduced-motion: no-preference) {
+  .kb-modal[open] .kb-bar > span { animation: kb-draw-x 900ms var(--kb-ease-mask) 380ms both; }
+}
+@keyframes kb-draw-x { from { transform: scaleX(0); } }

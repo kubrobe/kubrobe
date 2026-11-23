@@ -43,6 +43,35 @@ facts:
   - value: 19 Nov
     label: First commit, 2026
     note: Rebuilt in phases on 22 Nov
+detail:
+  overview: A Korean course for Android, aimed at the language an exchange student actually needs. It runs entirely on the phone, with no account and no internet connection after install, including pronunciation scoring.
+  audience: Learners of Korean, from their first Hangul letter to everyday exchange-student life on campus, in a dorm, at a part-time job or on transport.
+  responsibilities:
+    - Course design and the content pipeline
+    - The Kotlin and Jetpack Compose app
+    - Offline speech recognition for pronunciation feedback
+    - Unit tests and emulator tests in CI
+  process: The whole course is written in one plain-text file and compiled to JSON by a Python script, which also generates the audio and checks every clip with the speech recogniser. Lesson generation, answer checking and scoring live in a plain Kotlin core package. First commit 19 Nov 2026; the interface was rebuilt in phases on 22 Nov 2026.
+  features:
+    - title: Lesson path
+      text: 26 units, six for Hangul, then Basics, Everyday and Exchange life.
+    - title: 12 exercise types
+      text: From new letters and matching pairs to building sentences from a word bank, filling blanks and speaking aloud.
+    - title: Audio everywhere
+      text: Bundled Korean audio for every word and sentence, at normal and slow speed.
+    - title: Offline pronunciation
+      text: Your voice is checked on the phone by a Korean sherpa-onnx model, syllable by syllable.
+    - title: A routine
+      text: Hearts, XP, a daily goal, a streak, a placement test, practice sessions and a word list.
+  decisions:
+    - Offline first, including speech recognition, so the course keeps working with no connection after install.
+    - Course content as data compiled from text, so lessons can grow without touching app code.
+    - Testing by generation. Unit tests build every lesson of every unit with 40 random seeds and check each can be answered; device tests make 2,000 random taps to look for crashes.
+  challenges:
+    - Pronunciation scoring has only been checked against the bundled audio in CI. The emulator has no real microphone, so real voices still need testing on phones.
+  results: In active development. The tests are configured in CI but were not re-run for this page.
+  related:
+    - skillswap
 ---
 
 ## What it is

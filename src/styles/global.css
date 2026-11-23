@@ -4,6 +4,7 @@
 @import '@fontsource/instrument-serif/latin-400.css';
 @import '@fontsource/instrument-serif/latin-400-italic.css';
 @import './motion.css';
+@import './modal.css';
 
 /* Theme is driven by [data-theme] on <html>. Dark is the default. */
 @custom-variant light (&:where([data-theme='light'], [data-theme='light'] *));
@@ -18,6 +19,12 @@
   --kb-rule: #242424;
   --kb-rule-2: #3a3a3a;
   --kb-noise: 0.035;
+  /* Jade: the one accent. Active, selected and interactive details only; never large fills. */
+  --kb-jade: #63b393;     /* 8.4:1 on surface */
+  --kb-jade-dim: rgb(99 179 147 / 0.14);
+  --kb-jade-line: rgb(99 179 147 / 0.45);
+  --kb-scrim: rgb(4 4 4 / 0.6);
+  --kb-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 40px 120px -20px rgb(0 0 0 / 0.75);
   color-scheme: dark;
 
   --kb-ease-out: cubic-bezier(0.2, 0.7, 0, 1);
@@ -46,6 +53,11 @@
   --kb-rule: #d8d4cb;
   --kb-rule-2: #b9b4aa;
   --kb-noise: 0;
+  --kb-jade: #17694f;     /* 5.9:1 on surface */
+  --kb-jade-dim: rgb(23 105 79 / 0.1);
+  --kb-jade-line: rgb(23 105 79 / 0.4);
+  --kb-scrim: rgb(20 18 14 / 0.32);
+  --kb-shadow: 0 30px 90px -24px rgb(20 18 14 / 0.35);
   color-scheme: light;
 }
 
@@ -57,6 +69,7 @@
   --color-ink-3: var(--kb-ink-3);
   --color-rule: var(--kb-rule);
   --color-rule-2: var(--kb-rule-2);
+  --color-jade: var(--kb-jade);
 
   --breakpoint-sm: 30rem;
   --breakpoint-md: 48rem;
@@ -106,7 +119,7 @@
     color: var(--kb-surface);
   }
   :focus-visible {
-    outline: 2px solid var(--kb-ink);
+    outline: 2px solid var(--kb-jade);
     outline-offset: 3px;
   }
   a {
@@ -238,8 +251,8 @@
     .kb-prose :where(.kb-diagram .d-tall) { display: block; }
   }
   .kb-prose :where(.kb-diagram figcaption) { font-family: var(--font-mono); font-size: var(--text-meta); color: var(--kb-ink-2); margin-top: 10px; }
-  .kb-prose :where(.kb-diagram:focus-visible) { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
-  .kb-gallery:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
+  .kb-prose :where(.kb-diagram:focus-visible) { outline: 2px solid var(--kb-jade); outline-offset: 4px; }
+  .kb-gallery:focus-visible { outline: 2px solid var(--kb-jade); outline-offset: 4px; }
 
   /* Shared button for small actions: square, mono, same easing everywhere. */
   .kb-btn {
@@ -252,6 +265,12 @@
   .kb-btn:focus-visible { background: var(--kb-ink); color: var(--kb-surface); outline-offset: 2px; }
   .kb-btn:active { transform: translateY(1px); }
   .kb-btn[data-done] { border-color: var(--kb-ink); }
+  /* The primary action: jade edge, fills jade on hover. One per view at most. */
+  .kb-btn--jade { border-color: var(--kb-jade); gap: 10px; }
+  @media (hover: hover) { .kb-btn--jade:hover { background: var(--kb-jade); border-color: var(--kb-jade); color: var(--kb-surface); } }
+  .kb-btn--jade:focus-visible { background: var(--kb-jade); color: var(--kb-surface); }
+  .kb-btn--solid { background: var(--kb-ink); color: var(--kb-surface); border-color: var(--kb-ink); gap: 10px; }
+  @media (hover: hover) { .kb-btn--solid:hover { background: var(--kb-jade); border-color: var(--kb-jade); color: var(--kb-surface); } }
 
   /* Directional arrow: nudges one step the way it points when its link is hovered or focused. */
   .kb-arrow { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
@@ -283,6 +302,21 @@
     @starting-style { .kb-lightbox:popover-open::backdrop { background-color: rgb(0 0 0 / 0); } }
   }
 }
+
+/* Loading state: a faint Horangi that breathes while media loads (video embeds, project screens). */
+.kb-loading { position: relative; }
+.kb-loading::after {
+  content: ''; position: absolute; inset: 0; margin: auto; width: 36px; height: 36px; pointer-events: none;
+  background: var(--kb-ink-3);
+  -webkit-mask: url('/horangi-mask.svg') center / contain no-repeat;
+  mask: url('/horangi-mask.svg') center / contain no-repeat;
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .kb-loading::after { animation: kb-loading 1.6s ease-in-out infinite; }
+}
+@keyframes kb-loading { 0%, 100% { opacity: 0.25; transform: scale(0.94); } 50% { opacity: 0.7; transform: none; } }
+.kb-loading > img, .kb-loading > picture { position: relative; z-index: 1; }
 
 /* Subtle grain in dark only. Pure CSS, no image request. */
 body::after {

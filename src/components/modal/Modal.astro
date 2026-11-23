@@ -1,0 +1,53 @@
+---
+/**
+ * The one modal window used across the site. Content comes in through the default slot.
+ *
+ * With JavaScript (src/scripts/modal.ts): a native <dialog> opened with showModal(), so the page behind is
+ * inert and focus is trapped by the browser. The script adds the animated close, click outside, scroll
+ * lock (CSS), focus restore and #hash deep links.
+ * Without JavaScript: triggers are plain #id links, and the dialog shows as a full-screen :target overlay
+ * with a "Close" link, so every word stays reachable.
+ *
+ * Open it from anywhere with <ModalTrigger target="id"> or any element carrying data-modal-open="id".
+ */
+import Horangi from '@/components/Horangi.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  /** Small code above the title, e.g. "KB—510". */
+  eyebrow?: string | undefined;
+  lede?: string | undefined;
+  size?: 'md' | 'lg';
+}
+const { id, title, eyebrow, lede, size = 'md' } = Astro.props;
+const hasFoot = Astro.slots.has('footer');
+---
+<dialog id={id} class="kb-modal" data-size={size} aria-labelledby={`${id}-t`} aria-describedby={lede ? `${id}-d` : undefined}>
+  <div class="kb-modal-panel">
+    <header class="kb-modal-head">
+      <div class="min-w-0">
+        <p class="kb-modal-eyebrow kb-meta" aria-hidden={eyebrow ? undefined : 'true'}>
+          <Horangi size={14} class="kb-modal-mark" />
+          {eyebrow && <span>{eyebrow}</span>}
+        </p>
+        <h2 id={`${id}-t`} class="kb-modal-title">{title}</h2>
+      </div>
+      <a href="#_" class="kb-modal-close kb-btn" data-modal-close aria-label={`Close ${title}`}>
+        <span class="max-sm:sr-only">Close</span>
+        <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" class="kb-modal-x"><path d="M1 1 L11 11 M11 1 L1 11" stroke="currentColor" stroke-width="1.4" /></svg>
+      </a>
+    </header>
+    <div class="kb-modal-body">
+      {lede && <p id={`${id}-d`} class="kb-modal-lede" data-m style="--i:0">{lede}</p>}
+      <slot />
+    </div>
+    <footer class:list={['kb-modal-foot', !hasFoot && 'kb-modal-foot--min']}>
+      <slot name="footer" />
+      <a href="#_" class="kb-btn kb-modal-close-b" data-modal-close>Close</a>
+    </footer>
+  </div>
+</dialog>
+<script>
+  import '@/scripts/modal';
+</script>

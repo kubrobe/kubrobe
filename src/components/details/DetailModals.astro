@@ -1,0 +1,21 @@
+---
+/** Every detail window, rendered once per page so a trigger anywhere (including the footer) can open it. */
+import LanguagesModal from './LanguagesModal.astro';
+import SkillsModal from './SkillsModal.astro';
+import EducationModal from './EducationModal.astro';
+import CertificationsModal from './CertificationsModal.astro';
+import InterestsModal from './InterestsModal.astro';
+import BackgroundModal from './BackgroundModal.astro';
+import ProjectModal from './ProjectModal.astro';
+import { getWork } from '@/lib/entries';
+const work = await getWork();
+---
+<div class="kb-modals">
+  <BackgroundModal />
+  <SkillsModal />
+  <LanguagesModal />
+  <EducationModal />
+  <CertificationsModal />
+  <InterestsModal />
+  {work.map((w) => <ProjectModal entry={w} all={work} />)}
+</div>

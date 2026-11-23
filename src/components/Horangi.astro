@@ -1,0 +1,86 @@
+---
+/**
+ * Horangi (호랑이, "tiger"): the KUBROBE mark. An original faceted tiger head built from straight cuts,
+ * so it holds up from 16px (favicon) to large display sizes.
+ *
+ *   head        currentColor (ink)
+ *   stripes     cut-outs in --hr-cut (defaults to the page surface; set it when the mark sits on another fill)
+ *   eyes        jade, the only colour in the mark
+ *
+ * Moods: `idle` (default), `alert` (eyes wider), `sleep` (eyes closed, used on the 404 page).
+ * Micro-interactions live in CSS below and only run when motion is allowed:
+ *   [data-blink]   the eyes blink every few seconds
+ *   hover/focus    of the nearest `.hr-host` ancestor twitches the ears
+ */
+interface Props {
+  size?: number | string;
+  class?: string;
+  /** Accessible name. Without it the mark is decorative and hidden from assistive tech. */
+  label?: string;
+  mood?: 'idle' | 'alert' | 'sleep';
+  blink?: boolean;
+}
+const { size = 24, class: cls, label, mood = 'idle', blink = false } = Astro.props;
+---
+<svg
+  class:list={['kb-horangi', cls]}
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  data-mood={mood}
+  data-blink={blink ? '' : undefined}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  <g class="hr-ear hr-ear-l">
+    <path fill="currentColor" d="M2.4 8 L2.6 5.2 L4.4 3.8 L8.2 6.2 L7.2 8 Z" />
+    <path class="hr-cut" d="M4.2 5.4 L6.4 6.6 L4.6 8.2 Z" />
+  </g>
+  <g class="hr-ear hr-ear-r">
+    <path fill="currentColor" d="M21.6 8 L21.4 5.2 L19.6 3.8 L15.8 6.2 L16.8 8 Z" />
+    <path class="hr-cut" d="M19.8 5.4 L17.6 6.6 L19.4 8.2 Z" />
+  </g>
+  <path fill="currentColor" d="M2.6 6.8 L8.2 6.2 H15.8 L21.4 6.8 L21.6 10.2 L23 13.4 L19.4 19.2 L14.2 21.6 H9.8 L4.6 19.2 L1 13.4 L2.4 10.2 Z" />
+  <g class="hr-cut">
+    <path d="M12 6.2 L12.9 6.2 L12 10 L11.1 6.2 Z" />
+    <path d="M9 6.2 H10.3 L10.6 8.8 Z" />
+    <path d="M15 6.2 H13.7 L13.4 8.8 Z" />
+    <path d="M1.4 12.4 L1.9 11.2 L6.4 12.6 Z" />
+    <path d="M22.6 12.4 L22.1 11.2 L17.6 12.6 Z" />
+    <path d="M2.4 15.1 L3 16.1 L6.6 14.7 Z" />
+    <path d="M21.6 15.1 L21 16.1 L17.4 14.7 Z" />
+    <path d="M10.6 15.4 H13.4 L12 17 Z" />
+    <path class="hr-mouth" d="M12 17 V18.5 M12 18.5 L10.5 19.2 M12 18.5 L13.5 19.2" />
+  </g>
+  <g class="hr-eyes">
+    <path class="hr-eye-open" d="M7.2 11.6 L10.4 12.8 L7.8 13 Z M16.8 11.6 L13.6 12.8 L16.2 13 Z" />
+    <path class="hr-eye-shut" d="M7.4 12.6 L10.2 12.9 M16.6 12.6 L13.8 12.9" />
+  </g>
+</svg>
+<style is:global>
+  .kb-horangi { display: inline-block; flex: none; overflow: visible; color: var(--kb-ink); }
+  .kb-horangi .hr-cut { fill: var(--hr-cut, var(--kb-surface)); }
+  .kb-horangi .hr-mouth { fill: none; stroke: var(--hr-cut, var(--kb-surface)); stroke-width: 0.8; stroke-linecap: round; }
+  .kb-horangi .hr-eye-open { fill: var(--kb-jade); }
+  .kb-horangi .hr-eye-shut { fill: none; stroke: var(--kb-jade); stroke-width: 0.9; stroke-linecap: round; display: none; }
+  .kb-horangi[data-mood='sleep'] .hr-eye-open { display: none; }
+  .kb-horangi[data-mood='sleep'] .hr-eye-shut { display: inline; }
+  .kb-horangi[data-mood='alert'] .hr-eyes { transform: scaleY(1.25); }
+  .kb-horangi .hr-eyes, .kb-horangi .hr-ear { transform-box: fill-box; }
+  .kb-horangi .hr-eyes { transform-origin: center; }
+  .kb-horangi .hr-ear-l { transform-origin: 100% 100%; }
+  .kb-horangi .hr-ear-r { transform-origin: 0% 100%; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .kb-horangi .hr-ear, .kb-horangi .hr-eyes { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+    .kb-horangi[data-blink]:not([data-mood='sleep']) .hr-eyes { animation: hr-blink 6.4s infinite; }
+    .hr-host:hover .kb-horangi .hr-ear-l, .hr-host:focus-visible .kb-horangi .hr-ear-l { transform: rotate(-14deg); }
+    .hr-host:hover .kb-horangi .hr-ear-r, .hr-host:focus-visible .kb-horangi .hr-ear-r { transform: rotate(14deg); }
+    .hr-host:hover .kb-horangi:not([data-mood='sleep']) .hr-eyes { transform: scaleY(1.2); }
+    .kb-horangi[data-mood='sleep'] { animation: hr-breathe 4.8s ease-in-out infinite; transform-origin: 50% 90%; }
+  }
+  @keyframes hr-blink { 0%, 94%, 100% { transform: none; } 96.5% { transform: scaleY(0.08); } }
+  @keyframes hr-breathe { 0%, 100% { transform: none; } 50% { transform: scale(1.025, 0.985); } }
+</style>

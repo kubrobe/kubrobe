@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import Modal from '@/components/modal/Modal.astro';
+import Glyph from '@/components/Glyph.astro';
+import { getCertifications, statusLabel, code, pad } from '@/lib/entries';
+const certs = await getCertifications();
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<Modal id="m-certifications" title="Certifications" eyebrow="KB—540 · Credentials" lede="Certificates I hold or am working towards, each with its issuer and a way to verify it.">
+  {certs.length > 0 ? (
+    <ol class="grid gap-4">
+      {certs.map((c, i) => {
+        const d = c.data;
+        return (
+          <li class="kb-cert grid gap-4 border border-rule p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:p-6" data-m style={`--i:${i + 1}`}>
+            <div class="grid content-start gap-3">
+              <p class="kb-meta flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-2">
+                <span class="text-ink">{code(d.number)}</span>
+                <span class="inline-flex items-center gap-1.5"><Glyph status={d.status} class="text-jade" />{statusLabel('certifications', d.status)}</span>
+                {d.date && <time datetime={d.date.toISOString().slice(0, 10)}>{fmt(d.date)}</time>}
+              </p>
+              <h3 class="text-h3 leading-[1.05] font-[560] tracking-[-0.03em]">{d.title}{d.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}</h3>
+              <dl class="kb-m-dl text-sm">
+                <dt>Issued by</dt><dd>{d.issuer}</dd>
+                {d.credentialId && <><dt>Credential ID</dt><dd class="font-mono break-all">{d.credentialId}</dd></>}
+              </dl>
+              {d.progress !== undefined && (
+                <div class="grid gap-1.5">
+                  <div class="kb-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={d.progress} aria-label={`${d.title} progress`}><span style={`width:${d.progress}%`} /></div>
+                  <span class="kb-meta text-ink-2">{Math.round(d.progress)}% complete</span>
+                </div>
+              )}
+              {d.note && <p class="text-sm text-ink-2">{d.note}</p>}
+              {d.skills.length > 0 && <ul class="flex flex-wrap gap-2" aria-label="Related skills">{d.skills.map((s) => <li class="kb-m-tag">{s}</li>)}</ul>}
+              {d.credentialUrl && <a href={d.credentialUrl} rel="noopener" class="kb-m-link w-fit">Verify credential ↗</a>}
+            </div>
+            {d.image && (
+              <a href={d.image.src} class="kb-cert-img group block w-full sm:w-48" aria-label={`Open the ${d.title} certificate full size`}>
+                <Image src={d.image} alt={`${d.title} certificate`} widths={[320, 640]} sizes="(min-width: 40rem) 192px, 90vw" loading="lazy" class="block h-auto w-full border border-rule" />
+                <span class="kb-meta mt-1.5 block text-ink-3 group-hover:text-ink">View full size ↗</span>
+              </a>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  ) : (
+    <div class="grid gap-6">
+      <div class="kb-cert-empty grid gap-3 p-5 sm:p-7" data-m style="--i:1">
+        <p class="kb-meta text-ink-2"><span class="text-ink">{pad(0)}</span> published</p>
+        <p class="text-lg">No certificates are listed yet.</p>
+        <p class="max-w-[58ch] text-sm text-ink-2">When one is added it appears here with its issuer, date, credential ID, a verification link, the skills it covers and a full-size view of the certificate itself. Nothing is listed until it can be verified.</p>
+      </div>
+      <div data-m style="--i:2">
+        <h3 class="kb-m-h">Meanwhile</h3>
+        <ul class="flex flex-wrap gap-x-6">
+          <li><a href="#m-education" data-modal-open="m-education" class="kb-m-link">Education →</a></li>
+          <li><a href="#m-skills" data-modal-open="m-skills" class="kb-m-link">Skills →</a></li>
+        </ul>
+      </div>
+    </div>
+  )}
+</Modal>
+<style>
+  .kb-cert { transition: border-color var(--kb-dur-micro) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-cert:hover { border-color: var(--kb-rule-2); } }
+  .kb-cert-empty { border: 1px dashed var(--kb-rule-2); background: repeating-linear-gradient(135deg, transparent 0 10px, var(--kb-jade-dim) 10px 11px); }
+</style>

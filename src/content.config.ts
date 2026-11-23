@@ -51,6 +51,25 @@ const work = defineCollection({
     video: z.string().optional(),
     /** Verified headline numbers shown above the write-up. Each needs a source in `note`. */
     facts: z.array(z.object({ value: z.string(), label: z.string(), note: z.string().optional() })).default([]),
+    /**
+     * The "Explore project" window: a detailed preview of the case study. Every field is optional and is
+     * hidden when empty. Write only what the case study (or the repository) can back up.
+     */
+    detail: z.object({
+      overview: z.string().optional(),
+      problem: z.string().optional(),
+      solution: z.string().optional(),
+      audience: z.string().optional(),
+      responsibilities: z.array(z.string()).default([]),
+      process: z.string().optional(),
+      features: z.array(z.object({ title: z.string(), text: z.string() })).default([]),
+      decisions: z.array(z.string()).default([]),
+      challenges: z.array(z.string()).default([]),
+      /** Verified outcomes only. No invented users or metrics. */
+      results: z.string().optional(),
+      /** Slugs of other work entries. */
+      related: z.array(z.string()).default([]),
+    }).optional(),
   }),
 });
 
@@ -68,7 +87,9 @@ const writing = defineCollection({
 
 const certifications = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/certifications' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
+    /** Optional scan or image of the certificate (put the file in src/assets/certifications/). Viewable full size. */
+    image: image().optional(),
     ...base,
     issuer: z.string().min(1),
     /** Date earned (complete) or started (in-progress). Leave out if unknown. */
@@ -76,7 +97,11 @@ const certifications = defineCollection({
     /** Real progress only, 0–100. Leave out rather than guess. */
     progress: z.number().min(0).max(100).optional(),
     credentialUrl: z.url().optional(),
+    /** Credential or certificate ID, exactly as printed. */
+    credentialId: z.string().optional(),
     note: z.string().optional(),
+    /** Skills the certificate covers, shown as tags. */
+    skills: z.array(z.string()).default([]),
   }),
 });
 

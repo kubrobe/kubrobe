@@ -1,6 +1,8 @@
 ---
 import { profile } from '@/data/profile';
 import { code } from '@/lib/entries';
+import ModalTrigger from '@/components/modal/ModalTrigger.astro';
+import Horangi from '@/components/Horangi.astro';
 /** The person behind KUBROBE. Every part is hidden when its profile field is empty. */
 const facts = [
   profile.role && ['Role', profile.role],
@@ -14,7 +16,7 @@ const show = Boolean(profile.about.length || facts.length || profile.now.length 
   <section id="about" class="kb-wrap kb-section kb-rule" aria-labelledby="intro-h">
     <div class="kb-grid gap-y-12">
       <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:block lg:self-start lg:pt-3">
-        <span class="text-ink lg:block">{code(2)}</span><span>Introduction</span>
+        <span class="text-ink lg:block">{code(2)}</span><span>About</span>
       </div>
       <h2 id="intro-h" class="sr-only">Introduction</h2>
       {lead && (
@@ -36,20 +38,12 @@ const show = Boolean(profile.about.length || facts.length || profile.now.length 
           <ul class="grid gap-2 border-t border-rule pt-3">{profile.now.map((n) => <li>{n}</li>)}</ul>
         </div>
       )}
-      {profile.interests.length > 0 && (
-        <div data-reveal class="md:col-span-6 lg:col-[3/13]">
-          <h3 class="kb-label mb-3">Interests</h3>
-          <ul class="grid gap-x-[var(--kb-gutter)] md:grid-cols-2 lg:grid-cols-3">
-            {profile.interests.map((i) => (
-              <li class="grid gap-0.5 border-t border-rule py-3">
-                <span>{i.title}</span>
-                {i.note && <span class="kb-meta text-ink-2">{i.note}</span>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {profile.about.length > 0 && <a href="/about/" class="kb-draw kb-meta inline-flex min-h-11 w-fit items-center text-ink-2 hover:text-ink lg:col-[3/13]">More about →</a>}
+      <div data-reveal class="flex flex-wrap items-center gap-x-6 gap-y-3 md:col-span-6 lg:col-[3/13]">
+        <ModalTrigger target="m-background" class="kb-btn kb-btn--jade hr-host min-h-12">
+          <Horangi size={18} /> Get to know me <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span>
+        </ModalTrigger>
+        {profile.about.length > 0 && <a href="/about/" class="kb-draw kb-meta inline-flex min-h-11 items-center text-ink-2 hover:text-ink">The About page →</a>}
+      </div>
     </div>
   </section>
 )}

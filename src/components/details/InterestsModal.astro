@@ -1,0 +1,36 @@
+---
+import Modal from '@/components/modal/Modal.astro';
+import { interests, interestsIntro } from '@/data/interests';
+import { getWork } from '@/lib/entries';
+const titles = new Map((await getWork()).map((w) => [w.id, w.data.title]));
+---
+<Modal id="m-interests" title={interestsIntro.title} eyebrow="KB—550 · Interests" lede={interestsIntro.lede} size="lg">
+  <ul class="kb-m-grid" data-cols="3">
+    {interests.map((it, i) => (
+      <li class="kb-m-cell kb-int grid content-start gap-3" data-m style={`--i:${Math.min(i + 1, 9)}`}>
+        <p class="kb-meta text-ink-3" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
+        <h3 class="text-[1.375rem] leading-[1.1] font-[560] tracking-[-0.02em]">{it.title}</h3>
+        <p class="text-ink-2">{it.summary}</p>
+        {it.why && <p class="kb-serif text-lg leading-snug">“{it.why}”</p>}
+        {it.now && it.now.length > 0 && (<div><h4 class="kb-m-h">Right now</h4><ul class="kb-m-list text-sm">{it.now.map((n) => <li>{n}</li>)}</ul></div>)}
+        {it.shows && it.shows.length > 0 && (
+          <div>
+            <h4 class="kb-m-h">Where it shows up</h4>
+            <ul class="kb-m-list text-sm text-ink-2">
+              {it.shows.map((s) => (
+                <li>{s.text}{s.project && titles.has(s.project) && <> <a href={`#m-project-${s.project}`} data-modal-open={`m-project-${s.project}`} class="kb-m-link !inline !min-h-0 text-ink" aria-label={`Explore ${titles.get(s.project)}`}>Explore →</a></>}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {it.reading && it.reading.length > 0 && (
+          <div><h4 class="kb-m-h">Reading</h4><ul class="kb-m-list text-sm">{it.reading.map((r) => <li>{r.href ? <a href={r.href} rel="noopener" class="kb-m-link !inline">{r.title}</a> : r.title}{r.note && <span class="text-ink-3"> · {r.note}</span>}</li>)}</ul></div>
+        )}
+      </li>
+    ))}
+  </ul>
+</Modal>
+<style>
+  .kb-int { transition: background-color var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-int:hover { background: var(--kb-raised); } }
+</style>

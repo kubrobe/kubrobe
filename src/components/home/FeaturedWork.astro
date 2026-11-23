@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import Section from '@/components/Section.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
+import ModalTrigger from '@/components/modal/ModalTrigger.astro';
 import { workTypeLabel, pad } from '@/lib/entries';
 interface Props { featured: CollectionEntry<'work'>[]; total: number }
 const { featured, total } = Astro.props;
@@ -31,6 +32,9 @@ const { featured, total } = Astro.props;
             </span>
             <span class="kb-arrow kb-ix-arrow" data-dir="e" aria-hidden="true">→</span>
           </a>
+          <ModalTrigger target={`m-project-${w.id}`} class="kb-btn kb-ix-x" aria-label={`Explore ${d.title}: project details`}>
+            Explore project <span class="kb-ix-plus" aria-hidden="true">+</span>
+          </ModalTrigger>
         </li>
       );
     })}
@@ -41,10 +45,16 @@ const { featured, total } = Astro.props;
 </Section>
 <style>
   .kb-ix { margin: 0; padding: 0; list-style: none; }
+  /* The row links to the case study; the Explore button beside it opens the detail window. */
+  .kb-ix-li { position: relative; }
+  .kb-ix-x { position: absolute; left: 0; bottom: 22px; z-index: 1; background: var(--kb-surface); gap: 10px; }
+  .kb-ix-plus { display: inline-block; color: var(--kb-jade); font-size: 1rem; line-height: 1; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-ix-x:hover .kb-ix-plus { transform: rotate(90deg); color: inherit; } }
+  .kb-ix-x:focus-visible .kb-ix-plus { transform: rotate(90deg); color: inherit; }
   .kb-ix-a {
     position: relative; display: grid; gap: 6px 16px; align-items: start; text-decoration: none; color: inherit;
     grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: 'n meta arrow' 'title title title';
-    padding: 20px 0 24px;
+    padding: 20px 0 88px;
     /* A faint fill rises from the bottom edge on hover or focus. */
     background: linear-gradient(var(--kb-raised), var(--kb-raised)) no-repeat 0 100% / 100% 0;
     transition: background-size var(--kb-dur-ui) var(--kb-ease-out);
@@ -60,12 +70,13 @@ const { featured, total } = Astro.props;
     transition: transform var(--kb-dur-ui) var(--kb-ease-out), background-size var(--kb-dur-ui) var(--kb-ease-mask);
   }
   .kb-ix-sum { max-width: 44ch; font-size: 1.125rem; line-height: 1.5; color: var(--kb-ink-2); }
-  .kb-ix-a:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
+  .kb-ix-a:focus-visible { outline: 2px solid var(--kb-jade); outline-offset: 4px; }
 
   @media (min-width: 60rem) {
     .kb-ix-a {
-      grid-template-columns: 3.5rem minmax(0, 1fr) 13rem 2.5rem; grid-template-areas: 'n title meta arrow'; padding: 36px 14px 40px; margin-inline: -14px; align-items: start;
+      grid-template-columns: 3.5rem minmax(0, 1fr) 13rem 2.5rem; grid-template-areas: 'n title meta arrow'; padding: 36px 14px 100px; margin-inline: -14px; align-items: start;
     }
+    .kb-ix-x { left: calc(3.5rem + 16px); bottom: 36px; }
     .kb-ix-n { padding-top: 1.1rem; }
     .kb-ix-meta { flex-direction: column; align-items: flex-end; padding-top: 1.1rem; gap: 6px; }
     .kb-ix-arrow { padding-top: 1rem; justify-self: end; font-size: 1.25rem; }

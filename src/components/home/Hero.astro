@@ -1,5 +1,6 @@
 ---
 import Wordmark from '@/components/Wordmark.astro';
+import Horangi from '@/components/Horangi.astro';
 import { profile, profileIsPlaceholder } from '@/data/profile';
 import { code, isoDate, pad } from '@/lib/entries';
 import { revealWords } from '@/lib/text';
@@ -9,11 +10,7 @@ import pkg from '../../../package.json';
 interface Props { entries: number; updated?: Date | undefined; nav: NavItem[]; hasContact: boolean }
 const { entries, updated, nav, hasContact } = Astro.props;
 const clock = profile.showLocalTime && profile.timeZone ? profile.timeZone : undefined;
-// Hero navigation: only destinations that exist, with real counts.
-const links = [
-  ...nav.map((n) => ({ href: n.href, label: n.label, count: n.count })),
-  ...(hasContact ? [{ href: '#contact', label: 'Contact', count: undefined }] : []),
-];
+const hasWork = nav.some((n) => n.href === '/work/');
 ---
 <section class="kb-hero kb-wrap flex flex-col pt-5 pb-10 lg:pt-8 lg:pb-14" aria-labelledby="kb-wordmark">
   <div class="kb-grid kb-meta kb-in text-ink-2" style="--i:0">
@@ -28,55 +25,52 @@ const links = [
     </p>
   </div>
 
-  <div class="mt-auto pt-[clamp(72px,20vw,120px)] lg:pt-16">
+  <div class="kb-hero-mark kb-in mt-auto flex items-end justify-between gap-6 pt-[clamp(56px,16vw,110px)] lg:pt-12" style="--i:2">
+    <p class="kb-meta hidden text-ink-3 sm:block"><span lang="ko">호랑이</span> · Horangi, the KUBROBE tiger</p>
+    <span class="kb-hero-tiger hr-host -mb-1 ml-auto inline-flex items-end justify-end">
+      <Horangi size="100%" blink class="kb-hero-tiger-svg" label="Horangi, the KUBROBE tiger" />
+    </span>
+  </div>
+  <div class="pt-3">
     <Wordmark />
   </div>
 
-  {(profile.statement || links.length > 0) && (
-  <div class="kb-grid kb-draw-in mt-[clamp(28px,4vw,56px)] gap-y-10 pt-5 lg:pt-6" style="--i:4">
+  <div class="kb-grid kb-draw-in mt-[clamp(28px,4vw,56px)] gap-y-8 pt-5 lg:pt-6" style="--i:4">
     <div class="kb-rail kb-meta kb-in hidden text-ink-2 lg:block" style="--i:6">
-      <span class="block text-ink">{code(1)}</span>{profile.statement ? 'Statement' : 'Contents'}
+      <span class="block text-ink">{code(1)}</span>Statement
     </div>
     {profile.statement && (
       <p class:list={['kb-in min-w-0 text-[clamp(1.75rem,1.15rem+2.5vw,3.5rem)] leading-[1.06] font-[460] tracking-[-0.03em] text-balance md:col-span-6 lg:col-[3/9]', profileIsPlaceholder('statement') && 'text-ink-2']} style="--i:7">
         <Fragment set:html={revealWords(profile.statement)} />
       </p>
     )}
-    {links.length > 0 && (
-      <nav aria-label="Contents" class:list={['kb-in md:col-span-6', profile.statement ? 'lg:col-[10/13] lg:self-end' : 'lg:col-[3/13]']} style="--i:8">
-        <ol class:list={['border-b border-rule', !profile.statement && 'lg:grid lg:grid-cols-5 lg:gap-x-[var(--kb-gutter)] lg:border-b-0', 'md:max-lg:grid md:max-lg:grid-cols-2 md:max-lg:gap-x-[var(--kb-gutter)] md:max-lg:border-t md:max-lg:border-b-0']}>
-          {links.map((l, i) => (
-            <li class="border-t border-rule md:max-lg:border-t-0 md:max-lg:border-b">
-              <a href={l.href} class="kb-hero-link group flex min-h-11 items-baseline justify-between gap-4 py-2 no-underline">
-                <span class="flex items-baseline gap-3">
-                  <span class="kb-meta text-ink-3">{pad(i + 1)}</span>
-                  <span class="kb-hero-label text-lg">{l.label}</span>
-                </span>
-                <span class="kb-meta text-ink-2">
-                  {l.count !== undefined && <span>{pad(l.count)} <span class="sr-only">entries</span></span>}
-                  <span aria-hidden="true" class="kb-hero-arrow ml-2 inline-block">→</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-    )}
+    <div class="kb-in grid content-end gap-3 md:col-span-6 lg:col-[10/13] lg:self-end" style="--i:8">
+      {profile.role && <p class="kb-meta text-ink-2">{profile.role}</p>}
+      <div class="flex flex-wrap gap-2">
+        {hasWork && <a href="#work" class="kb-btn kb-btn--solid kb-hero-cta grow sm:grow-0 lg:grow">Explore my work <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span></a>}
+        <a href="#about" class="kb-btn kb-hero-cta grow sm:grow-0 lg:grow">About me</a>
+      </div>
+      {hasContact && <a href="#contact" class="kb-draw kb-meta w-fit text-ink-2 hover:text-ink">Contact ↓</a>}
+    </div>
   </div>
-  )}
 </section>
 <style>
   /* The hero fills the first screen on tablets and up so the wordmark lands on the fold. */
   @media (min-width: 60rem) and (min-height: 600px) {
     .kb-hero { min-height: calc(100svh - var(--kb-bar-h) - var(--kb-mobile-bar-h) - env(safe-area-inset-top)); }
   }
-  .kb-hero-label, .kb-hero-arrow { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
-  .kb-hero-link:focus-visible { outline-offset: -2px; }
-  @media (hover: hover) {
-    .kb-hero-link:hover .kb-hero-label { transform: translateX(8px); }
-    .kb-hero-link:hover .kb-hero-arrow { transform: translateX(4px); }
+  .kb-hero-cta { min-height: 48px; font-size: 0.8125rem; }
+  /* Horangi sits above the O end of the wordmark, at roughly one letter's height. */
+  .kb-hero-tiger { width: clamp(44px, 9vw, 120px); color: var(--kb-ink); }
+  .kb-hero-tiger :global(.kb-hero-tiger-svg) { width: 100%; height: auto; }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* Subtle parallax: the tiger drifts up a little faster than the page as the hero leaves. */
+      .kb-hero-tiger :global(.kb-hero-tiger-svg) { animation: kb-tiger-par linear both; }
+      .kb-hero-tiger :global(.kb-hero-tiger-svg:is(svg)) { animation-timeline: view(); animation-range: exit 0% exit 100%; }
+    }
   }
-  .kb-hero-link:focus-visible .kb-hero-label { transform: translateX(8px); }
+  @keyframes kb-tiger-par { to { transform: translateY(-60%) rotate(-4deg); } }
 </style>
 {clock && (
   <script>

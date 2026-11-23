@@ -5,7 +5,6 @@
  *   mask                    headings: rise through a clipping mask
  *   clip                    images: unmask from the bottom while the picture settles
  *   rule                    hairlines draw from the left
- *   parallax                desktop only: an image drifts a few percent inside its frame
  *   intro                   first arrival at the home page only (html[data-intro])
  *
  * Rules for everything in here:
@@ -67,13 +66,6 @@
     @keyframes kb-rule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
     @keyframes kb-wm-scroll { from { --kb-wm-w: 640; transform: none; } to { --kb-wm-w: 440; transform: translateY(-6%); } }
 
-    /* Parallax: desktop with a fine pointer only. Frames clip, pictures drift. */
-    @media (min-width: 60rem) and (hover: hover) {
-      [data-parallax] { animation: kb-drift linear both; }
-      [data-parallax]:is([data-parallax]) { animation-timeline: view(); animation-range: cover 0% cover 100%; }
-      @keyframes kb-drift { from { translate: 0 calc(var(--p, 1) * 28px); } to { translate: 0 calc(var(--p, 1) * -28px); } }
-    }
-
     /* Diagram: boxes arrive as the figure scrolls in; connectors draw. Positions stagger them for free. */
     .kb-diagram svg rect, .kb-diagram svg text { animation: kb-fade linear both; }
     .kb-diagram svg rect:is(rect), .kb-diagram svg text:is(text) { animation-timeline: view(); animation-range: entry 5% entry 75%; }
@@ -85,7 +77,7 @@
 
   /* Printing sees the whole page at once, so nothing may wait on a scroll position. */
   @media print {
-    [data-reveal], [data-reveal] img, [data-parallax], .kb-prose > *, .kb-rule::before, .kb-wordmark, .kb-diagram svg * { animation: none !important; }
+    [data-reveal], [data-reveal] img, .kb-prose > *, .kb-rule::before, .kb-wordmark, .kb-diagram svg * { animation: none !important; }
   }
 
   /* ---------- Intro: first arrival at the home page only ---------- */

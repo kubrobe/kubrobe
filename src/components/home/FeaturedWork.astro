@@ -1,116 +1,83 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Section from '@/components/Section.astro';
-import { Image } from 'astro:assets';
-import EntryFigure from '@/components/EntryFigure.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
-import { workTypeLabel, pad, code } from '@/lib/entries';
+import { workTypeLabel, pad } from '@/lib/entries';
 interface Props { featured: CollectionEntry<'work'>[]; total: number }
 const { featured, total } = Astro.props;
 ---
 <Section number={100} label="Selected work" id="work" heading="Selected *work*">
-  <ol class="grid gap-[var(--kb-space-block)]">
+  <!--
+    A text index, not a gallery: the screens live on each case study. The whole row is one link.
+    Everything that matters (type, year, status) is visible without hover.
+  -->
+  <ol class="kb-ix">
     {featured.map((w, i) => {
       const d = w.data;
-      const flip = i % 2 === 1;
-      // The lead entry gets the widest figure. Real screenshots replace the generated figure when they exist.
-      const lead = i === 0;
-      const shots = d.gallery.slice(0, lead ? 3 : 2);
       return (
-        <li data-reveal id={`kb-${d.number}`}>
-          <article class="kb-feature kb-rule group relative grid gap-6 pt-5 md:grid-cols-12 md:gap-x-[var(--kb-gutter)] lg:pt-6" aria-labelledby={`kb-${d.number}-t`}>
-            <figure class:list={['md:row-span-2', lead ? 'md:col-span-7' : 'md:col-span-5', flip && 'md:order-2 md:col-start-8']}>
-              {shots.length > 0 ? (
-                <div class:list={['kb-shots kb-frame bg-raised px-4 pt-6 sm:px-6 sm:pt-8', d.presentation === 'devices' ? 'kb-devices' : 'kb-board']} data-reveal="clip" style={`--n:${shots.length}`}>
-                  {shots.map((g, k) => (
-                    <div class="kb-shot-wrap" style={`--k:${k}`}>
-                      <div class={d.presentation === 'devices' ? 'kb-device' : 'kb-screen'} data-parallax style={`--p:${[1, 0.4, -0.2][k] ?? 0}`}>
-                        <Image src={g.src} alt={g.alt} widths={[200, 320, 480]} sizes={lead ? '(min-width: 60rem) 16vw, 30vw' : '(min-width: 60rem) 14vw, 45vw'}
-                          loading={i === 0 && k === 0 ? 'eager' : 'lazy'} class="kb-shot block h-auto w-full" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <EntryFigure number={d.number} resolve class="w-full" />
-              )}
-              <figcaption class="kb-meta mt-2 flex justify-between gap-4 text-ink-3">
-                <span>Fig. {code(d.number)}</span>
-                <span>{shots.length > 0 ? 'Screenshots, demo data' : 'Generated from the entry ID'}</span>
-              </figcaption>
-            </figure>
-            <div class:list={['grid min-w-0 content-start gap-4', lead ? 'md:col-span-5 md:pl-[6%]' : 'md:col-span-7', !lead && (flip ? 'md:order-1 md:col-start-1 md:pr-[8%]' : 'md:pl-[8%]')]}>
-              <p class="kb-meta flex flex-wrap gap-x-3 text-ink-2">
-                <span class="text-ink">{code(d.number)}</span><span>{workTypeLabel[d.type]}</span><span>{d.year}</span>
-              </p>
-              <h3 id={`kb-${d.number}-t`} class="text-[clamp(2rem,1.4rem+2.6vw,3.75rem)] leading-[0.98] font-[560] tracking-[-0.035em] text-balance">
-                <a href={`/work/${w.id}/`} class="kb-feature-link no-underline">
-                  <span class="kb-feature-title inline-block" style={`view-transition-name:kb-t-${d.number};view-transition-class:kb-title`}>{d.title}</span>
-                </a>
-                {d.placeholder && <span class="kb-ph-tag ml-2 align-middle text-[0.6rem]">Placeholder</span>}
-              </h3>
-              <p class="max-w-[46ch] text-lg text-ink-2">{d.summary}</p>
-              <dl class="kb-meta grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 border-t border-rule pt-3 sm:max-w-[28rem]">
-                <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
-                {d.role && <><dt class="text-ink-3">Role</dt><dd class="text-ink-2">{d.role}</dd></>}
-                {d.stack.length > 0 && <><dt class="text-ink-3">Stack</dt><dd class="text-ink-2">{d.stack.join(', ')}</dd></>}
-              </dl>
-              <span class="kb-meta text-ink" aria-hidden="true">Open case study <span class="kb-feature-arrow inline-block">→</span></span>
-            </div>
-          </article>
+        <li data-reveal class="kb-ix-li border-t border-rule last:border-b">
+          <a href={`/work/${w.id}/`} class="kb-ix-a group" aria-describedby={`kb-ix-${d.number}-d`}>
+            <span class="kb-ix-n kb-meta">{pad(i + 1)}</span>
+            <span class="kb-ix-title-wrap">
+              <span data-reveal="mask" class="block">
+                <span class="kb-ix-title" style={`view-transition-name:kb-t-${d.number};view-transition-class:kb-title`}>{d.title}</span>
+              </span>
+              {d.placeholder && <span class="kb-ph-tag ml-2 align-middle">Placeholder</span>}
+              <span id={`kb-ix-${d.number}-d`} class="kb-ix-sum">{d.summary}</span>
+            </span>
+            <span class="kb-ix-meta kb-meta">
+              <span>{workTypeLabel[d.type]} · {d.year}</span>
+              <StatusGlyph kind="work" status={d.status} />
+            </span>
+            <span class="kb-arrow kb-ix-arrow" data-dir="e" aria-hidden="true">→</span>
+          </a>
         </li>
       );
     })}
   </ol>
   {total > featured.length && (
-    <a href="/work/" class="kb-draw kb-meta mt-[var(--kb-space-block)] inline-block text-ink-2 hover:text-ink">All {pad(total)} entries →</a>
+    <a href="/work/" class="kb-draw kb-meta mt-8 inline-flex min-h-11 items-center text-ink-2 hover:text-ink">All {pad(total)} entries →</a>
   )}
 </Section>
 <style>
-  /* The title link stretches over the whole feature, so the figure and text are one target. */
-  .kb-feature-link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
-  .kb-feature-link:focus-visible { outline: none; }
-  .kb-feature:has(.kb-feature-link:focus-visible) { outline: 2px solid var(--kb-ink); outline-offset: 8px; }
+  .kb-ix { margin: 0; padding: 0; list-style: none; }
+  .kb-ix-a {
+    position: relative; display: grid; gap: 6px 16px; align-items: start; text-decoration: none; color: inherit;
+    grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: 'n meta arrow' 'title title title';
+    padding: 20px 0 24px;
+    /* A faint fill rises from the bottom edge on hover or focus. */
+    background: linear-gradient(var(--kb-raised), var(--kb-raised)) no-repeat 0 100% / 100% 0;
+    transition: background-size var(--kb-dur-ui) var(--kb-ease-out);
+  }
+  .kb-ix-n { grid-area: n; color: var(--kb-ink); }
+  .kb-ix-meta { grid-area: meta; justify-self: end; display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: flex-end; color: var(--kb-ink-2); transition: color var(--kb-dur-micro) var(--kb-ease-out); }
+  .kb-ix-arrow { grid-area: arrow; font-family: var(--font-mono); color: var(--kb-ink-2); }
+  .kb-ix-title-wrap { grid-area: title; display: grid; gap: 14px; min-width: 0; }
+  .kb-ix-title {
+    display: inline-block; font-size: clamp(2.5rem, 1.3rem + 5.2vw, 5.5rem); line-height: 0.96; font-weight: 560; letter-spacing: -0.045em;
+    /* Underline sweeps beneath the name. */
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 2px; padding-bottom: 0.08em;
+    transition: transform var(--kb-dur-ui) var(--kb-ease-out), background-size var(--kb-dur-ui) var(--kb-ease-mask);
+  }
+  .kb-ix-sum { max-width: 44ch; font-size: 1.125rem; line-height: 1.5; color: var(--kb-ink-2); }
+  .kb-ix-a:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
 
-  .kb-feature-title, .kb-feature-arrow { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
-
-  /* Figures resolve from coarse to fine on desktop hover or keyboard focus. */
-  .kb-feature :global(.kb-fig-fine) { clip-path: inset(0 0 100% 0); transition: clip-path var(--kb-dur-reveal) var(--kb-ease-mask); }
-  .kb-feature :global(.kb-fig-coarse) { transition: opacity var(--kb-dur-ui) var(--kb-ease-out); }
-  .kb-feature:has(.kb-feature-link:focus-visible) :global(.kb-fig-fine) { clip-path: inset(0 0 0 0); }
-  .kb-feature:has(.kb-feature-link:focus-visible) :global(.kb-fig-coarse) { opacity: 0; }
-  .kb-feature:has(.kb-feature-link:focus-visible) .kb-feature-title { transform: translateX(12px); }
-  .kb-feature:has(.kb-feature-link:focus-visible) .kb-feature-arrow { transform: translateX(6px); }
+  @media (min-width: 60rem) {
+    .kb-ix-a {
+      grid-template-columns: 3.5rem minmax(0, 1fr) 13rem 2.5rem; grid-template-areas: 'n title meta arrow'; padding: 36px 14px 40px; margin-inline: -14px; align-items: start;
+    }
+    .kb-ix-n { padding-top: 1.1rem; }
+    .kb-ix-meta { flex-direction: column; align-items: flex-end; padding-top: 1.1rem; gap: 6px; }
+    .kb-ix-arrow { padding-top: 1rem; justify-self: end; font-size: 1.25rem; }
+  }
   @media (hover: hover) {
-    .kb-feature:hover :global(.kb-fig-fine) { clip-path: inset(0 0 0 0); }
-    .kb-feature:hover :global(.kb-fig-coarse) { opacity: 0; }
-    .kb-feature:hover .kb-feature-title { transform: translateX(12px); }
-    .kb-feature:hover .kb-feature-arrow { transform: translateX(6px); }
+    .kb-ix-a:hover { background-size: 100% 100%; }
+    .kb-ix-a:hover .kb-ix-title { transform: translateX(14px); background-size: 100% 2px; }
+    .kb-ix-a:hover .kb-ix-meta { color: var(--kb-ink); }
   }
-  /* Phones, tablets and touch screens show the fine figure directly. */
-  @media (hover: none), (pointer: coarse), (max-width: 59.99rem) {
-    .kb-feature :global(.kb-fig-fine) { clip-path: none; }
-    .kb-feature :global(.kb-fig-coarse) { display: none; }
-  }
-  /* Screens: SkillSwap is a staggered board of bare screens, Doran is a set of framed devices.
-     Both keep each screenshot's real aspect ratio. */
-  .kb-shots { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 8px; align-items: start; }
-  @media (min-width: 30rem) { .kb-shots { gap: 12px; } }
-  .kb-board .kb-shot-wrap:nth-child(even) { margin-top: clamp(16px, 3vw, 44px); }
-  .kb-board .kb-screen { border: 1px solid var(--kb-rule-2); border-radius: 4px; overflow: clip; background: var(--kb-surface); }
-  .kb-devices { padding-top: clamp(28px, 4vw, 48px); }
-  .kb-devices .kb-shot-wrap:nth-child(2) { margin-top: clamp(20px, 4vw, 56px); margin-left: -6%; }
-  .kb-device { background: #000; border: 1px solid var(--kb-rule-2); border-radius: 14px; padding: 4px; box-shadow: 0 0 0 1px var(--kb-surface); overflow: clip; }
-  .kb-device .kb-shot { border-radius: 10px; }
-  .kb-shot-wrap { min-width: 0; }
-  /* Screenshots sit slightly desaturated in the monochrome page and come to full colour on hover or focus. */
-  .kb-shot { filter: grayscale(1) contrast(1.05); transition: filter var(--kb-dur-ui) var(--kb-ease-out), translate var(--kb-dur-ui) var(--kb-ease-out); transition-delay: calc(var(--k) * 40ms); }
-  .kb-feature:has(.kb-feature-link:focus-visible) .kb-shot { filter: none; translate: 0 -6px; }
-  @media (hover: hover) { .kb-feature:hover .kb-shot { filter: none; translate: 0 -6px; } }
-  @media (hover: none), (pointer: coarse), (max-width: 59.99rem) { .kb-shot { filter: none; } }
-
-  @media (prefers-reduced-motion: reduce) {
-    .kb-feature :global(.kb-fig-fine), .kb-feature :global(.kb-fig-coarse), .kb-shot { transition: none; }
-    .kb-feature:hover .kb-shot, .kb-feature:has(.kb-feature-link:focus-visible) .kb-shot { translate: none; }
-  }
+  .kb-ix-a:focus-visible { background-size: 100% 100%; }
+  .kb-ix-a:focus-visible .kb-ix-title { transform: translateX(14px); background-size: 100% 2px; }
+  .kb-ix-a:focus-visible .kb-ix-meta { color: var(--kb-ink); }
+  .kb-ix-a:active { background-size: 100% 100%; }
+  @media (prefers-reduced-motion: reduce) { .kb-ix-a, .kb-ix-title { transition: none; } }
 </style>

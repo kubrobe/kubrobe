@@ -4,7 +4,7 @@ Status as of Stage G. ✓ = done and checked here. ☐ = open.
 
 ## A. Owner decisions and information (blocks launch)
 
-- ☐ Public domain (sets `SITE_URL`).
+- ✓ Public domain bought: kubrobe.uz (Sayt.uz). Canonical origin is built in; no `SITE_URL` needed.
 - ☐ Contact email, if wanted. Add to `src/data/profile.ts`; the mailto and Copy button appear. Never a guessed address.
 - ☐ Other profile links (LinkedIn etc.), only ones to be public.
 - ☐ Confirm the GitHub repositories linked on the site are public: `kubrobe/skillswap`, `kubrobe/skillswap-android`, `kubrobe/doran`. Visitors see a 404 on a private repo.
@@ -20,8 +20,8 @@ Status as of Stage G. ✓ = done and checked here. ☐ = open.
 - ✓ `vercel.json` (build, output, headers, CSP, caching); CSP exercised with 0 violations.
 - ✓ No secrets in tree or history.
 - ☐ Create the GitHub repository and push (owner).
-- ☐ Import into Vercel, set `SITE_URL`, deploy (`PRODUCTION-DEPLOYMENT.md`).
-- ☐ Add domain and DNS, redeploy with final `SITE_URL`.
+- ☐ Import into Vercel and deploy (`PRODUCTION-DEPLOYMENT.md`); no environment variables are required.
+- ☐ Add `kubrobe.uz` and `www.kubrobe.uz` in Vercel, then add the DNS records Vercel shows (`docs/DOMAIN-LAUNCH-REPORT.md`).
 
 ## C. Checks that need real browsers or devices
 

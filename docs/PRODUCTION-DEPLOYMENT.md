@@ -17,11 +17,11 @@ Nothing has been deployed. These are the exact steps for the first release. No s
 
 | Name | Required | Value |
 | --- | --- | --- |
-| `SITE_URL` | Yes, once the domain is known | `https://your-domain` with no trailing slash |
+| `SITE_URL` | No | Overrides the canonical origin; default is `https://kubrobe.uz` (no trailing slash) |
 | `KB_SHOW_PLACEHOLDERS` | No. **Must not be set** in production | `true` makes a noindex design-review build |
 | `VERCEL_PROJECT_PRODUCTION_URL` and `VERCEL_GIT_COMMIT_SHA` | Set by Vercel | Fallback site URL; footer build id |
 
-If `SITE_URL` is missing, the Vercel production URL is used. If neither exists, canonical and Open Graph URLs are omitted rather than pointing at localhost.
+If `SITE_URL` is missing, `https://kubrobe.uz` is used. `vercel.json` redirects `www.kubrobe.uz` to the root with a permanent redirect.
 
 ## First release, in order
 

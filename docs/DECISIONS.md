@@ -16,7 +16,7 @@ Short records of choices that are not obvious from the code. Newest last.
 | 10 | Gallery lightbox uses the native `popover` attribute | No JavaScript, Esc and light dismiss built in, focus returns to the trigger. |
 | 11 | Two architecture diagrams (wide and portrait) switched by CSS | Legible without horizontal scrolling on phones. Only one is exposed to assistive technology at a time. |
 | 12 | Three-column prose tables render as stacked cards on narrow screens | Clipped tables are worse than a different layout. |
-| 13 | Canonical, `og:url`, `og:image` omitted until a real domain is set | A localhost canonical in production would be harmful. |
+| 13 | Canonical, `og:url`, `og:image` and the sitemap use `https://kubrobe.uz` by default (`SITE_URL` can override); root is canonical, `www` redirects to it | Domain purchased (Sayt.uz). Previews on `*.vercel.app` still canonicalise to the production domain. |
 | 14 | Empty Writing and Certifications stay reachable but `noindex` and out of the sitemap | Honest empty states without advertising thin pages. |
 | 15 | Social image is typographic (wordmark and statement) | No fabricated or recycled screenshots. |
 | 16 | No analytics, no cookies | Nothing to disclose; revisit after launch. |

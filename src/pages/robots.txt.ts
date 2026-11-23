@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { showPlaceholders } from '@/data/profile';
 
-// Generated so the sitemap line can use the real domain once one is configured.
+// Generated so the sitemap line always follows the configured site origin.
 export const GET: APIRoute = ({ site }) => {
   const hasDomain = Boolean(site && !['localhost', '127.0.0.1'].includes(site.hostname));
   const lines = ['User-agent: *', showPlaceholders ? 'Disallow: /' : 'Allow: /'];

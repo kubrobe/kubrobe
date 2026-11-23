@@ -16,13 +16,8 @@ const published = (dir) => {
 };
 const empty = ['writing', 'certifications'].filter((d) => published(d) === 0);
 
-// The public URL is not decided yet. Set SITE_URL when a domain exists;
-// on Vercel the production URL is picked up automatically.
-const site =
-  process.env.SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:4321');
+// Canonical production origin. SITE_URL overrides it (for example a staging build); never a preview URL.
+const site = process.env.SITE_URL || 'https://kubrobe.uz';
 
 export default defineConfig({
   site,

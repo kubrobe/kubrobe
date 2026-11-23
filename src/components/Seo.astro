@@ -14,8 +14,7 @@ const { title, description = fallback || SITE, noindex = false, type = 'website'
 // The home page carries a descriptive title; other pages are "Page · KUBROBE".
 const fullTitle = title ? `${title} · ${SITE}` : `${SITE} · Digital products and practical experiments`;
 
-// Absolute URLs only exist once a real domain is configured (SITE_URL, or Vercel's production URL).
-// Until then canonical, og:url and og:image are omitted rather than pointing at localhost.
+// Canonical, og:url and og:image use the configured site origin (https://kubrobe.uz by default).
 const site = Astro.site;
 const hasDomain = Boolean(site && !['localhost', '127.0.0.1'].includes(site.hostname));
 const canonical = hasDomain && site ? new URL(Astro.url.pathname, site) : undefined;

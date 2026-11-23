@@ -11,7 +11,8 @@ const SITE = 'KUBROBE';
 // Plain-text version of the verified statement; never invent a tagline.
 const fallback = [profile.statement?.replaceAll('*', ''), profile.role].filter(Boolean).join(' ');
 const { title, description = fallback || SITE, noindex = false, type = 'website' } = Astro.props;
-const fullTitle = title ? `${title} · ${SITE}` : SITE;
+// The home page carries a descriptive title; other pages are "Page · KUBROBE".
+const fullTitle = title ? `${title} · ${SITE}` : `${SITE} · Digital products and practical experiments`;
 
 // Absolute URLs only exist once a real domain is configured (SITE_URL, or Vercel's production URL).
 // Until then canonical, og:url and og:image are omitted rather than pointing at localhost.
@@ -35,6 +36,9 @@ const image = hasDomain && site ? new URL('/og.png', site) : undefined;
 {image && !noindex && <meta property="og:image:height" content="630" />}
 {image && !noindex && <meta property="og:image:alt" content="KUBROBE, set in large white letters on black." />}
 <meta name="twitter:card" content={image && !noindex ? 'summary_large_image' : 'summary'} />
+{canonical && !noindex && Astro.url.pathname === '/' && (
+  <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: SITE, url: new URL('/', site).href, description })} />
+)}
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 {image && !noindex && <meta name="twitter:image" content={image} />}

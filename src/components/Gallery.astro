@@ -24,7 +24,7 @@ const n = shots.length;
       <li class="kb-gallery-item" data-i={i}>
         <figure>
           <button type="button" popovertarget={`${id}-p${i}`} class="kb-shot-btn kb-frame" aria-label={`Enlarge: ${g.caption ?? g.alt}`} data-reveal="clip">
-            <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 14vw, 56vw" loading={i < 3 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} class="block h-auto w-full" />
+            <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 14vw, 56vw" loading={i < 2 ? 'eager' : 'lazy'} class="block h-auto w-full" />
           </button>
           {g.caption && <figcaption class="kb-meta mt-2 text-ink-2"><span class="text-ink-3">{pad(i + 1)}</span> {g.caption}</figcaption>}
         </figure>

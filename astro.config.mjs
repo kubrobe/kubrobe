@@ -30,5 +30,5 @@ export default defineConfig({
   trailingSlash: 'ignore',
   integrations: [sitemap({ filter: (page) => !/\/404\/?$/.test(page) && !empty.some((d) => new URL(page).pathname.startsWith(`/${d}`)) })],
   vite: { plugins: [tailwindcss()] },
-  build: { inlineStylesheets: 'auto' },
+  build: { inlineStylesheets: 'always' },
 });

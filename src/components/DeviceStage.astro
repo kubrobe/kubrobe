@@ -26,7 +26,7 @@ const n = shots.length;
     {shots.map((g, i) => (
       <label for={`${id}-r${i}`} class="kb-dev" style={`--j:${i}`}>
         <span class="kb-device-frame">
-          <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 280px, 60vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} class="block h-auto w-full" />
+          <Image src={g.src} alt={g.alt} widths={[240, 360, 480]} sizes="(min-width: 60rem) 280px, 60vw" loading={i === 0 ? 'eager' : 'lazy'} class="block h-auto w-full" />
         </span>
       </label>
     ))}

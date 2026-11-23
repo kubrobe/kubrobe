@@ -42,13 +42,13 @@ Nothing is invented: no personal facts, statistics, projects, screenshots or cer
 
 See `docs/PRODUCTION-DEPLOYMENT.md` (Vercel settings, environment variables, domain steps, post-deploy checks) and `docs/FINAL-CHECKLIST.md`.
 
-Short version: import the repository into Vercel (framework Astro; `vercel.json` sets install, build and output), the canonical origin `https://kubrobe.uz` is built in (`SITE_URL` only overrides it), leave `KB_SHOW_PLACEHOLDERS` unset.
+Short version: import the repository into Vercel (framework Astro; `vercel.json` sets install, build and output), the canonical origin `https://www.kubrobe.uz` is built in (the apex `kubrobe.uz` 308-redirects to it via Vercel domain settings) (`SITE_URL` only overrides it), leave `KB_SHOW_PLACEHOLDERS` unset.
 
 ## Environment variables
 
 | Name | Where | Purpose |
 | --- | --- | --- |
-| `SITE_URL` | build, optional | Overrides the canonical origin (default `https://kubrobe.uz`) |
+| `SITE_URL` | build, optional | Overrides the canonical origin (default `https://www.kubrobe.uz`) |
 | `KB_SHOW_PLACEHOLDERS` | build | `true` only for the design-review build |
 | `VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_GIT_COMMIT_SHA` | set by Vercel | Fallback site URL; build id shown in the footer |
 

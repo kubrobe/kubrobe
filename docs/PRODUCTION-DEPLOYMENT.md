@@ -17,11 +17,11 @@ Nothing has been deployed. These are the exact steps for the first release. No s
 
 | Name | Required | Value |
 | --- | --- | --- |
-| `SITE_URL` | No | Overrides the canonical origin; default is `https://kubrobe.uz` (no trailing slash) |
+| `SITE_URL` | No | Overrides the canonical origin; default is `https://www.kubrobe.uz` (no trailing slash) |
 | `KB_SHOW_PLACEHOLDERS` | No. **Must not be set** in production | `true` makes a noindex design-review build |
 | `VERCEL_PROJECT_PRODUCTION_URL` and `VERCEL_GIT_COMMIT_SHA` | Set by Vercel | Fallback site URL; footer build id |
 
-If `SITE_URL` is missing, `https://kubrobe.uz` is used. `vercel.json` redirects `www.kubrobe.uz` to the root with a permanent redirect.
+If `SITE_URL` is missing, `https://www.kubrobe.uz` is used. The apex `kubrobe.uz` redirects to `www` with a 308, configured in Vercel → Project → Settings → Domains (not in `vercel.json`). Do not add a host redirect to `vercel.json`: combined with the domain redirect it creates a redirect loop.
 
 ## First release, in order
 

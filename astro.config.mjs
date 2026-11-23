@@ -17,7 +17,7 @@ const published = (dir) => {
 const empty = ['writing', 'certifications'].filter((d) => published(d) === 0);
 
 // Canonical production origin. SITE_URL overrides it (for example a staging build); never a preview URL.
-const site = process.env.SITE_URL || 'https://kubrobe.uz';
+const site = process.env.SITE_URL || 'https://www.kubrobe.uz';
 
 export default defineConfig({
   site,

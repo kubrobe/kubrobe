@@ -24,6 +24,7 @@ npm run dev        # http://localhost:4321
 
 ## Architecture
 
+- `src/data/site.ts`: home title, home description and social-card alt text.
 - `src/data/profile.ts`: personal facts. Anything empty is hidden. Only verified facts live in `real`.
 - `src/content/{work,writing,certifications}`: markdown entries with a typed schema (`src/content.config.ts`). `draft: true` never publishes; `placeholder: true` shows only in the placeholder build. See `src/content/README.md`.
 - `src/pages`: home, about, work (list and case study), writing, certifications, 404, `robots.txt`.
@@ -31,6 +32,8 @@ npm run dev        # http://localhost:4321
 - `src/styles/global.css`: tokens (dark and light palettes), type, prose. `src/styles/motion.css`: all motion (CSS only; scroll-driven reveals behind `@supports`, first-arrival intro, view transitions).
 - `src/lib`: entry helpers, build-time dither figure, nav, text helpers.
 - Scripts in pages: theme toggle (inline, applied before first paint), copy-email, lightbox stepping, contents scroll-spy. Homepage JS is under 1 KB gzipped.
+
+Brand assets (`favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `og.png`) are generated from the Geist wordmark by `scripts/brand/` (see its README).
 
 Design rules live in `docs/DESIGN-SYSTEM.md`; decisions in `docs/DECISIONS.md`; progress in `docs/TASKS.md`.
 
@@ -42,7 +45,7 @@ Nothing is invented: no personal facts, statistics, projects, screenshots or cer
 
 See `docs/PRODUCTION-DEPLOYMENT.md` (Vercel settings, environment variables, domain steps, post-deploy checks) and `docs/FINAL-CHECKLIST.md`.
 
-Short version: import the repository into Vercel (framework Astro; `vercel.json` sets install, build and output), the canonical origin `https://www.kubrobe.uz` is built in (the apex `kubrobe.uz` 308-redirects to it via Vercel domain settings) (`SITE_URL` only overrides it), leave `KB_SHOW_PLACEHOLDERS` unset.
+Short version: import the repository into Vercel (framework Astro; `vercel.json` sets install, build and output). The canonical origin `https://www.kubrobe.uz` is built in, so `SITE_URL` is not needed in production; set it only to build for a different origin. The apex `kubrobe.uz` 308-redirects to `www` through Vercel domain settings. Leave `KB_SHOW_PLACEHOLDERS` unset.
 
 ## Environment variables
 
@@ -50,6 +53,6 @@ Short version: import the repository into Vercel (framework Astro; `vercel.json`
 | --- | --- | --- |
 | `SITE_URL` | build, optional | Overrides the canonical origin (default `https://www.kubrobe.uz`) |
 | `KB_SHOW_PLACEHOLDERS` | build | `true` only for the design-review build |
-| `VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_GIT_COMMIT_SHA` | set by Vercel | Fallback site URL; build id shown in the footer |
+| `VERCEL_GIT_COMMIT_SHA` | set by Vercel | Build id shown in the footer. Preview builds still canonicalise to `https://www.kubrobe.uz` |
 
 No secrets are used anywhere in this project.

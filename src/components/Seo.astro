@@ -1,5 +1,6 @@
 ---
 import { profile } from '@/data/profile';
+import { site as meta } from '@/data/site';
 
 interface Props {
   title?: string | undefined;
@@ -7,12 +8,13 @@ interface Props {
   noindex?: boolean | undefined;
   type?: 'website' | 'article' | undefined;
 }
-const SITE = 'KUBROBE';
+const SITE = meta.brand;
 // Plain-text version of the verified statement; never invent a tagline.
 const fallback = [profile.statement?.replaceAll('*', ''), profile.role].filter(Boolean).join(' ');
-const { title, description = fallback || SITE, noindex = false, type = 'website' } = Astro.props;
-// The home page carries a descriptive title; other pages are "Page · KUBROBE".
-const fullTitle = title ? `${title} · ${SITE}` : `${SITE} · Digital products and practical experiments`;
+const isHome = Astro.url.pathname === '/';
+const { title, description = (isHome ? meta.homeDescription : fallback) || SITE, noindex = false, type = 'website' } = Astro.props;
+// The home page carries the brand and the owner's name; other pages are "Page · KUBROBE".
+const fullTitle = title ? `${title} · ${SITE}` : meta.homeTitle;
 
 // Canonical, og:url and og:image use the configured site origin (https://www.kubrobe.uz by default).
 const site = Astro.site;
@@ -33,9 +35,9 @@ const image = hasDomain && site ? new URL('/og.png', site) : undefined;
 {image && !noindex && <meta property="og:image" content={image} />}
 {image && !noindex && <meta property="og:image:width" content="1200" />}
 {image && !noindex && <meta property="og:image:height" content="630" />}
-{image && !noindex && <meta property="og:image:alt" content="KUBROBE, set in large white letters on black." />}
+{image && !noindex && <meta property="og:image:alt" content={meta.ogImageAlt} />}
 <meta name="twitter:card" content={image && !noindex ? 'summary_large_image' : 'summary'} />
-{canonical && !noindex && Astro.url.pathname === '/' && (
+{canonical && !noindex && isHome && (
   <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: SITE, url: new URL('/', site).href, description })} />
 )}
 <meta name="twitter:title" content={fullTitle} />

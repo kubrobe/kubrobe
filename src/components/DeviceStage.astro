@@ -62,7 +62,7 @@ const n = shots.length;
   .kb-stage:has(.kb-stage-r:nth-of-type(5):checked) { --sel: 4; }
   .kb-stage:has(.kb-stage-r:nth-of-type(6):checked) { --sel: 5; }
 
-  .kb-stage-view { position: relative; overflow: clip; height: calc(var(--dw) * 2.222 + 56px); background: radial-gradient(60% 55% at 50% 38%, color-mix(in srgb, var(--kb-ink) 9%, var(--kb-raised)), var(--kb-raised) 72%); border: 1px solid var(--kb-rule); }
+  .kb-stage-view { position: relative; overflow: clip; height: calc(var(--dw) * 2.222 + 56px); background: var(--kb-raised); border: 1px solid var(--kb-rule); }
   .kb-dev {
     --o: calc(var(--j) - var(--sel));
     position: absolute; top: 28px; left: 50%; width: var(--dw); margin-left: calc(var(--dw) / -2); cursor: pointer;
@@ -80,7 +80,7 @@ const n = shots.length;
     .kb-stage:has(.kb-stage-r:nth-of-type(2):checked) .kb-dev[style*='--j:1'],
     .kb-stage:has(.kb-stage-r:nth-of-type(3):checked) .kb-dev[style*='--j:2'] { opacity: 1; }
   }
-  .kb-stage-r:focus-visible ~ .kb-stage-view { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
+  .kb-stage-r:focus-visible ~ .kb-stage-view { outline: 2px solid var(--kb-jade); outline-offset: 4px; }
 
   .kb-stage-meta { display: grid; gap: 16px; margin-top: 16px; }
   @media (min-width: 48rem) { .kb-stage-meta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--kb-gutter); } }
@@ -111,6 +111,6 @@ const n = shots.length;
   .kb-stage-r:nth-of-type(3):focus-visible ~ .kb-stage-meta .kb-stage-tab[style*='--j:2'],
   .kb-stage-r:nth-of-type(4):focus-visible ~ .kb-stage-meta .kb-stage-tab[style*='--j:3'],
   .kb-stage-r:nth-of-type(5):focus-visible ~ .kb-stage-meta .kb-stage-tab[style*='--j:4'],
-  .kb-stage-r:nth-of-type(6):focus-visible ~ .kb-stage-meta .kb-stage-tab[style*='--j:5'] { outline: 2px solid var(--kb-ink); outline-offset: -2px; }
+  .kb-stage-r:nth-of-type(6):focus-visible ~ .kb-stage-meta .kb-stage-tab[style*='--j:5'] { outline: 2px solid var(--kb-jade); outline-offset: -2px; }
   @media (prefers-reduced-motion: reduce) { .kb-dev, .kb-stage-d, .kb-stage-tab { transition: none; } }
 </style>

@@ -24,15 +24,6 @@
 
 /* ---------- Reduced-motion-safe base ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  body::after { animation: kb-grain 8s steps(8) infinite; }
-  @keyframes kb-grain {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(-3%, 2%); }
-    50% { transform: translate(2%, -3%); }
-    75% { transform: translate(-2%, -1%); }
-    100% { transform: translate(0, 0); }
-  }
-
   /* ---------- Scroll-linked reveals (no JavaScript) ---------- */
   @supports (animation-timeline: view()) {
     [data-reveal] { animation: kb-rise linear both; }
@@ -84,13 +75,11 @@
   html[data-intro] .kb-wm-l { animation: kb-wm-in 900ms var(--kb-ease-mask) both; animation-delay: calc(140ms + var(--d) * 70ms); }
   html[data-intro] .kb-in { animation: kb-hero-in 700ms var(--kb-ease-out) both; animation-delay: calc(var(--i) * 90ms + 200ms); }
   html[data-intro] .kb-header { animation: kb-hdr 600ms var(--kb-ease-out) 450ms both; }
-  html[data-intro] .kb-hero::before { animation: kb-spot 1600ms var(--kb-ease-out) 100ms both; }
   html[data-intro] .kb-hero .kb-draw-in::before { animation: kb-rule 900ms var(--kb-ease-mask) both; animation-delay: calc(var(--i, 0) * 90ms + 300ms); }
   html[data-intro] .kb-wd > span { animation: kb-wm-in 800ms var(--kb-ease-out) both; animation-delay: calc(780ms + var(--n) * 42ms); }
   @keyframes kb-wm-in { from { transform: translateY(105%); } to { transform: none; } }
   @keyframes kb-hero-in { from { opacity: 0; transform: translateY(14px); } }
   @keyframes kb-hdr { from { opacity: 0; transform: translateY(-10px); } }
-  @keyframes kb-spot { from { opacity: 0; } }
 
   /* ---------- Cross-document page transitions (no JavaScript) ---------- */
   @view-transition { navigation: auto; }
@@ -112,13 +101,8 @@
 }
 .kb-draw-in::before { background: var(--kb-rule-2); }
 
-/* A faint monochrome spotlight behind the hero. Static, fades in on first arrival. */
+/* The hero is a positioning context for its own layers. */
 .kb-hero { position: relative; isolation: isolate; }
-.kb-hero::before {
-  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(ellipse 70% 55% at 50% 58%, rgb(255 255 255 / 0.055), transparent 70%);
-}
-:root[data-theme='light'] .kb-hero::before { background: radial-gradient(ellipse 70% 55% at 50% 58%, rgb(0 0 0 / 0.04), transparent 70%); }
 
 /* Word-by-word statement: each word sits in its own mask. */
 .kb-wd { display: inline-block; overflow: clip; padding-block: 0.06em 0.14em; margin-block: -0.06em -0.14em; vertical-align: top; }

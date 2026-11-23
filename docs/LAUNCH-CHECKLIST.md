@@ -4,7 +4,7 @@ Nothing is deployed and nothing has been pushed. Order matters: decisions first,
 
 ## 1. Needs a decision or information from the owner
 
-- [ ] Public domain name. Set `SITE_URL` (or use Vercel's production URL, picked up automatically). Until then canonical and Open Graph URLs are omitted on purpose.
+- [x] Public domain name: `https://www.kubrobe.uz` is the built-in canonical origin. `SITE_URL` is an optional override only.
 - [ ] Contact email. Add to `src/data/profile.ts`; the Copy button and mailto appear automatically. Do not use a guessed address.
 - [ ] LinkedIn or other profile links (only ones you want public).
 - [ ] Certifications, each as Earned, In progress or Planned, with evidence. The section stays hidden until at least one exists.
@@ -21,7 +21,7 @@ Nothing is deployed and nothing has been pushed. Order matters: decisions first,
 
 - [ ] Create the GitHub repository for KUBROBE; push the local commits (restore from the saved bundle if needed: `git clone kubrobe.bundle kubrobe`).
 - [ ] Connect to Vercel (build `npm run build`, output `dist`, Node 22.23.4 or newer).
-- [ ] Set `SITE_URL` to the final domain in Vercel environment variables.
+- [x] `SITE_URL` is not needed in Vercel; leave it unset unless building for another origin.
 - [ ] Confirm `KB_SHOW_PLACEHOLDERS` is not set in production.
 
 ## 3. After the first deploy

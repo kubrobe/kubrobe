@@ -17,8 +17,10 @@ Contrast ratios are WCAG 2 against `bg` / `bg-2`. Every **text** token passes AA
 | `rule` | `#242424` | | `#D8D4CB` | | hairlines |
 | `rule-2` | `#3A3A3A` | | `#B9B4AA` | | emphasised hairlines, hover borders |
 
-**Accent is inversion.** An active or selected element swaps `ink` and `bg`. There are no hues, gradients or glows.
-The grain overlay is 3.5% in dark and off in light.
+| `jade` | `#63B393` | 8.4 | `#17694F` | 5.9 | the one accent: focus rings, active and selected details; never large fills |
+
+**Accent is inversion, plus a restrained jade.** An active or selected element swaps `ink` and `bg`; jade marks focus and
+small active details. There are no gradients, glows, noise or grain (removed in V3 Phase 0).
 
 ## 2. Typography
 
@@ -80,7 +82,7 @@ Full-width moments (wordmark, contact) ignore the rail.
 ## 6. Motion
 
 **Principle: things are filed, not flown in.** Motion moves along the grid, resolves from coarse to fine,
-or follows the pointer. Nothing loops except the very slow grain drift. Nothing hijacks scroll.
+or follows the pointer. Nothing loops. Nothing hijacks scroll.
 
 | Token | Value |
 | --- | --- |
@@ -100,7 +102,6 @@ or follows the pointer. Nothing loops except the very slow grain drift. Nothing 
 | Project hover preview: 1-bit pattern seeded by the entry ID, revealed by a clip-path mask | canvas, desktop only | ~1 KB | shown without the mask animation |
 | Page transitions | cross-document View Transitions (`@view-transition`) | 0 | off |
 | Interactive navigation: underline draws from the left; active item inverted on phones | CSS | 0 | instant |
-| Background movement: grain drifts in 8 s steps | CSS transform | 0 | off |
 
 **Why no GSAP yet.** GSAP plus ScrollTrigger is about 45 KB gzipped, which is almost the whole
 50 KB homepage budget. It would mostly be doing things that modern CSS now does without JavaScript

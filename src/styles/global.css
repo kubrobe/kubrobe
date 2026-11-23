@@ -17,7 +17,10 @@
   --kb-ink-3: #808080;    /* 5.1:1 (4.6:1 on raised) */
   --kb-rule: #242424;
   --kb-rule-2: #3a3a3a;
-  --kb-noise: 0.035;
+  /* Jade: the one accent. Focus, active and selected details only; never large fills. */
+  --kb-jade: #63b393;     /* 8.4:1 on surface */
+  --kb-jade-dim: rgb(99 179 147 / 0.14);
+  --kb-jade-line: rgb(99 179 147 / 0.45);
   color-scheme: dark;
 
   --kb-ease-out: cubic-bezier(0.2, 0.7, 0, 1);
@@ -45,7 +48,9 @@
   --kb-ink-3: #64625d;    /* 5.4:1 (4.8:1 on raised) */
   --kb-rule: #d8d4cb;
   --kb-rule-2: #b9b4aa;
-  --kb-noise: 0;
+  --kb-jade: #17694f;     /* 5.9:1 on surface */
+  --kb-jade-dim: rgb(23 105 79 / 0.1);
+  --kb-jade-line: rgb(23 105 79 / 0.4);
   color-scheme: light;
 }
 
@@ -57,6 +62,7 @@
   --color-ink-3: var(--kb-ink-3);
   --color-rule: var(--kb-rule);
   --color-rule-2: var(--kb-rule-2);
+  --color-jade: var(--kb-jade);
 
   --breakpoint-sm: 30rem;
   --breakpoint-md: 48rem;
@@ -106,7 +112,7 @@
     color: var(--kb-surface);
   }
   :focus-visible {
-    outline: 2px solid var(--kb-ink);
+    outline: 2px solid var(--kb-jade);
     outline-offset: 3px;
   }
   a {
@@ -238,8 +244,8 @@
     .kb-prose :where(.kb-diagram .d-tall) { display: block; }
   }
   .kb-prose :where(.kb-diagram figcaption) { font-family: var(--font-mono); font-size: var(--text-meta); color: var(--kb-ink-2); margin-top: 10px; }
-  .kb-prose :where(.kb-diagram:focus-visible) { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
-  .kb-gallery:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: 4px; }
+  .kb-prose :where(.kb-diagram:focus-visible) { outline: 2px solid var(--kb-jade); outline-offset: 4px; }
+  .kb-gallery:focus-visible { outline: 2px solid var(--kb-jade); outline-offset: 4px; }
 
   /* Shared button for small actions: square, mono, same easing everywhere. */
   .kb-btn {
@@ -282,15 +288,4 @@
     .kb-lightbox:popover-open::backdrop { background-color: rgb(0 0 0 / 0.8); }
     @starting-style { .kb-lightbox:popover-open::backdrop { background-color: rgb(0 0 0 / 0); } }
   }
-}
-
-/* Subtle grain in dark only. Pure CSS, no image request. */
-body::after {
-  content: '';
-  position: fixed;
-  pointer-events: none;
-  z-index: 100;
-  inset: -50%;
-  opacity: var(--kb-noise);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }

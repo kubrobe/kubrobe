@@ -27,10 +27,10 @@ If `SITE_URL` is missing, `https://www.kubrobe.uz` is used. The apex `kubrobe.uz
 
 1. Resolve the owner items in `FINAL-CHECKLIST.md` section A (at minimum: domain, and confirm the GitHub repositories linked on the site are public).
 2. Create an empty GitHub repository for KUBROBE (by the owner). Locally: `git remote add origin <url>` then `git push -u origin main`. The full history is preserved; the earlier bundle can restore it (`git clone kubrobe.bundle kubrobe`).
-3. In Vercel: Add New Project, import the repository. Framework preset Astro. Leave the command fields at their defaults (they come from `vercel.json`). Add `SITE_URL` for Production (and Preview if wanted). Deploy.
+3. In Vercel: Add New Project, import the repository. Framework preset Astro. Leave the command fields at their defaults (they come from `vercel.json`). Do not add `SITE_URL`: the canonical origin is built in. Deploy.
 4. Open the `*.vercel.app` URL and run the post-deploy checks below.
 5. Domain: Project Settings, Domains, add the domain. Follow Vercel's DNS instructions: an apex domain gets an A record to the address Vercel shows; `www` gets a CNAME to `cname.vercel-dns.com` (use the exact values the dashboard shows). Pick one canonical host and let Vercel redirect the other. Wait for the certificate.
-6. Set `SITE_URL` to the final domain and redeploy (canonical, sitemap and `og:*` bake in at build time).
+6. Canonical, sitemap and `og:*` bake in at build time from `https://www.kubrobe.uz`. Set `SITE_URL` only to build for a different origin, then redeploy.
 7. Submit `https://your-domain/sitemap-index.xml` in Google Search Console (and Bing if wanted).
 
 ## Post-deploy checks

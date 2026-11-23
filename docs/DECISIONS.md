@@ -42,3 +42,8 @@ Short records of choices that are not obvious from the code. Newest last.
 | 38 | Video chapters are an optional config list rendered as seek buttons; labels are the video's own chapter titles | Start times verified against the file (seek tested to within 0.4 s). |
 | 36 | Test video URLs are honoured only in the design-review build | A stray variable can never publish media. |
 | 37 | Hero statistics reduced in scale | The project name leads. |
+| 39 | V3 Phase 0: film grain, hero spotlight and the radial gradients in `DeviceStage` and the video poster removed | V3 brief: no decorative noise, gradients or endless loops. Solid-colour `linear-gradient` fills used to animate underlines and row fills stay: they draw a flat colour, not a gradient. |
+| 40 | Jade accent tokens (`--kb-jade`, `-dim`, `-line`; Tailwind `jade`) ported from PR #1 without its modal or loading styles; focus rings use jade | Keeps the approved accent while PR #1 stays unmerged. |
+| 41 | Favicon, touch icon and social image are generated from the Geist wordmark (`scripts/brand/`) and share one palette | The previous set was inconsistent (ring SVG, broken 180 px touch icon). Typography only. |
+| 42 | Home title "KUBROBE · Najmiddin Kurganov"; home description is the approved supporting introduction, verbatim (`src/data/site.ts`) | V3 positioning; name publication approved 2026-11-23. Supersedes 26. |
+| 43 | `theme-color` follows the real surfaces (`#080808` / `#F3F1EC`) and is set before first paint for a stored light theme | The old values did not match the page. |

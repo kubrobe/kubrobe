@@ -1,7 +1,8 @@
 /**
  * Central media configuration.
  *
- * To add the SkillSwap hackathon video, set `url` below. That is the only field you need.
+ * To add the SkillSwap hackathon video, set `videos.skillswap.url` below. That is the only field you need;
+ * the section appears on the live site as soon as it is set and not before.
  *
  *   url: 'https://www.youtube.com/watch?v=VIDEO_ID'   (YouTube, unlisted is fine)
  *   url: 'https://vimeo.com/123456789'                (Vimeo)
@@ -15,12 +16,14 @@ export interface VideoConfig {
   url: string | undefined;
   title: string;
   description: string;
-  /** Shown on the poster. Measured from the supplied file: 5:56. */
+  /** Shown on the poster, as m:ss. */
   duration: string;
   /** One sentence of context under the player. */
   caption: string;
-  /** Optional chapter list: start time in seconds and a label. Rendered as seek buttons under the player. */
-  chapters?: { t: number; label: string }[] | undefined;
+  /** Optional chapters: start time in seconds, the video's own label, optional one-line description. Rendered as seek buttons. */
+  chapters?: { t: number; label: string; note?: string }[] | undefined;
+  /** Optional transcript, one paragraph per item. Rendered in a collapsible block under the player. */
+  transcript?: string[] | undefined;
   /** Optional local poster image in public/media/ (a real frame from the video). */
   poster?: string | undefined;
   /** Optional local WebVTT captions in public/media/ (MP4 only). */
@@ -29,22 +32,16 @@ export interface VideoConfig {
 
 export const videos: Record<string, VideoConfig> = {
   skillswap: {
-    url: undefined,
+    url: undefined, // <- put the YouTube (unlisted) URL here when it exists
     title: 'SkillSwap: from idea to presentation',
-    description: 'The presentation made for the hackathon: from the idea of a time bank, through booking and teaching, to the architecture behind it.',
-    duration: '5:56',
-    caption: 'A narrated walkthrough with on-screen captions. It uses the demo characters, some visuals are marked illustrative, and the closing chapter is a proposal for a campus pilot, not an existing deployment.',
-    // Times are approximate (within a couple of seconds); labels are the video's own chapter titles.
-    chapters: [
-      { t: 0, label: 'Students have skills worth sharing' },
-      { t: 30, label: 'The time-bank economy' },
-      { t: 65, label: 'Discovering skills and booking lessons' },
-      { t: 131, label: 'Becoming a teacher' },
-      { t: 164, label: 'Lesson verification and credits' },
-      { t: 213, label: 'Why credits connect different students' },
-      { t: 237, label: 'Inside SkillSwap' },
-      { t: 308, label: 'Campus pilot proposal' },
-    ],
+    description: 'The presentation made for the hackathon, from the idea behind SkillSwap to how it works.',
+    duration: '3:58', // the owner's final cut
+    // Neutral on purpose: replace with a sentence written from the final video once it has been reviewed.
+    caption: 'The hackathon presentation for SkillSwap.',
+    // Not set yet: chapters, poster and transcript are written from the final 3:58 file, never copied from another cut.
+    chapters: undefined,
+    poster: undefined,
+    transcript: undefined,
   },
 };
 

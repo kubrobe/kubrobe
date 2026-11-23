@@ -53,9 +53,8 @@ Status as of Stage G. ✓ = done and checked here. ☐ = open.
 ## F. Stage H: video and media (owner)
 
 - ☐ Set `videos.skillswap.url` in `src/data/media.ts` (YouTube unlisted, Vimeo, or `/media/<file>.mp4`). Until then the section stays hidden.
-- ☐ Confirm which cut is final: the Google Photos file is 5:56; your earlier screenshot showed a 3:58 version.
-- ☐ Confirm the caption and chapter labels in `src/data/media.ts`; chapter times are approximate (within about 2 s).
-- ☐ The closing chapter proposes a campus pilot ("not an existing partnership"); decide that you want it on the public page.
-- ☐ Optional: poster frame and WebVTT captions in `public/media/`.
+- ☐ Provide the final 3:58 file in a readable form (in the project folder, or a Google Photos link that resolves to it). Chapters, poster (cleanest tagline frame), caption and transcript are written from it; duration 3:58 is already set.
+- ☐ If the 3:58 video has a campus-pilot chapter, it is labelled as a proposal; confirm you want it public.
+- ☐ Optional: WebVTT captions in `public/media/`.
 - ☐ After deploy: press play on the real video in Chrome, Firefox and Safari (iOS too); confirm no provider request before play.
 - ☐ Decide whether the two unused SkillSwap screens should be added.

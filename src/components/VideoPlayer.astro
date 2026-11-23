@@ -1,0 +1,88 @@
+---
+import { getVideo } from '@/data/media';
+import { showPlaceholders } from '@/data/profile';
+interface Props { video: string; id?: string; label?: string; number?: string }
+const { video, id = 'video', label = 'From idea to presentation' } = Astro.props;
+const v = getVideo(video);
+const src = v?.source;
+// Real media: render. No media: hidden on the live site; a marked stand-in only in dev and design-review builds.
+const preview = !src && Boolean(v) && (import.meta.env.DEV || showPlaceholders);
+const link = src ? (src.kind === 'mp4' ? src.src : src.watch) : '#';
+const kind = src?.kind;
+---
+{v && (src || preview) && (
+  <section class="kb-wrap pb-12 lg:pb-20" aria-labelledby={`${id}-h`}>
+    <div class="kb-grid"><div class="kb-main">
+      <div class="mb-4 flex items-baseline justify-between gap-4">
+        <h2 id={`${id}-h`} class="kb-label">{label}</h2>
+        <p class="kb-meta text-ink-3">{v.cfg.duration}{src?.kind === 'youtube' || src?.kind === 'vimeo' ? ` · opens ${src.kind === 'youtube' ? 'YouTube' : 'Vimeo'} on play` : ''}</p>
+      </div>
+      <div class="grid gap-6 lg:grid-cols-12 lg:gap-x-[var(--kb-gutter)]">
+        <div class="lg:col-span-4">
+          <p class="text-h3 font-medium leading-tight tracking-[-0.025em]">{v.cfg.title}</p>
+          <p class="mt-3 max-w-[40ch] text-ink-2">{v.cfg.description}</p>
+        </div>
+        <figure class="lg:col-span-8" data-reveal="clip">
+          {src ? (
+            <div class="kb-vp" data-vp data-kind={kind} data-id={src.kind === 'mp4' ? undefined : src.id} data-src={src.kind === 'mp4' ? src.src : undefined} data-title={v.cfg.title} data-captions={v.cfg.captions} data-poster={v.cfg.poster}>
+              <a href={link} class="kb-vp-face" aria-label={`Play video: ${v.cfg.title}, ${v.cfg.duration}`} rel="noopener" style={v.cfg.poster ? `background-image:url(${v.cfg.poster})` : undefined}>
+                <span class="kb-vp-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+                <span class="kb-vp-label kb-meta" aria-hidden="true">Play · {v.cfg.duration}</span>
+              </a>
+            </div>
+          ) : (
+            <div class="kb-vp kb-vp-stub">
+              <span class="kb-ph-tag">Not configured</span>
+              <p class="kb-meta mt-3 max-w-[44ch] text-center text-ink-2">No video URL is set, so this section is hidden on the live site. Add the URL to <code>src/data/media.ts</code> (field <code>url</code>).</p>
+            </div>
+          )}
+          <figcaption class="kb-meta mt-3 max-w-[60ch] text-ink-3">{v.cfg.caption}</figcaption>
+        </figure>
+      </div>
+    </div></div>
+  </section>
+)}
+<script>
+  // Nothing from a video provider loads until the visitor asks for it. No autoplay on arrival.
+  document.querySelectorAll<HTMLElement>('[data-vp]').forEach((box) => {
+    const face = box.querySelector<HTMLAnchorElement>('.kb-vp-face');
+    face?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const { kind, id, src, title = 'Video', captions, poster } = box.dataset;
+      let el: HTMLElement;
+      if (kind === 'mp4' && src) {
+        const v = document.createElement('video');
+        v.src = src; v.controls = true; v.playsInline = true; v.preload = 'metadata'; if (poster) v.poster = poster;
+        v.setAttribute('aria-label', title);
+        if (captions) { const t = document.createElement('track'); t.kind = 'captions'; t.src = captions; t.srclang = 'en'; t.label = 'English'; t.default = true; v.append(t); }
+        el = v; v.addEventListener('canplay', () => { void v.play().catch(() => {}); }, { once: true });
+      } else {
+        const f = document.createElement('iframe');
+        f.src = kind === 'vimeo'
+          ? `https://player.vimeo.com/video/${id}?autoplay=1&dnt=1`
+          : `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+        f.title = title; f.allow = 'autoplay; fullscreen; picture-in-picture'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
+        el = f;
+      }
+      el.className = 'kb-vp-media';
+      face.replaceWith(el);
+      el.focus();
+    });
+  });
+</script>
+<style is:global>
+  .kb-vp { position: relative; aspect-ratio: 16 / 9; width: 100%; background: #000; border: 1px solid var(--kb-rule-2); overflow: hidden; }
+  .kb-vp-media { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
+  .kb-vp-face {
+    position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; text-decoration: none; color: #f2f1ee;
+    background: radial-gradient(120% 90% at 50% 40%, #1b1b1b, #0a0a0a) center / cover no-repeat;
+  }
+  .kb-vp-play { display: grid; place-items: center; width: 72px; height: 72px; border: 1px solid rgb(255 255 255 / .5); border-radius: 50%; transition: transform var(--kb-dur-ui) var(--kb-ease-out), background-color var(--kb-dur-micro) var(--kb-ease-out), color var(--kb-dur-micro) var(--kb-ease-out); }
+  .kb-vp-play svg { margin-left: 3px; }
+  .kb-vp-label { color: #cfcdc8; }
+  @media (hover: hover) { .kb-vp-face:hover .kb-vp-play { background: #f2f1ee; color: #0a0a0a; transform: scale(1.06); } }
+  .kb-vp-face:focus-visible { outline: 2px solid #f2f1ee; outline-offset: -6px; }
+  .kb-vp-face:focus-visible .kb-vp-play { background: #f2f1ee; color: #0a0a0a; }
+  .kb-vp-stub { display: grid; place-content: center; justify-items: center; background: transparent; border-style: dashed; padding: 16px; }
+  @media (prefers-reduced-motion: reduce) { .kb-vp-play { transition: none; } }
+</style>

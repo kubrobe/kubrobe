@@ -6,6 +6,8 @@ import PageHead from '@/components/PageHead.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
 import Gallery from '@/components/Gallery.astro';
 import DeviceStage from '@/components/DeviceStage.astro';
+import Exhibit from '@/components/Exhibit.astro';
+import VideoPlayer from '@/components/VideoPlayer.astro';
 import { getWork, workTypeLabel, code } from '@/lib/entries';
 
 export const getStaticPaths = (async () => (await getWork()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
@@ -20,15 +22,22 @@ const spec = [
   ['Entry', code(d.number)],
   ['Type', workTypeLabel[d.type]],
   ['Year', String(d.year)],
-  ['Role', d.role],
-  ['Timeline', d.timeline],
-  ['Stack', d.stack.join(', ') || undefined],
 ].filter((r): r is [string, string] => Boolean(r[1]));
 ---
 <Base title={d.title} description={d.summary} type="article">
   <PageHead number={d.number} label={workTypeLabel[d.type]} title={d.title} lede={d.summary} vtName={`kb-t-${d.number}`} crumb={{ href: '/work/', label: `Work · ${String(at + 1).padStart(2, '0')} / ${String(work.length).padStart(2, '0')}` }}>
     {d.placeholder && <span class="kb-ph-tag mt-4 inline-block">Placeholder</span>}
   </PageHead>
+  <section class="kb-wrap pb-8 lg:pb-10" aria-label="Project summary">
+    <div class="kb-grid"><div class="kb-main">
+      <dl class="kb-meta grid gap-x-8 gap-y-2 border-t border-rule pt-4 sm:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto_1fr]">
+        <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
+        {d.timeline && <><dt class="text-ink-3">Timeline</dt><dd class="text-ink-2">{d.timeline}</dd></>}
+        {d.role && <><dt class="text-ink-3">Role</dt><dd class="text-ink-2 lg:col-span-3">{d.role}</dd></>}
+        {d.stack.length > 0 && <><dt class="text-ink-3">Stack</dt><dd class="text-ink-2 lg:col-span-3">{d.stack.join(' · ')}</dd></>}
+      </dl>
+    </div></div>
+  </section>
   {d.facts.length > 0 && (
     <section class="kb-wrap pb-10 lg:pb-14" aria-label="At a glance">
       <div class="kb-grid"><div class="kb-main">
@@ -36,7 +45,7 @@ const spec = [
           {d.facts.map((f) => (
             <div class="kb-fact grid content-start border-b border-rule py-4 pr-4">
               <dt class="kb-meta order-2 mt-2 text-ink-2">{f.label}</dt>
-              <dd class="order-1 text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-none font-[560] tracking-[-0.04em]">{f.value}</dd>
+              <dd class="order-1 text-[clamp(1.5rem,1.2rem+1vw,2.125rem)] leading-none font-[560] tracking-[-0.03em]">{f.value}</dd>
               {f.note && <dd class="kb-meta order-3 mt-1 text-ink-3">{f.note}</dd>}
             </div>
           ))}
@@ -46,9 +55,10 @@ const spec = [
   )}
   {d.gallery.length > 0 && (
     <div class="kb-wrap pb-12 lg:pb-20">
-      <div class="kb-grid"><div class="kb-main">{d.presentation === 'devices' ? <DeviceStage id="screens" shots={d.gallery} source={d.gallerySource} /> : <Gallery id="screens" shots={d.gallery} source={d.gallerySource} />}</div></div>
+      <div class="kb-grid"><div class="kb-main">{d.presentation === 'devices' ? <DeviceStage id="screens" shots={d.gallery} source={d.gallerySource} /> : d.presentation === 'exhibit' ? <Exhibit id="screens" shots={d.gallery} source={d.gallerySource} /> : <Gallery id="screens" shots={d.gallery} source={d.gallerySource} />}</div></div>
     </div>
   )}
+  {d.video && <VideoPlayer video={d.video} />}
   <div class="kb-wrap pb-20">
     <div class="kb-grid">
       <aside class="kb-rail kb-meta" aria-label="Spec sheet">

@@ -6,6 +6,8 @@ type: case-study
 year: 2026
 status: in-progress
 featured: true
+presentation: exhibit
+video: skillswap
 order: 1
 role: Android app and website front end, in a team of three
 timeline: 7–17 Nov 2026 (commit history)
@@ -29,21 +31,27 @@ gallery:
   - src: ../../assets/work/skillswap/web-home.jpg
     alt: SkillSwap website on a phone, home screen with time-bank credits, open swaps and two-way matches.
     caption: Web · Home
+    group: Website
   - src: ../../assets/work/skillswap/web-lessons.jpg
     alt: SkillSwap website lessons page listing a lesson with weekly free times and a book button that costs one credit.
     caption: Web · Lessons
+    group: Website
   - src: ../../assets/work/skillswap/android-browse.jpg
     alt: SkillSwap Android app browse screen with search, a live activity ticker, swipe to swap and perfect matches.
     caption: Android · Browse
+    group: Android app
   - src: ../../assets/work/skillswap/android-lessons.jpg
     alt: SkillSwap Android app My lessons screen with upcoming lessons, check-in, video, calendar and AI plan buttons.
     caption: Android · My lessons
+    group: Android app
   - src: ../../assets/work/skillswap/web-swaps.jpg
     alt: SkillSwap website swap page with status history and a review.
     caption: Web · Swaps
+    group: Website
   - src: ../../assets/work/skillswap/android-teach.jpg
     alt: SkillSwap Android app screen for publishing a skill to teach.
     caption: Android · Teach
+    group: Android app
 gallerySource: Screenshots from the project repositories. Every person and record shown is demo data.
 facts:
   - value: "27"
@@ -236,7 +244,7 @@ Each line says what was checked, and how. "Tested" means I ran the website's own
 
 All accounts and records in the demo are fictional. There are no real users.
 
-## Next
+## Future direction
 
 1. Rate-limit login and registration, then add email verification and password reset.
 2. Replace the full-snapshot sync with incremental changes, so the app moves less data as the community grows.

@@ -1,0 +1,135 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Lightbox from '@/components/Lightbox.astro';
+import { pad } from '@/lib/entries';
+
+interface Shot { src: ImageMetadata; alt: string; caption?: string | undefined; group?: string | undefined }
+interface Props { shots: Shot[]; source?: string | undefined; id: string }
+const { shots, source, id } = Astro.props;
+const n = shots.length;
+// Groups come only from the screenshots' own `group` field, in first-seen order.
+const groups: { name: string; items: number[] }[] = [];
+shots.forEach((s, i) => {
+  const name = s.group ?? 'Screens';
+  const g = groups.find((x) => x.name === name);
+  if (g) g.items.push(i); else groups.push({ name, items: [i] });
+});
+---
+<!--
+  An exhibition of real product screens: one large screen at a time, an index of thumbnails grouped as the
+  content groups them, caption beside it, enlarge in a native popover viewer.
+  Selection is a radio group, so it works without JavaScript (arrow keys move between screens).
+  Script adds previous/next buttons and swipe on the stage.
+-->
+<section class="kb-ex" aria-labelledby={`${id}-h`} data-exhibit>
+  <div class="mb-4 flex items-baseline justify-between gap-4">
+    <h2 id={`${id}-h`} class="kb-label">Screens</h2>
+    <p class="kb-meta text-ink-3">{pad(n)} screens · {groups.length > 1 ? `${groups.map((g) => g.name.toLowerCase()).join(' and ')}` : 'real captures'}</p>
+  </div>
+  {shots.map((g, i) => <input type="radio" name={`${id}-sel`} id={`${id}-r${i}`} class="kb-ex-r sr-only" checked={i === 0} aria-label={`${g.group ? g.group + ': ' : ''}${g.caption ?? `Screen ${i + 1}`}`} />)}
+
+  <div class="kb-ex-grid">
+    <div class="kb-ex-stage kb-frame" data-reveal="clip" data-stage>
+      {shots.map((g, i) => (
+        <figure class="kb-ex-p" data-i={i}>
+          <Image src={g.src} alt={g.alt} widths={[450, 900]} sizes="(min-width: 60rem) 320px, 72vw" loading={i === 0 ? 'eager' : 'lazy'} class="kb-ex-img" />
+        </figure>
+      ))}
+      <div class="kb-ex-step" data-ex-steps hidden>
+        <button type="button" class="kb-btn" data-ex="-1" aria-label="Previous screen">←</button>
+        <button type="button" class="kb-btn" data-ex="1" aria-label="Next screen">→</button>
+      </div>
+    </div>
+
+    <div class="kb-ex-side">
+      <div class="kb-ex-caps">
+        {shots.map((g, i) => (
+          <div class="kb-ex-c" data-i={i}>
+            <p class="kb-meta text-ink-2"><span class="text-ink">{pad(i + 1)} / {pad(n)}</span>{g.group && <> · {g.group}</>}</p>
+            <p class="mt-2 text-h3 font-medium leading-tight tracking-[-0.025em]">{g.caption?.replace(/^[^·]*·\s*/, '') ?? `Screen ${i + 1}`}</p>
+            <p class="mt-3 max-w-[40ch] text-ink-2" aria-hidden="true">{g.alt}</p>
+            <button type="button" class="kb-btn mt-4" popovertarget={`${id}-p${i}`}>Enlarge</button>
+          </div>
+        ))}
+      </div>
+      <div class="kb-ex-index">
+        {groups.map((gr) => (
+          <div>
+            {groups.length > 1 && <p class="kb-label mb-2">{gr.name}</p>}
+            <ul class="kb-ex-thumbs" role="list">
+              {gr.items.map((i) => (
+                <li>
+                  <label for={`${id}-r${i}`} class="kb-ex-t" data-i={i} title={shots[i]?.caption}>
+                    <Image src={shots[i]!.src} alt="" widths={[72, 144]} sizes="72px" loading="lazy" class="block h-full w-full object-cover object-top" />
+                    <span class="sr-only">{shots[i]?.caption}</span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+  {source && <p class="kb-meta mt-4 text-ink-3">{source}</p>}
+  {shots.map((g, i) => (
+    <Lightbox id={`${id}-p${i}`} shot={g} index={i} total={n} prevId={`${id}-p${(i + n - 1) % n}`} nextId={`${id}-p${(i + 1) % n}`} />
+  ))}
+</section>
+<script>
+  // Previous/next buttons and swipe on the stage; they just move the radio selection.
+  document.querySelectorAll<HTMLElement>('[data-exhibit]').forEach((root) => {
+    const radios = [...root.querySelectorAll<HTMLInputElement>(':scope > .kb-ex-r')];
+    const go = (d: number) => {
+      const at = radios.findIndex((r) => r.checked);
+      const next = radios[(at + d + radios.length) % radios.length];
+      if (next) { next.checked = true; next.dispatchEvent(new Event('change', { bubbles: true })); }
+    };
+    root.querySelector<HTMLElement>('[data-ex-steps]')?.removeAttribute('hidden');
+    root.querySelectorAll<HTMLButtonElement>('[data-ex]').forEach((b) => b.addEventListener('click', () => go(Number(b.dataset['ex']))));
+    const stage = root.querySelector<HTMLElement>('[data-stage]');
+    let x0: number | null = null;
+    stage?.addEventListener('touchstart', (e) => { x0 = e.touches[0]?.clientX ?? null; }, { passive: true });
+    stage?.addEventListener('touchend', (e) => {
+      const x1 = e.changedTouches[0]?.clientX;
+      if (x0 !== null && x1 !== undefined && Math.abs(x1 - x0) > 48) go(x1 < x0 ? 1 : -1);
+      x0 = null;
+    }, { passive: true });
+  });
+</script>
+<style is:global>
+  .kb-ex-grid { display: grid; gap: 20px; }
+  .kb-ex-stage { position: relative; display: grid; place-items: center; background: var(--kb-raised); min-height: 420px; padding: 28px 16px 64px; }
+  .kb-ex-p { display: none; margin: 0; }
+  .kb-ex-img { display: block; height: auto; width: auto; max-width: min(72vw, 300px); max-height: min(66vh, 560px); border: 1px solid var(--kb-rule-2); border-radius: 14px; box-shadow: 0 24px 60px -30px rgb(0 0 0 / .55); }
+  .kb-ex-step { position: absolute; inset: auto 12px 12px 12px; display: flex; justify-content: space-between; pointer-events: none; }
+  .kb-ex-step .kb-btn { pointer-events: auto; background: var(--kb-surface); }
+  .kb-ex-c { display: none; }
+  .kb-ex-index { display: grid; gap: 16px; margin-top: 24px; }
+  .kb-ex-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .kb-ex-t { display: block; position: relative; width: 56px; height: 88px; min-width: 44px; overflow: hidden; border: 1px solid var(--kb-rule-2); cursor: pointer; opacity: .55; transition: opacity var(--kb-dur-micro) var(--kb-ease-out), border-color var(--kb-dur-micro) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-ex-t:hover { opacity: 1; } }
+  @media (min-width: 60rem) {
+    .kb-ex-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--kb-gutter); align-items: stretch; }
+    .kb-ex-stage { min-height: 620px; }
+    .kb-ex-side { display: flex; flex-direction: column; justify-content: space-between; }
+    .kb-ex-index { margin-top: 32px; }
+    .kb-ex-t { width: 64px; height: 100px; }
+  }
+  /* Selection state: the visible screen, caption and thumbnail follow the checked radio. */
+  @keyframes kb-ex-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .kb-ex-r:nth-of-type(1):checked ~ .kb-ex-grid [data-i='0'].kb-ex-p, .kb-ex-r:nth-of-type(1):checked ~ .kb-ex-grid [data-i='0'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(2):checked ~ .kb-ex-grid [data-i='1'].kb-ex-p, .kb-ex-r:nth-of-type(2):checked ~ .kb-ex-grid [data-i='1'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(3):checked ~ .kb-ex-grid [data-i='2'].kb-ex-p, .kb-ex-r:nth-of-type(3):checked ~ .kb-ex-grid [data-i='2'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(4):checked ~ .kb-ex-grid [data-i='3'].kb-ex-p, .kb-ex-r:nth-of-type(4):checked ~ .kb-ex-grid [data-i='3'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(5):checked ~ .kb-ex-grid [data-i='4'].kb-ex-p, .kb-ex-r:nth-of-type(5):checked ~ .kb-ex-grid [data-i='4'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(6):checked ~ .kb-ex-grid [data-i='5'].kb-ex-p, .kb-ex-r:nth-of-type(6):checked ~ .kb-ex-grid [data-i='5'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(7):checked ~ .kb-ex-grid [data-i='6'].kb-ex-p, .kb-ex-r:nth-of-type(7):checked ~ .kb-ex-grid [data-i='6'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(8):checked ~ .kb-ex-grid [data-i='7'].kb-ex-p, .kb-ex-r:nth-of-type(8):checked ~ .kb-ex-grid [data-i='7'].kb-ex-c { display: block; }
+  .kb-ex-r:nth-of-type(1):checked ~ .kb-ex-grid .kb-ex-t[data-i='0'], .kb-ex-r:nth-of-type(2):checked ~ .kb-ex-grid .kb-ex-t[data-i='1'], .kb-ex-r:nth-of-type(3):checked ~ .kb-ex-grid .kb-ex-t[data-i='2'], .kb-ex-r:nth-of-type(4):checked ~ .kb-ex-grid .kb-ex-t[data-i='3'], .kb-ex-r:nth-of-type(5):checked ~ .kb-ex-grid .kb-ex-t[data-i='4'], .kb-ex-r:nth-of-type(6):checked ~ .kb-ex-grid .kb-ex-t[data-i='5'], .kb-ex-r:nth-of-type(7):checked ~ .kb-ex-grid .kb-ex-t[data-i='6'], .kb-ex-r:nth-of-type(8):checked ~ .kb-ex-grid .kb-ex-t[data-i='7'] { opacity: 1; border-color: var(--kb-ink); }
+  .kb-ex-r:nth-of-type(1):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='0'], .kb-ex-r:nth-of-type(2):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='1'], .kb-ex-r:nth-of-type(3):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='2'], .kb-ex-r:nth-of-type(4):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='3'], .kb-ex-r:nth-of-type(5):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='4'], .kb-ex-r:nth-of-type(6):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='5'], .kb-ex-r:nth-of-type(7):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='6'], .kb-ex-r:nth-of-type(8):focus-visible ~ .kb-ex-grid .kb-ex-t[data-i='7'] { outline: 2px solid var(--kb-ink); outline-offset: 3px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .kb-ex-p, .kb-ex-c { animation: kb-ex-in var(--kb-dur-ui) var(--kb-ease-out) both; }
+  }
+</style>

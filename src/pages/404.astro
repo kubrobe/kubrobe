@@ -1,9 +1,29 @@
 ---
 import Base from '@/layouts/Base.astro';
 import PageHead from '@/components/PageHead.astro';
+import Horangi from '@/components/Horangi.astro';
 ---
 <Base title="Not found" description="This address is not in the KUBROBE index." noindex>
-  <PageHead number={404} label="Missing" title="No such *entry*" lede="This address is not in the index.">
-    <a href="/" class="kb-meta kb-link mt-8 inline-flex min-h-11 items-center text-ink-2 hover:text-ink">← Back to the index</a>
+  <PageHead number={404} label="Missing" title="No such *entry*" lede="This address is not in the index. Horangi looked everywhere and fell asleep.">
+    <div class="kb-404 hr-host mt-10 flex items-end gap-6">
+      <span class="kb-404-tiger"><Horangi size="100%" mood="sleep" label="Horangi, asleep" /></span>
+      <span class="kb-404-z kb-meta text-jade" aria-hidden="true"><span>z</span><span>z</span><span>z</span></span>
+    </div>
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href="/" class="kb-btn kb-btn--solid min-h-12">← Back to the index</a>
+      <a href="/work/" class="kb-btn min-h-12">See the work</a>
+    </div>
   </PageHead>
 </Base>
+<style>
+  .kb-404-tiger { display: block; flex: none; width: clamp(96px, 22vw, 200px); }
+  .kb-404-tiger :global(svg) { width: 100%; height: auto; }
+  .kb-404-z { display: flex; gap: 2px; padding-bottom: 1.5rem; font-size: 1rem; }
+  .kb-404-z span { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .kb-404-z span { animation: kb-z 2.8s var(--kb-ease-out) infinite both; }
+    .kb-404-z span:nth-child(2) { animation-delay: 0.45s; font-size: 1.2em; }
+    .kb-404-z span:nth-child(3) { animation-delay: 0.9s; font-size: 1.45em; }
+  }
+  @keyframes kb-z { 0% { opacity: 0; transform: translate(0, 6px); } 30% { opacity: 1; } 80%, 100% { opacity: 0; transform: translate(6px, -18px); } }
+</style>

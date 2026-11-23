@@ -4,6 +4,7 @@ import Seo from '@/components/Seo.astro';
 import IndexBar from '@/components/IndexBar.astro';
 import MobileBar from '@/components/MobileBar.astro';
 import Footer from '@/components/Footer.astro';
+import DetailModals from '@/components/details/DetailModals.astro';
 import { getNav } from '@/lib/nav';
 import { showPlaceholders } from '@/data/profile';
 import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
@@ -26,6 +27,7 @@ const nav = await getNav();
     <meta name="theme-color" content="#0b0b0c" />
     <meta name="color-scheme" content="dark light" />
     <script is:inline>
+      document.documentElement.classList.add('js');
       try { var t = localStorage.getItem('kb-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
       /* The home-page entrance plays on a fresh arrival (direct, reload, external link), not when moving around inside the site. */
       try { if (location.pathname === '/' && !(document.referrer && new URL(document.referrer).origin === location.origin)) document.documentElement.dataset.intro = ''; } catch (e) {}
@@ -50,6 +52,7 @@ const nav = await getNav();
     </main>
     <Footer />
     <MobileBar nav={nav} />
+    <DetailModals />
   </body>
 </html>
 <style is:global>

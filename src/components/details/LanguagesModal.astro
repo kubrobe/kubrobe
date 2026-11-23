@@ -1,0 +1,71 @@
+---
+import Modal from '@/components/modal/Modal.astro';
+import { languages, languagesIntro, relationLabel, abilityOrder } from '@/data/languages';
+const cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);
+---
+<Modal id="m-languages" title={languagesIntro.title} eyebrow="KB—510 · Languages" lede={languagesIntro.lede}>
+  <p data-m style="--i:1" class="mb-8 max-w-[60ch]">{languagesIntro.summary}</p>
+  {languages.length > 0 ? (
+    <ul class="kb-m-grid" data-cols="2">
+      {languages.map((l, i) => (
+        <li class="kb-m-cell grid content-start gap-4" data-m style={`--i:${i + 2}`}>
+          <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+            <h3 class="text-h3 leading-none font-[560] tracking-[-0.03em]">
+              {l.name}{l.nativeName && <span class="kb-em ml-2 text-ink-2" lang="">{l.nativeName}</span>}
+            </h3>
+            <span class="kb-m-tag" data-tone={l.relation === 'studying' ? 'jade' : undefined}>{relationLabel[l.relation]}</span>
+          </div>
+          {l.placeholder && <span class="kb-ph-tag w-fit">Placeholder</span>}
+          {l.proficiency && <p class="kb-meta text-ink-2">Overall · <span class="text-ink">{l.proficiency}</span></p>}
+          {l.abilities && (
+            <div>
+              <h4 class="kb-m-h">Skill breakdown</h4>
+              <dl class="grid gap-3">
+                {abilityOrder.filter((a) => l.abilities?.[a]).map((a) => {
+                  const v = l.abilities![a]!;
+                  const bar = v.value !== undefined && l.scale;
+                  return (
+                    <div class="grid gap-1.5">
+                      <div class="flex items-baseline justify-between gap-3">
+                        <dt class="kb-meta text-ink-3">{cap(a)}</dt>
+                        <dd class="text-right text-sm">{v.level}</dd>
+                      </div>
+                      {bar && <div class="kb-bar" role="img" aria-label={`${cap(a)}: ${v.value} on the scale ${l.scale}`}><span style={`width:${Math.max(0, Math.min(100, v.value!))}%`} /></div>}
+                      {v.note && <dd class="kb-meta text-ink-3">{v.note}</dd>}
+                    </div>
+                  );
+                })}
+              </dl>
+              {l.scale && <p class="kb-meta mt-2 text-ink-3">Scale: {l.scale}</p>}
+            </div>
+          )}
+          {l.certificates && l.certificates.length > 0 && (
+            <div><h4 class="kb-m-h">Certificates</h4>
+              <ul class="flex flex-wrap gap-2">{l.certificates.map((c) => (
+                <li>{c.url
+                  ? <a class="kb-m-tag" data-tone="jade" href={c.url} rel="noopener">{c.name}{c.date && <> · {c.date}</>} ↗</a>
+                  : <span class="kb-m-tag" data-tone="jade">{c.name}{c.issuer && <> · {c.issuer}</>}{c.date && <> · {c.date}</>}</span>}</li>
+              ))}</ul>
+            </div>
+          )}
+          {l.history && l.history.length > 0 && (<div><h4 class="kb-m-h">Learning history</h4><ol class="kb-m-list text-sm text-ink-2">{l.history.map((h) => <li>{h}</li>)}</ol></div>)}
+          {l.goals && l.goals.length > 0 && (<div><h4 class="kb-m-h">Current goals</h4><ul class="kb-m-list text-sm">{l.goals.map((g) => <li>{g}</li>)}</ul></div>)}
+          {l.notes && <p class="text-sm text-ink-2">{l.notes}</p>}
+          {l.relatedProject && <a href={`#m-project-${l.relatedProject}`} data-modal-open={`m-project-${l.relatedProject}`} class="kb-m-link kb-meta w-fit">Related project →</a>}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <div class="kb-m-empty grid gap-3" data-m style="--i:2">
+      <p class="text-ink">Individual language profiles are on their way.</p>
+      <p class="text-sm">Each one will show the overall level, speaking, listening, reading and writing, any certificates, how I learned it and what I am working towards. Levels will only appear once they are confirmed, never estimated.</p>
+    </div>
+  )}
+  <div class="kb-m-section mt-8" data-m style="--i:6">
+    <h3 class="kb-m-h">Related</h3>
+    <ul class="flex flex-wrap gap-x-6">
+      <li><a href="#m-project-doran" data-modal-open="m-project-doran" class="kb-m-link">Doran, a Korean course I am building →</a></li>
+      <li><a href="#m-interests" data-modal-open="m-interests" class="kb-m-link">Interests →</a></li>
+    </ul>
+  </div>
+</Modal>

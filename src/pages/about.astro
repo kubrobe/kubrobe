@@ -1,22 +1,67 @@
 ---
+/**
+ * About, in two layers. Layer 1: a short overview on the page. Layer 2: every detail window
+ * (background, skills, languages, education, certifications, interests, projects), one click away.
+ */
 import Base from '@/layouts/Base.astro';
 import PageHead from '@/components/PageHead.astro';
-import Empty from '@/components/Empty.astro';
+import Section from '@/components/Section.astro';
+import Explore from '@/components/home/Explore.astro';
+import ModalTrigger from '@/components/modal/ModalTrigger.astro';
+import Horangi from '@/components/Horangi.astro';
+import StatusGlyph from '@/components/StatusGlyph.astro';
 import { profile } from '@/data/profile';
-const has = profile.about.length || profile.now.length || profile.interests.length;
+import { getWork, workTypeLabel, code } from '@/lib/entries';
+
+const work = await getWork();
+const [lead, ...rest] = profile.about;
+const facts = [
+  ['Studying', profile.role],
+  ['Currently', profile.currently],
+  ['Based in', profile.city],
+].filter((f): f is [string, string] => Boolean(f[1]));
 ---
-<Base title="About" description={profile.about[0]}>
-  <PageHead number={400} label="About" title="About" />
-  <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main grid gap-12">
-    {profile.about.length > 0 && <div class="kb-prose text-lg">{profile.about.map((p) => <p>{p}</p>)}</div>}
-    {profile.now.length > 0 && (
-      <section aria-labelledby="now-h"><h2 id="now-h" class="kb-label mb-3">Now</h2><ul class="grid gap-2 border-t border-rule pt-3">{profile.now.map((n) => <li>{n}</li>)}</ul></section>
-    )}
-    {profile.interests.length > 0 && (
-      <section aria-labelledby="int-h"><h2 id="int-h" class="kb-label mb-3">Interests</h2>
-        <ul>{profile.interests.map((i) => <li class="grid gap-0.5 border-t border-rule py-3"><span>{i.title}</span>{i.note && <span class="kb-meta text-ink-2">{i.note}</span>}</li>)}</ul>
-      </section>
-    )}
-    {!has && <Empty text="Nothing filed here yet." />}
-  </div></div></div>
+<Base title="About" description={lead}>
+  <PageHead number={400} label="About" title="About *me*">
+    <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-14">
+      <div class="grid content-start gap-5">
+        {lead && <p class="kb-serif text-[clamp(1.6rem,1.2rem+1.8vw,2.6rem)] leading-[1.12] tracking-[-0.015em]">{lead}</p>}
+        {rest.map((p) => <p class="max-w-[58ch] text-lg text-ink-2">{p}</p>)}
+        <div class="mt-2 flex flex-wrap items-center gap-3">
+          <ModalTrigger target="m-background" class="kb-btn kb-btn--jade hr-host min-h-12">
+            <Horangi size={18} /> Get to know me <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span>
+          </ModalTrigger>
+          <a href="#contact" class="kb-btn min-h-12">Contact</a>
+        </div>
+      </div>
+      {facts.length > 0 && (
+        <dl class="kb-meta grid content-start grid-cols-[auto_1fr] gap-x-6 gap-y-3 border-t border-rule pt-4 lg:self-end">
+          {facts.map(([k, v]) => <><dt class="text-ink-3">{k}</dt><dd class="text-ink">{v}</dd></>)}
+        </dl>
+      )}
+    </div>
+  </PageHead>
+
+  <Explore number={410} label="Details" heading="In *detail*" id="about-details" />
+
+  {work.length > 0 && (
+    <Section number={420} label="Projects" id="about-projects" heading="What I *build*">
+      <ul class="grid gap-[var(--kb-gutter)] md:grid-cols-2">
+        {work.map((w) => (
+          <li data-reveal class="kb-ap grid content-start gap-3 border border-rule p-5">
+            <p class="kb-meta flex flex-wrap items-center justify-between gap-2 text-ink-3">
+              <span>{code(w.data.number)} · {workTypeLabel[w.data.type]} · {w.data.year}</span>
+              <StatusGlyph kind="work" status={w.data.status} />
+            </p>
+            <h3 class="text-h3 leading-none font-[560] tracking-[-0.03em]">{w.data.title}</h3>
+            <p class="text-ink-2">{w.data.summary}</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <ModalTrigger target={`m-project-${w.id}`} class="kb-btn kb-btn--jade" aria-label={`Explore ${w.data.title}: project details`}>Explore project <span aria-hidden="true">+</span></ModalTrigger>
+              <a href={`/work/${w.id}/`} class="kb-btn">Case study <span class="kb-arrow ml-2" data-dir="e" aria-hidden="true">→</span></a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )}
 </Base>

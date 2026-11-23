@@ -1,0 +1,142 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Modal from '@/components/modal/Modal.astro';
+import Glyph from '@/components/Glyph.astro';
+import { code, statusLabel, workTypeLabel } from '@/lib/entries';
+
+interface Props { entry: CollectionEntry<'work'>; all: CollectionEntry<'work'>[] }
+const { entry, all } = Astro.props;
+const d = entry.data;
+const x = d.detail;
+const shots = d.gallery.slice(0, 3);
+const related = (x?.related ?? []).map((s) => all.find((w) => w.id === s)).filter((w): w is CollectionEntry<'work'> => Boolean(w));
+const meta = [
+  ['Type', workTypeLabel[d.type]],
+  ['Year', String(d.year)],
+  ['Role', d.role],
+  ['Timeline', d.timeline],
+].filter((m): m is [string, string] => Boolean(m[1]));
+let i = 0;
+const n = () => `--i:${++i}`;
+---
+<Modal id={`m-project-${entry.id}`} title={d.title} eyebrow={`${code(d.number)} · Project`} size="lg">
+  <div class="kb-pm grid grid-cols-[minmax(0,1fr)] gap-10">
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-10" data-m style={n()}>
+      <div class="grid content-start gap-4">
+        <p class="kb-meta flex items-center gap-2 text-ink-2"><Glyph status={d.status} class="text-jade" />{statusLabel('work', d.status)}</p>
+        <p class="text-[clamp(1.2rem,1.05rem+0.6vw,1.5rem)] leading-[1.4]">{x?.overview ?? d.summary}</p>
+      </div>
+      <dl class="kb-m-dl content-start border-t border-rule pt-4 text-sm">{meta.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+    </div>
+
+    {d.facts.length > 0 && (
+      <ul class="kb-m-grid grid-cols-2 lg:!grid-cols-4" data-m style={n()} aria-label="Key figures">
+        {d.facts.map((f) => (
+          <li class="kb-m-cell grid content-start gap-1">
+            <span class="text-[clamp(1.75rem,1.4rem+1.4vw,2.6rem)] leading-none font-[560] tracking-[-0.04em] tabular-nums">{f.value}</span>
+            <span class="text-sm">{f.label}</span>
+            {f.note && <span class="kb-meta text-ink-3">{f.note}</span>}
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {shots.length > 0 && (
+      <figure class="min-w-0" data-m style={n()}>
+        <ul class="kb-pm-shots" data-count={shots.length}>
+          {shots.map((s) => (
+            <li class="kb-pm-shot kb-loading">
+              <Image src={s.src} alt={s.alt} widths={[240, 480]} sizes="(min-width: 60rem) 300px, 44vw" loading="lazy" class="block h-full w-full object-cover object-top" />
+              {s.caption && <span class="kb-meta kb-pm-cap">{s.caption}</span>}
+            </li>
+          ))}
+        </ul>
+        {d.gallerySource && <figcaption class="kb-meta mt-2 text-ink-3">{d.gallerySource}</figcaption>}
+      </figure>
+    )}
+
+    {(x?.problem || x?.solution || x?.audience) && (
+      <div class="kb-m-grid" data-cols="3" data-m style={n()}>
+        {x?.problem && <section class="kb-m-cell"><h3 class="kb-m-h">Problem</h3><p class="text-sm text-ink-2">{x.problem}</p></section>}
+        {x?.solution && <section class="kb-m-cell"><h3 class="kb-m-h">Solution</h3><p class="text-sm text-ink-2">{x.solution}</p></section>}
+        {x?.audience && <section class="kb-m-cell"><h3 class="kb-m-h">Who it is for</h3><p class="text-sm text-ink-2">{x.audience}</p></section>}
+      </div>
+    )}
+
+    {x && x.features.length > 0 && (
+      <section data-m style={n()}>
+        <h3 class="kb-m-h">Key features</h3>
+        <ol class="grid gap-x-8 sm:grid-cols-2">
+          {x.features.map((f, fi) => (
+            <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-y-1 border-t border-rule py-3">
+              <span class="kb-meta text-jade">{String(fi + 1).padStart(2, '0')}</span>
+              <span class="font-[540]">{f.title}</span>
+              <span class="col-start-2 text-sm text-ink-2">{f.text}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
+
+    {x && (x.responsibilities.length > 0 || x.process) && (
+      <div class="grid gap-8 lg:grid-cols-2" data-m style={n()}>
+        {x.responsibilities.length > 0 && (
+          <section><h3 class="kb-m-h">My role</h3>
+            {d.role && <p class="mb-3 text-ink-2">{d.role}</p>}
+            <ul class="kb-m-list">{x.responsibilities.map((r) => <li>{r}</li>)}</ul>
+          </section>
+        )}
+        {x.process && <section><h3 class="kb-m-h">How it was made</h3><p class="text-ink-2">{x.process}</p></section>}
+      </div>
+    )}
+
+    {d.stack.length > 0 && (
+      <section data-m style={n()}>
+        <h3 class="kb-m-h">Technology</h3>
+        <ul class="flex flex-wrap gap-2">{d.stack.map((s) => <li class="kb-m-tag">{s}</li>)}</ul>
+      </section>
+    )}
+
+    {x && (x.decisions.length > 0 || x.challenges.length > 0) && (
+      <div class="grid gap-8 lg:grid-cols-2" data-m style={n()}>
+        {x.decisions.length > 0 && <section><h3 class="kb-m-h">Design decisions</h3><ul class="kb-m-list text-sm">{x.decisions.map((t) => <li>{t}</li>)}</ul></section>}
+        {x.challenges.length > 0 && <section><h3 class="kb-m-h">Challenges</h3><ul class="kb-m-list text-sm">{x.challenges.map((t) => <li>{t}</li>)}</ul></section>}
+      </div>
+    )}
+
+    {x?.results && (
+      <section class="kb-pm-results" data-m style={n()}>
+        <h3 class="kb-m-h">Where it stands</h3>
+        <p class="text-sm">{x.results}</p>
+      </section>
+    )}
+
+    {(d.links.length > 0 || related.length > 0) && (
+      <div class="grid gap-8 sm:grid-cols-2" data-m style={n()}>
+        {d.links.length > 0 && (
+          <section><h3 class="kb-m-h">Links</h3>
+            <ul>{d.links.map((l) => <li><a href={l.href} rel="noopener" class="kb-m-link">{l.label} <span aria-hidden="true">↗</span></a></li>)}</ul>
+          </section>
+        )}
+        {related.length > 0 && (
+          <section><h3 class="kb-m-h">Related projects</h3>
+            <ul>{related.map((r) => <li><a href={`#m-project-${r.id}`} data-modal-open={`m-project-${r.id}`} class="kb-m-link">{r.data.title} <span class="text-ink-3">· {r.data.summary.split('.')[0]}</span></a></li>)}</ul>
+          </section>
+        )}
+      </div>
+    )}
+  </div>
+  <a slot="footer" href={`/work/${entry.id}/`} class="kb-btn kb-btn--jade">Read the full case study <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span></a>
+</Modal>
+<style>
+  .kb-pm-shots { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kb-pm-shots[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 640px; }
+  .kb-pm-shot { position: relative; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid var(--kb-rule); background: var(--kb-raised); }
+  .kb-pm-cap { position: absolute; left: 0; bottom: 0; padding: 4px 8px; background: var(--kb-surface); color: var(--kb-ink-2); border-top: 1px solid var(--kb-rule); border-right: 1px solid var(--kb-rule); }
+  @media (max-width: 29.99rem) {
+    .kb-pm-shots { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 62%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+    .kb-pm-shot { scroll-snap-align: start; }
+  }
+  .kb-pm-results { border-left: 2px solid var(--kb-jade); padding: 2px 0 2px 16px; }
+</style>

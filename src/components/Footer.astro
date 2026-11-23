@@ -1,10 +1,12 @@
 ---
 import CopyEmail from './CopyEmail.astro';
+import Horangi from './Horangi.astro';
 import { profile, showPlaceholders } from '@/data/profile';
+import { channels, telegramConfigured } from '@/data/contact';
 import { code } from '@/lib/entries';
 import pkg from '../../package.json';
 const sha = import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
-const hasContact = Boolean(profile.email || profile.links.length);
+const hasContact = Boolean(profile.email || channels.length);
 ---
 <footer id="contact" class:list={['kb-wrap border-t border-rule pb-6 lg:pb-10', hasContact ? 'pt-[var(--kb-space-section)]' : 'pt-5']} aria-labelledby={hasContact ? 'contact-h' : undefined}>
   {hasContact && (
@@ -17,28 +19,43 @@ const hasContact = Boolean(profile.email || profile.links.length);
         Get in <em class="kb-em">touch</em>
       </h2>
       {profile.email && <div data-reveal class="md:col-span-6 lg:col-[3/10]"><CopyEmail email={profile.email} /></div>}
-      {profile.links.length > 0 && (
-        <ul data-reveal class="border-b border-rule md:col-span-6 lg:col-[10/13] lg:self-end">
-          {profile.links.map((l) => (
-            <li class="border-t border-rule">
-              <a href={l.href} class="group flex min-h-11 items-center justify-between gap-4 py-2 no-underline" rel="me noopener">
-                <span class="transition-transform duration-[var(--kb-dur-ui)] ease-[var(--kb-ease-out)] group-hover:translate-x-2 group-focus-visible:translate-x-2">{l.label}</span>
-                <span class="kb-meta kb-arrow text-ink-2" data-dir="ne" aria-hidden="true">↗</span>
+      <p data-reveal class="max-w-[40ch] text-lg text-ink-2 md:col-span-6 lg:col-[3/8] lg:self-end">{telegramConfigured ? 'Telegram is the quickest way to reach me. Code lives on GitHub.' : 'A Telegram link is on its way. Until then, my code and projects are on GitHub.'}</p>
+      <ul data-reveal class="kb-ch border-b border-rule md:col-span-6 lg:col-[8/13] lg:self-end" aria-label="Contact channels">
+        {channels.map((c) => (
+          <li class="border-t border-rule">
+            {c.href ? (
+              <a href={c.href} class="kb-ch-row group" rel="me noopener">
+                <span class="kb-ch-label">{c.label}{c.handle && <span class="kb-meta ml-3 text-ink-3">{c.handle}</span>}</span>
+                <span class="kb-meta text-ink-3 max-sm:hidden">{c.note}</span>
+                <span class="kb-meta kb-arrow text-jade" data-dir="ne" aria-hidden="true">↗</span>
               </a>
-            </li>
-          ))}
-        </ul>
-      )}
+            ) : (
+              <div class="kb-ch-row">
+                <span class="kb-ch-label text-ink-2">{c.label}</span>
+                <span class="kb-meta text-ink-3 max-sm:hidden">{c.note}</span>
+                <span class="kb-m-tag">Pending</span>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
       {showPlaceholders && <span class="kb-ph-tag w-fit lg:col-[3/13]">Placeholder contact</span>}
     </div>
   )}
   <div class:list={['kb-grid kb-meta gap-y-1 text-ink-2', hasContact && 'border-t border-rule pt-4']}>
     <p class="kb-rail hidden lg:block">{code(0)} Colophon</p>
     <p class="col-span-3 md:col-span-5 lg:col-[3/12] lg:flex lg:flex-wrap lg:gap-x-6">
-      <span class="text-ink">KUBROBE v{pkg.version}</span>
+      <span class="hr-host inline-flex items-center gap-2 text-ink"><Horangi size={14} /> KUBROBE v{pkg.version}</span>
       {sha && <span> · Build {sha}</span>}
       <span class="block text-ink-3 lg:inline">Geist, Geist Mono, Instrument Serif · Astro</span>
     </p>
     <a href="#main" class="kb-draw col-span-1 inline-flex min-h-11 items-start justify-self-end whitespace-nowrap text-ink lg:col-[12/13] lg:items-center">Top <span aria-hidden="true" class="kb-arrow ml-1" data-dir="n">↑</span></a>
   </div>
 </footer>
+<style>
+  .kb-ch-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 4px 16px; min-height: 56px; padding: 6px 0; text-decoration: none; color: inherit; }
+  .kb-ch-label { font-size: var(--text-lg); transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { a.kb-ch-row:hover .kb-ch-label { transform: translateX(8px); } }
+  a.kb-ch-row:focus-visible .kb-ch-label { transform: translateX(8px); }
+  a.kb-ch-row:focus-visible { outline-offset: 2px; }
+</style>

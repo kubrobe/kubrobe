@@ -1,0 +1,12 @@
+---
+/**
+ * Opens a <Modal>. Renders a real #id link, so it still works without JavaScript; the modal script
+ * gives it button semantics (role="button", Space to activate) once it runs.
+ */
+import type { HTMLAttributes } from 'astro/types';
+interface Props extends Omit<HTMLAttributes<'a'>, 'href'> {
+  target: string;
+}
+const { target, class: cls, ...rest } = Astro.props;
+---
+<a href={`#${target}`} data-modal-open={target} aria-haspopup="dialog" aria-controls={target} class:list={[cls]} {...rest}><slot /></a>

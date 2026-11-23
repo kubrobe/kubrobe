@@ -1,0 +1,70 @@
+---
+import Modal from '@/components/modal/Modal.astro';
+import { skills, categories, skillsIntro, statusLabel } from '@/data/skills';
+import { getWork } from '@/lib/entries';
+const work = await getWork();
+const titles = new Map(work.map((w) => [w.id, w.data.title]));
+const groups = categories.map((c) => ({ ...c, items: skills.filter((s) => s.category === c.id) })).filter((g) => g.items.length);
+const using = skills.filter((s) => s.status === 'using').length;
+const learning = skills.length - using;
+---
+<Modal id="m-skills" title={skillsIntro.title} eyebrow="KB—520 · Skills" lede={skillsIntro.lede} size="lg">
+  <!-- The filter is radio buttons and :has(), so it works without JavaScript. -->
+  <div class="kb-sk">
+  <fieldset class="kb-skill-filter mb-8 flex flex-wrap items-center gap-2" data-m style="--i:1">
+    <legend class="sr-only">Show skills</legend>
+    <label><input type="radio" name="kb-skill-f" value="all" checked class="sr-only" /><span>All <span class="text-ink-3">{skills.length}</span></span></label>
+    <label><input type="radio" name="kb-skill-f" value="using" class="sr-only" /><span><i class="kb-dot" aria-hidden="true" />{statusLabel.using} <span class="text-ink-3">{using}</span></span></label>
+    <label><input type="radio" name="kb-skill-f" value="learning" class="sr-only" /><span><i class="kb-dot kb-dot--open" aria-hidden="true" />{statusLabel.learning} <span class="text-ink-3">{learning}</span></span></label>
+  </fieldset>
+  <div class="kb-skills grid gap-10">
+    {groups.map((g, gi) => (
+      <section class="kb-skill-group" aria-labelledby={`sk-${g.id}`} data-m style={`--i:${gi + 2}`}>
+        <h3 id={`sk-${g.id}`} class="kb-m-h">{g.label}</h3>
+        <p class="kb-meta -mt-1 mb-3 text-ink-3">{g.note}</p>
+        <ul class="kb-m-grid" data-cols="3">
+          {g.items.map((s) => (
+            <li class="kb-m-cell kb-skill grid content-start gap-2" data-status={s.status}>
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="text-lg leading-tight font-[540] tracking-[-0.01em]">{s.name}</h4>
+                <span class="kb-meta flex flex-none items-center gap-1.5 pt-0.5 text-ink-2" title={statusLabel[s.status]}>
+                  <i class:list={['kb-dot', s.status === 'learning' && 'kb-dot--open']} aria-hidden="true" />
+                  <span class="sr-only sm:not-sr-only">{s.status === 'using' ? 'Using' : 'Learning'}</span>
+                </span>
+              </div>
+              <p class="text-sm text-ink-2">{s.description}</p>
+              {s.experience && <p class="kb-meta text-ink-3">{s.experience}</p>}
+              {s.projects && s.projects.some((p) => titles.has(p)) && (
+                <p class="kb-meta flex flex-wrap items-center gap-x-3 text-ink-3">
+                  <span>Used in</span>
+                  {s.projects.filter((p) => titles.has(p)).map((p) => (
+                    <a href={`#m-project-${p}`} data-modal-open={`m-project-${p}`} class="kb-m-link !min-h-8 text-ink">{titles.get(p)}</a>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+  </div>
+  <p class="kb-meta mt-8 max-w-[64ch] text-ink-3" data-m style="--i:9">No skill here carries a level or a score. “Using in projects” means there is work to point at; in team projects only my own part counts.</p>
+</Modal>
+<style>
+  .kb-skill-filter { border: 0; padding: 0; margin-inline: 0; }
+  .kb-skill-filter label > span {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; cursor: pointer;
+    font-family: var(--font-mono); font-size: var(--text-meta); border: 1px solid var(--kb-rule-2); color: var(--kb-ink-2);
+    transition: border-color var(--kb-dur-micro) var(--kb-ease-out), color var(--kb-dur-micro), background-color var(--kb-dur-micro);
+  }
+  .kb-skill-filter label:hover > span { color: var(--kb-ink); border-color: var(--kb-ink-3); }
+  .kb-skill-filter input:checked + span { color: var(--kb-ink); border-color: var(--kb-jade); background: var(--kb-jade-dim); }
+  .kb-skill-filter input:focus-visible + span { outline: 2px solid var(--kb-jade); outline-offset: 2px; }
+  .kb-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--kb-jade); flex: none; }
+  .kb-dot--open { background: transparent; box-shadow: inset 0 0 0 1.2px var(--kb-ink-2); }
+  .kb-sk:has(input[value='using']:checked) .kb-skill[data-status='learning'],
+  .kb-sk:has(input[value='learning']:checked) .kb-skill[data-status='using'] { display: none; }
+  .kb-sk:has(input[value='using']:checked) .kb-skill-group:not(:has(.kb-skill[data-status='using'])),
+  .kb-sk:has(input[value='learning']:checked) .kb-skill-group:not(:has(.kb-skill[data-status='learning'])) { display: none; }
+</style>

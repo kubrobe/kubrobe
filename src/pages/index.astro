@@ -4,8 +4,8 @@ import Hero from '@/components/home/Hero.astro';
 import Intro from '@/components/home/Intro.astro';
 import FeaturedWork from '@/components/home/FeaturedWork.astro';
 import CertPreview from '@/components/home/CertPreview.astro';
+import Explore from '@/components/home/Explore.astro';
 import WritingPreview from '@/components/home/WritingPreview.astro';
-import { profile } from '@/data/profile';
 import { getNav } from '@/lib/nav';
 import { getWork, getWriting, getCertifications, getLastUpdated } from '@/lib/entries';
 
@@ -13,12 +13,13 @@ const [work, writing, certs, updated, nav] = await Promise.all([getWork(), getWr
 const featured = (work.some((w) => w.data.featured) ? work.filter((w) => w.data.featured) : work).slice(0, 4);
 const latest = writing.slice(0, 3);
 const total = work.length + writing.length + certs.length;
-const hasContact = Boolean(profile.email || profile.links.length);
+const hasContact = true; // Footer contact always renders (GitHub is live; Telegram shows as pending until configured).
 ---
 <Base>
   <Hero entries={total} updated={updated} nav={nav} hasContact={hasContact} />
-  <Intro />
   {featured.length > 0 && <FeaturedWork featured={featured} total={work.length} />}
+  <Intro />
+  <Explore />
   {certs.length > 0 && <CertPreview certs={certs} />}
   {latest.length > 0 && <WritingPreview posts={latest} />}
 </Base>

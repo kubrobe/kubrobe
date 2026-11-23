@@ -1,0 +1,32 @@
+---
+import Modal from '@/components/modal/Modal.astro';
+import Horangi from '@/components/Horangi.astro';
+import { background, backgroundIntro } from '@/data/background';
+import { profile } from '@/data/profile';
+const sections = background.filter((s) => s.body.length > 0);
+---
+<Modal id="m-background" title={backgroundIntro.title} eyebrow="KB—560 · About" lede={backgroundIntro.lede}>
+  {profile.statement && (
+    <p class="kb-bg-quote kb-serif mb-10 text-[clamp(1.6rem,1.2rem+1.6vw,2.4rem)] leading-[1.12] tracking-[-0.015em]" data-m style="--i:1">
+      {profile.statement.replaceAll('*', '')}
+    </p>
+  )}
+  <ol class="kb-bg grid">
+    {sections.map((s, i) => (
+      <li class="kb-bg-row grid gap-2 border-t border-rule py-5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6" data-m style={`--i:${i + 2}`}>
+        <h3 class="kb-meta flex items-baseline gap-3 text-ink-2"><span class="text-ink-3">{String(i + 1).padStart(2, '0')}</span>{s.title}</h3>
+        <div class="grid gap-3">
+          {s.body.map((p) => <p>{p}</p>)}
+          {s.links && s.links.length > 0 && (
+            <p class="flex flex-wrap gap-x-5">
+              {s.links.map((l) => l.modal
+                ? <a href={`#${l.modal}`} data-modal-open={l.modal} class="kb-m-link kb-meta">{l.label} →</a>
+                : <a href={l.href} class="kb-m-link kb-meta">{l.label} →</a>)}
+            </p>
+          )}
+        </div>
+      </li>
+    ))}
+  </ol>
+  <p class="kb-meta mt-6 flex items-center gap-2 text-ink-3" data-m style="--i:9"><Horangi size={16} blink /> Horangi keeps watch over the index.</p>
+</Modal>

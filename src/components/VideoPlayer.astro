@@ -86,6 +86,11 @@ const kind = src?.kind;
         el = f;
       }
       el.className = 'kb-vp-media';
+      // Horangi breathes in the frame until the player has something to show.
+      box.classList.add('kb-loading');
+      const done = () => box.classList.remove('kb-loading');
+      el.addEventListener(el instanceof HTMLVideoElement ? 'canplay' : 'load', done, { once: true });
+      window.setTimeout(done, 8000);
       box.querySelector('.kb-vp-face')?.replaceWith(el);
       el.focus();
     };
@@ -107,7 +112,7 @@ const kind = src?.kind;
   .kb-vp-ch-n { color: var(--kb-ink-3); }
   .kb-vp-tr { margin-top: 16px; border-top: 1px solid var(--kb-rule); border-bottom: 1px solid var(--kb-rule); }
   .kb-vp-tr > summary { display: flex; min-height: 44px; align-items: center; cursor: pointer; color: var(--kb-ink-2); list-style: none; }
-  .kb-vp-tr > summary:focus-visible { outline: 2px solid var(--kb-ink); outline-offset: -2px; }
+  .kb-vp-tr > summary:focus-visible { outline: 2px solid var(--kb-jade); outline-offset: -2px; }
   .kb-vp-tr-b { display: grid; gap: 12px; max-width: 62ch; padding: 4px 0 20px; color: var(--kb-ink-2); }
   .kb-vp-play { display: grid; place-items: center; width: 72px; height: 72px; background: rgb(10 10 10 / .72); border: 1px solid rgb(255 255 255 / .5); border-radius: 50%; transition: transform var(--kb-dur-ui) var(--kb-ease-out), background-color var(--kb-dur-micro) var(--kb-ease-out), color var(--kb-dur-micro) var(--kb-ease-out); }
   .kb-vp-play svg { margin-left: 3px; }
@@ -121,6 +126,6 @@ const kind = src?.kind;
   .kb-vp-ch { display: flex; width: 100%; min-height: 44px; align-items: center; gap: 10px; border: 0; border-top: 1px solid var(--kb-rule); background: transparent; color: var(--kb-ink-2); text-align: left; font: inherit; font-family: var(--font-mono); font-size: var(--text-meta); cursor: pointer; transition: color var(--kb-dur-micro) var(--kb-ease-out), padding-left var(--kb-dur-ui) var(--kb-ease-out); }
   .kb-vp-ch > span:last-child { margin-left: auto; }
   @media (hover: hover) { .kb-vp-ch:hover { color: var(--kb-ink); padding-left: 8px; } }
-  .kb-vp-ch:focus-visible { color: var(--kb-ink); outline: 2px solid var(--kb-ink); outline-offset: -2px; }
+  .kb-vp-ch:focus-visible { color: var(--kb-ink); outline: 2px solid var(--kb-jade); outline-offset: -2px; }
   @media (prefers-reduced-motion: reduce) { .kb-vp-ch, .kb-vp-play { transition: none; } }
 </style>

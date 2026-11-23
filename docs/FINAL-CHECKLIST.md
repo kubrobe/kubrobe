@@ -53,8 +53,11 @@ Status as of Stage G. ✓ = done and checked here. ☐ = open.
 ## F. Stage H: video and media (owner)
 
 - ☐ Set `videos.skillswap.url` in `src/data/media.ts` (YouTube unlisted, Vimeo, or `/media/<file>.mp4`). Until then the section stays hidden.
-- ☐ Provide the final 3:58 file in a readable form (in the project folder, or a Google Photos link that resolves to it). Chapters, poster (cleanest tagline frame), caption and transcript are written from it; duration 3:58 is already set.
-- ☐ If the 3:58 video has a campus-pilot chapter, it is labelled as a proposal; confirm you want it public.
-- ☐ Optional: WebVTT captions in `public/media/`.
+- ☐ Review the chapter titles, notes, caption and transcript in `src/data/media.ts` (written from the video's on-screen captions; the spoken audio was not checked). See `docs/STAGE-I-VIDEO-REPORT.md`.
+- ☐ Verify the claims listed in section "Claims to verify" of the Stage I report (12 screens, 3 languages, 20 unit tests, 6 cached tables vs the case study's 7 Room entities, no secrets in the app, "every box is implemented today").
+- ☐ The last chapters are a campus-pilot proposal (labelled "not an existing partnership or deployment" in the video and in the page caption); confirm you want them public.
+- ☐ Decide whether the example people (Aziza, Bobur, Dilnoza) should be described as example characters in the caption; the video labels some screens "illustrative" but does not say so about the names.
+- ☐ WebVTT captions are not generated (caption timing could not be established reliably); optional, add a `.vtt` in `public/media/` and set `captions`.
+- ☐ Upload the 5:56 video yourself (YouTube Unlisted) and paste the URL into `videos.skillswap.url`; until then the section stays hidden. Note: `public/media/skillswap-poster.webp` (a still of the tagline frame) ships with the site even while hidden.
 - ☐ After deploy: press play on the real video in Chrome, Firefox and Safari (iOS too); confirm no provider request before play.
 - ☐ Decide whether the two unused SkillSwap screens should be added.

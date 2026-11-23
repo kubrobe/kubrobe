@@ -39,22 +39,22 @@
     [data-reveal] { animation: kb-rise linear both; }
     /* The timeline sits in its own rule: the CSS minifier would otherwise fold it into the
        animation shorthand, which browsers reject, silently disabling the reveal. */
-    [data-reveal]:is([data-reveal]) { animation-timeline: view(); animation-range: entry 0% entry 55%; }
+    [data-reveal]:is([data-reveal]) { animation-timeline: view(); animation-range: entry 0% entry min(55%, 240px); }
     [data-reveal='mask'] { animation-name: kb-mask; }
     [data-reveal='clip'] { animation-name: kb-clip; }
-    [data-reveal='clip']:is([data-reveal]) { animation-range: entry 0% entry 70%; }
+    [data-reveal='clip']:is([data-reveal]) { animation-range: entry 0% entry min(70%, 280px); }
     [data-reveal='clip'] img { animation: kb-settle linear both; }
     [data-reveal='clip'] img:is(img) { animation-timeline: view(); animation-range: entry 0% cover 40%; }
 
     /* Case-study prose: section headings rise through a mask; figures and tables rise. Paragraphs stay still. */
     .kb-prose > h2 { animation: kb-mask linear both; }
-    .kb-prose > h2:is(h2) { animation-timeline: view(); animation-range: entry 0% entry 60%; }
+    .kb-prose > h2:is(h2) { animation-timeline: view(); animation-range: entry 0% entry min(60%, 200px); }
     .kb-prose > :is(figure, table, .kb-stats) { animation: kb-rise linear both; }
-    .kb-prose > :is(figure, table, .kb-stats):is(figure, table, div) { animation-timeline: view(); animation-range: entry 0% entry 45%; }
+    .kb-prose > :is(figure, table, .kb-stats):is(figure, table, div) { animation-timeline: view(); animation-range: entry 0% entry min(45%, 240px); }
 
     /* Hairlines draw in as their section arrives. */
     .kb-rule::before { animation: kb-rule linear both; }
-    .kb-rule:is(.kb-rule)::before { animation-timeline: view(); animation-range: entry 0% entry 40%; }
+    .kb-rule:is(.kb-rule)::before { animation-timeline: view(); animation-range: entry 0% entry min(40%, 160px); }
 
     /* The wordmark lightens and lifts as it scrolls away. */
     .kb-wordmark { animation: kb-wm-scroll linear both; }
@@ -81,6 +81,11 @@
     .kb-diagram svg path[pathLength]:is(path) { animation-timeline: view(); animation-range: entry 20% entry 85%; }
     @keyframes kb-fade { from { opacity: 0; } to { opacity: 1; } }
     @keyframes kb-trace { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  }
+
+  /* Printing sees the whole page at once, so nothing may wait on a scroll position. */
+  @media print {
+    [data-reveal], [data-reveal] img, [data-parallax], .kb-prose > *, .kb-rule::before, .kb-wordmark, .kb-diagram svg * { animation: none !important; }
   }
 
   /* ---------- Intro: first arrival at the home page only ---------- */

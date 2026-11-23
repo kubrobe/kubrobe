@@ -19,7 +19,9 @@ Kept the Stage F system. New, each with a purpose: title mask reveal on index ro
 
 ## Hackathon video
 
-**The video file was not available to me.** The only thing supplied was a phone screenshot of a player (`SkillSwap_demo.mp4`, 3:58, paused at 0:45); the file is not in the project folders or the sandbox, and I cannot watch video anyway. So nothing was uploaded, copied or invented, and the real duration (3:58, not five minutes) is used. The screenshot was not used as a poster.
+**Update:** the video was later fetched from the owner's Google Photos link into a private scratch folder (not in git, not uploaded anywhere). It is 1920×1080 H.264 with AAC audio and **5:56 long**, a different cut from the 3:58 version in the earlier screenshot. It has burned-in captions and eight numbered chapters. The config now carries the real duration, a chapter list (seek buttons under the player; tested with the real file locally) and a caption that matches what the video says (demo characters, some visuals marked illustrative, the last chapter a campus-pilot proposal). The URL field is still empty, so nothing is published. The text below describes the earlier state.
+
+**The video file was not available to me at the time.** The only thing supplied was a phone screenshot of a player (`SkillSwap_demo.mp4`, 3:58, paused at 0:45); the file is not in the project folders or the sandbox, and I cannot watch video anyway. So nothing was uploaded, copied or invented, and the real duration (3:58, not five minutes) is used. The screenshot was not used as a poster.
 
 What was built:
 

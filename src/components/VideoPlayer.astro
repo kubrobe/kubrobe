@@ -37,6 +37,13 @@ const kind = src?.kind;
             </div>
           )}
           <figcaption class="kb-meta mt-3 max-w-[60ch] text-ink-3">{v.cfg.caption}</figcaption>
+          {src && v.cfg.chapters && v.cfg.chapters.length > 0 && (
+            <ol class="kb-vp-chapters" role="list" aria-label="Chapters" data-chapters>
+              {v.cfg.chapters.map((c, i) => (
+                <li><button type="button" class="kb-vp-ch" data-t={c.t}><span class="text-ink-3">{String(i + 1).padStart(2, '0')}</span> {c.label} <span class="text-ink-3">{Math.floor(c.t / 60)}:{String(c.t % 60).padStart(2, '0')}</span></button></li>
+              ))}
+            </ol>
+          )}
         </figure>
       </div>
     </div></div>
@@ -45,29 +52,38 @@ const kind = src?.kind;
 <script>
   // Nothing from a video provider loads until the visitor asks for it. No autoplay on arrival.
   document.querySelectorAll<HTMLElement>('[data-vp]').forEach((box) => {
-    const face = box.querySelector<HTMLAnchorElement>('.kb-vp-face');
-    face?.addEventListener('click', (e) => {
-      e.preventDefault();
+    const wrap = box.closest('figure');
+    const load = (start: number) => {
       const { kind, id, src, title = 'Video', captions, poster } = box.dataset;
-      let el: HTMLElement;
+      let el = box.querySelector<HTMLElement>('.kb-vp-media');
+      if (el instanceof HTMLVideoElement) { el.currentTime = start; void el.play().catch(() => {}); el.focus(); return; }
+      if (el instanceof HTMLIFrameElement) {
+        el.src = kind === 'vimeo'
+          ? `https://player.vimeo.com/video/${id}?autoplay=1&dnt=1#t=${start}s`
+          : `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&start=${start}`;
+        el.focus(); return;
+      }
       if (kind === 'mp4' && src) {
         const v = document.createElement('video');
         v.src = src; v.controls = true; v.playsInline = true; v.preload = 'metadata'; if (poster) v.poster = poster;
         v.setAttribute('aria-label', title);
         if (captions) { const t = document.createElement('track'); t.kind = 'captions'; t.src = captions; t.srclang = 'en'; t.label = 'English'; t.default = true; v.append(t); }
-        el = v; v.addEventListener('canplay', () => { void v.play().catch(() => {}); }, { once: true });
+        v.addEventListener('loadedmetadata', () => { if (start) v.currentTime = start; void v.play().catch(() => {}); }, { once: true });
+        el = v;
       } else {
         const f = document.createElement('iframe');
         f.src = kind === 'vimeo'
-          ? `https://player.vimeo.com/video/${id}?autoplay=1&dnt=1`
-          : `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+          ? `https://player.vimeo.com/video/${id}?autoplay=1&dnt=1#t=${start}s`
+          : `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&start=${start}`;
         f.title = title; f.allow = 'autoplay; fullscreen; picture-in-picture'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
         el = f;
       }
       el.className = 'kb-vp-media';
-      face.replaceWith(el);
+      box.querySelector('.kb-vp-face')?.replaceWith(el);
       el.focus();
-    });
+    };
+    box.querySelector<HTMLAnchorElement>('.kb-vp-face')?.addEventListener('click', (e) => { e.preventDefault(); load(0); });
+    wrap?.querySelectorAll<HTMLButtonElement>('.kb-vp-ch').forEach((b) => b.addEventListener('click', () => load(Number(b.dataset['t'] ?? 0))));
   });
 </script>
 <style is:global>
@@ -84,5 +100,11 @@ const kind = src?.kind;
   .kb-vp-face:focus-visible { outline: 2px solid #f2f1ee; outline-offset: -6px; }
   .kb-vp-face:focus-visible .kb-vp-play { background: #f2f1ee; color: #0a0a0a; }
   .kb-vp-stub { display: grid; place-content: center; justify-items: center; background: transparent; border-style: dashed; padding: 16px; }
-  @media (prefers-reduced-motion: reduce) { .kb-vp-play { transition: none; } }
+  .kb-vp-chapters { display: grid; gap: 0; margin: 16px 0 0; padding: 0; list-style: none; border-bottom: 1px solid var(--kb-rule); }
+  @media (min-width: 48rem) { .kb-vp-chapters { grid-template-columns: 1fr 1fr; column-gap: var(--kb-gutter); } }
+  .kb-vp-ch { display: flex; width: 100%; min-height: 44px; align-items: center; gap: 10px; border: 0; border-top: 1px solid var(--kb-rule); background: transparent; color: var(--kb-ink-2); text-align: left; font: inherit; font-family: var(--font-mono); font-size: var(--text-meta); cursor: pointer; transition: color var(--kb-dur-micro) var(--kb-ease-out), padding-left var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-vp-ch > span:last-child { margin-left: auto; }
+  @media (hover: hover) { .kb-vp-ch:hover { color: var(--kb-ink); padding-left: 8px; } }
+  .kb-vp-ch:focus-visible { color: var(--kb-ink); outline: 2px solid var(--kb-ink); outline-offset: -2px; }
+  @media (prefers-reduced-motion: reduce) { .kb-vp-ch, .kb-vp-play { transition: none; } }
 </style>

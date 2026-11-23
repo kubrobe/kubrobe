@@ -38,6 +38,7 @@ Short records of choices that are not obvious from the code. Newest last.
 | 32 | SkillSwap gallery is an exhibit with groups taken from a `group` field on each screenshot | Groups only where the screenshots support them (Website, Android app). |
 | 33 | Gallery state is a radio group, not script | Works without JavaScript; keyboard behaviour is native. |
 | 34 | Video is one config field (`src/data/media.ts`), hidden until set, click-to-load, no autoplay | No provider request before play; nothing fake can ship. |
-| 35 | Duration shown is 3:58, from the owner's player screenshot, not "about five minutes" | Use the real figure. |
+| 35 | Duration shown is 5:56, measured from the supplied file (an earlier screenshot showed a 3:58 version) | Use the real figure; confirm which cut is final. |
+| 38 | Video chapters are an optional config list rendered as seek buttons | Navigation for a six-minute video; times approximate. |
 | 36 | Test video URLs are honoured only in the design-review build | A stray variable can never publish media. |
 | 37 | Hero statistics reduced in scale | The project name leads. |

@@ -258,7 +258,7 @@
   .kb-btn:focus-visible { background: var(--kb-ink); color: var(--kb-surface); outline-offset: 2px; }
   .kb-btn { transition-property: background-color, color, border-color, transform; }
   .kb-btn:active { transform: translateY(1px) scale(0.98); transition-duration: var(--kb-dur-instant); }
-  /* Variants (from the V2 work, without its mascot): line is the default secondary action, jade the one primary action per view. */
+  /* Variants: line is the default secondary action, jade the one primary action per view. */
   .kb-btn--line { border-color: var(--kb-rule-2); }
   .kb-btn--jade { border-color: var(--kb-jade); gap: 10px; }
   @media (hover: hover) { .kb-btn--jade:hover { background: var(--kb-jade); border-color: var(--kb-jade); color: var(--kb-surface); } }

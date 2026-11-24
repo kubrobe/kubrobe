@@ -35,6 +35,7 @@ const spec = [
         <dt class="text-ink-3">Status</dt><dd><StatusGlyph kind="work" status={d.status} /></dd>
         {d.timeline && <><dt class="text-ink-3">Timeline</dt><dd class="text-ink-2">{d.timeline}</dd></>}
         {d.role && <><dt class="text-ink-3">Role</dt><dd class="text-ink-2 lg:col-span-3">{d.role}</dd></>}
+        {d.context && <><dt class="text-ink-3">Context</dt><dd class="text-ink-2 lg:col-span-3">{d.context}</dd></>}
         {d.stack.length > 0 && <><dt class="text-ink-3">Stack</dt><dd class="text-ink-2 lg:col-span-3">{d.stack.join(' · ')}</dd></>}
       </dl>
     </div></div>

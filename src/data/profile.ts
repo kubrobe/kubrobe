@@ -73,18 +73,18 @@ export const profile = {
     "I'm Najmiddin Kurganov, an IT-Business student interested in technology, business and creative problem-solving. I explore ideas, build projects and document what I learn along the way.",
 
   /**
-   * About page, after the introduction. Facts only, written plainly.
-   * Owner: rewrite these in your own words whenever you like.
+   * About page, after the introduction. Owner-approved wording, verbatim (2026-11-24).
+   * Do not rewrite without the owner's approval.
    */
   about: [
     "I'm 19, from Bekobod in Tashkent Region, and in my third year of a bachelor's degree in IT-Business at Ajou University in Tashkent. I expect to graduate in May 2028.",
-    'So far that has meant two projects: SkillSwap, a skill-exchange platform built with a university team, and Doran, a Korean-learning app I am building on my own. KUBROBE is where the work is filed, with what is finished kept apart from what is still in progress.',
+    "My work includes SkillSwap, a skill-exchange platform that I designed and built entirely from scratch for a university subject and hackathon, and Doran, a Korean-learning app I'm developing independently. KUBROBE is where I document my work, keeping completed projects distinct from those still in progress.",
   ],
 
   /** What is happening now. Verified activities only. */
   now: [
     { label: 'Doran', context: 'Solo · Android', text: 'Building an offline Korean-learning app for Android, on my own.', href: '/work/doran/', status: 'in-progress' },
-    { label: 'SkillSwap', context: 'Team · Web and Android', text: 'Working across the website and Android app of a peer-to-peer skill exchange, with a university team.', href: '/work/skillswap/', status: 'in-progress' },
+    { label: 'SkillSwap', context: 'Solo · Web and Android', text: 'Building the website and Android app of a peer-to-peer skill exchange, on my own.', href: '/work/skillswap/', status: 'in-progress' },
     { label: 'IT-Business', context: 'Ajou University in Tashkent', text: 'Third year of the bachelor’s degree; graduating in May 2028.', status: 'in-progress' },
   ] as NowItem[],
 

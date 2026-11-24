@@ -9,7 +9,7 @@ Status as of Stage G. ✓ = done and checked here. ☐ = open.
 - ☐ Other profile links (LinkedIn etc.), only ones to be public.
 - ☐ Confirm the GitHub repositories linked on the site are public: `kubrobe/skillswap`, `kubrobe/skillswap-android`, `kubrobe/doran`. Visitors see a 404 on a private repo.
 - ☐ Confirm the Render site `skillswap-vqt7.onrender.com` opens (free tier may sleep); update the status row or remove the link.
-- ☐ Confirm SkillSwap attribution wording (course project later extended; commit identities; teammates not named) and Doran "Solo project".
+- ☑ SkillSwap attribution confirmed by the owner on 2026-11-24 (DECISIONS 57); Doran "Solo project".
 - ☐ Certifications with evidence. The section stays hidden and `noindex` until one exists.
 - ☐ E-Commerce Sales Analysis details; then remove `draft: true`. It stays unpublished until then.
 - ☐ Optional: real-device test of Doran pronunciation scoring if its "Partial" status should change.

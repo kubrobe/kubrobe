@@ -9,7 +9,7 @@ Nothing is deployed and nothing has been pushed. Order matters: decisions first,
 - [ ] LinkedIn or other profile links (only ones you want public).
 - [ ] Certifications, each as Earned, In progress or Planned, with evidence. The section stays hidden until at least one exists.
 - [ ] E-Commerce Sales Analysis: year, status, goal, dataset, tools and methods, deliverables, your own part. Then remove `draft: true` from `src/content/work/ecommerce-sales-analysis.md`.
-- [ ] SkillSwap: confirm both commit identities are yours; whether teammates may be named; the wording for AI-assisted commits; "course project, later extended for a hackathon" is correct.
+- [x] SkillSwap attribution: resolved 2026-11-24 (DECISIONS 57). Designed and built solely by the owner; team registration for the course and hackathon only; AI-assisted coding noted.
 - [ ] Doran: confirm it is a solo project (currently shown as "Solo project").
 - [ ] Android app: confirm "mostly working"; share a release APK link if you want one shown.
 - [ ] Confirm the GitHub repos `kubrobe/skillswap`, `kubrobe/skillswap-android` and `kubrobe/doran` are public. Visitors get a 404 on a private repo.

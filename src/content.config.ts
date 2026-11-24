@@ -33,6 +33,8 @@ const work = defineCollection({
     featured: z.boolean().default(false),
     order: z.number().int().default(0),
     role: z.string().optional(),
+    /** Academic or event context, and how the work was shared. Shown under Role on the case study. */
+    context: z.string().optional(),
     stack: z.array(z.string()).default([]),
     timeline: z.string().optional(),
     links: z.array(link).default([]),

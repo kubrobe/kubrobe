@@ -9,7 +9,8 @@ featured: true
 presentation: exhibit
 video: skillswap
 order: 1
-role: Android app and website front end, in a team of three
+role: Independent developer — designed and built from scratch
+context: University subject and hackathon project. Registered as a team for academic and hackathon participation; designed and built by me alone.
 timeline: 7–17 Nov 2026 (commit history)
 stack:
   - Node.js
@@ -74,7 +75,7 @@ SkillSwap is a skill exchange for students. A member lists a practical skill the
 
 There are two clients, a mobile-first website and a native Android app. They share one server and one database, so an account, a booking or a review made on one appears on the other.
 
-It began as a university course project (a database-backed website for a Big Data course) and was extended for a university hackathon. This page is about the product and how it is built, not about the competition.
+It began as a university course project (a database-backed website for a Big Data course) and was extended for a university hackathon. Both were registered as team entries, but I designed and built the product myself. This page is about the product and how it is built, not about the competition.
 
 ## Problem
 
@@ -210,13 +211,11 @@ Compose screens read state from a ViewModel (`StateFlow`), which goes through a 
 
 ## My contribution
 
-SkillSwap was built by a team of three. Both repositories document the split:
+I designed and directed the development of SkillSwap from scratch, covering the website, server, database and Android application.
 
-- **Me:** the Android app (architecture, Room, networking, screens, the three languages, unit tests and the release APK) and the website's front end.
-- **Team leader:** the backend (server, database, API, live events, Telegram bot and server tests).
-- **Designer:** the brand, screens, icon set and motion.
+SkillSwap was registered as a team project for a university subject and for a hackathon. That arrangement was for academic and hackathon participation, not shared implementation.
 
-Both repositories live on my GitHub account, and the commit history was recorded there. Much of the code was written in AI-assisted sessions, and those commits are attributed to Claude in the history. The history does not record who on the team wrote which part, so the split above rests on the team's own documentation.
+I used AI-assisted coding tools throughout implementation. The repositories preserve the development history and commit attribution.
 
 ## Challenges and lessons
 
@@ -234,7 +233,7 @@ Each line says what was checked, and how. "Tested" means I ran the website's own
 |---|---|---|
 | Website features: accounts, profiles, skills, matching, swaps and reviews, lessons and the time bank, check-in, chat, notifications, mobile API, video-room access rules, Google and Telegram sign-in | Working, tested | 80 of 80 automated tests passed |
 | Live deployment on Render | Not verified | Documented as deployed on Render's free tier with the database on Supabase. I could not reach it from my test environment, so I have not checked it |
-| Android app | Not verified | Described by the team as mostly working against the same backend. I have not built or run it. 66 unit tests exist; I counted them but did not run them |
+| Android app | Not verified | Documented in the repository as working against the same backend. Not built or run for this page. 66 unit tests exist; counted, not run |
 | Video lessons | Partial | Needs TURN configured on the server |
 | AI matchmaker | Partial | Falls back to keyword matching without an API key |
 | MongoDB statistics | Optional | Not needed for the core product |

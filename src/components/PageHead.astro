@@ -8,7 +8,7 @@ const mark = marker ?? (number !== undefined ? code(number) : undefined);
 <header class="kb-wrap pt-10 pb-10 lg:pt-20 lg:pb-14">
   <div class="kb-grid">
     <div class="kb-rail kb-meta flex gap-3 text-ink-3 lg:block">
-      {mark && <span class="text-ink-2 lg:block">{mark}</span>}<span>{label}</span>
+      {mark && <span class:list={['text-ink-2 lg:block', number !== undefined && 'kb-ph-code']}>{mark}</span>}<span>{label}</span>
     </div>
     <div class="kb-main min-w-0">
       {crumb && <a href={crumb.href} class="kb-crumb kb-meta mb-6 inline-flex min-h-11 items-center gap-2 text-ink-2 no-underline hover:text-ink"><span class="kb-crumb-a" aria-hidden="true">←</span> <span class="kb-draw">{crumb.label}</span></a>}
@@ -19,6 +19,8 @@ const mark = marker ?? (number !== undefined ? code(number) : undefined);
   </div>
 </header>
 <style>
+  /* A real entry's catalogue code is set large in the rail: the page is filed under it. */
+  @media (min-width: 60rem) { .kb-ph-code { font-size: clamp(1.25rem, 0.6rem + 1.1vw, 1.875rem); line-height: 1.05; letter-spacing: -0.02em; color: var(--kb-ink); margin-bottom: 6px; } }
   .kb-crumb-a { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
   @media (hover: hover) { .kb-crumb:hover .kb-crumb-a { transform: translateX(-4px); } }
   .kb-crumb:focus-visible .kb-crumb-a { transform: translateX(-4px); }

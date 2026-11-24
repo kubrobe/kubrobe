@@ -8,6 +8,7 @@ import Gallery from '@/components/Gallery.astro';
 import DeviceStage from '@/components/DeviceStage.astro';
 import Exhibit from '@/components/Exhibit.astro';
 import VideoPlayer from '@/components/VideoPlayer.astro';
+import { Image } from 'astro:assets';
 import { getWork, workTypeLabel, code } from '@/lib/entries';
 
 export const getStaticPaths = (async () => (await getWork()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
@@ -99,10 +100,13 @@ const spec = [
           {[['Previous', neighbours.prev, '←'], ['Next', neighbours.next, '→']].filter(([, w]) => w).map(([label, w, arrow]) => {
             const e = w as typeof neighbours.next;
             return (
-              <a href={`/work/${e.id}/`} class="kb-next group grid gap-2 border-t border-rule py-5 no-underline" rel={label === 'Next' ? 'next' : 'prev'}>
-                <span class="kb-meta flex justify-between text-ink-2"><span>{label as string} · {code(e.data.number)}</span><span class="kb-next-arrow" aria-hidden="true">{arrow as string}</span></span>
-                <span class="kb-next-title text-h3 font-medium leading-tight tracking-[-0.025em]" style={`view-transition-name:kb-t-${e.data.number};view-transition-class:kb-title`}>{e.data.title}</span>
-                <span class="max-w-[44ch] text-ink-2">{e.data.summary}</span>
+              <a href={`/work/${e.id}/`} class="kb-next group grid grid-cols-[minmax(0,1fr)_auto] gap-x-5 gap-y-2 border-t border-rule py-5 no-underline" rel={label === 'Next' ? 'next' : 'prev'}>
+                <span class="kb-meta col-span-2 flex justify-between text-ink-2"><span>{label as string} · {code(e.data.number)}</span><span class="kb-next-arrow" aria-hidden="true">{arrow as string}</span></span>
+                <span class="grid content-start gap-2">
+                  <span class="kb-next-title text-h3 font-medium leading-tight tracking-[-0.025em]" style={`view-transition-name:kb-t-${e.data.number};view-transition-class:kb-title`}>{e.data.title}</span>
+                  <span class="max-w-[44ch] text-ink-2">{e.data.summary}</span>
+                </span>
+                {e.data.gallery[0] && <span class="kb-next-shot" aria-hidden="true"><Image src={e.data.gallery[0].src} alt="" widths={[120, 240]} sizes="7rem" loading="lazy" decoding="async" /></span>}
               </a>
             );
           })}
@@ -142,6 +146,10 @@ const spec = [
   .kb-next-title, .kb-next-arrow { transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
   @media (hover: hover) { .kb-next:hover .kb-next-title { transform: translateX(10px); } .kb-next:hover .kb-next-arrow { transform: translateX(6px); } }
   .kb-next:focus-visible { outline-offset: -2px; }
+  .kb-next-shot { display: block; width: clamp(4.5rem, 3rem + 4vw, 7rem); aspect-ratio: 9 / 16; overflow: clip; border: 1px solid var(--kb-rule); background: var(--kb-raised); transition: transform var(--kb-dur-ui) var(--kb-ease-out), border-color var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-next-shot :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; filter: grayscale(0.35) brightness(0.86); transition: filter var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) { .kb-next:hover .kb-next-shot { transform: translateY(-4px); border-color: var(--kb-rule-2); } .kb-next:hover .kb-next-shot :global(img) { filter: none; } }
+  .kb-next:focus-visible .kb-next-shot :global(img) { filter: none; }
   .kb-next:focus-visible .kb-next-title { transform: translateX(10px); }
-  @media (prefers-reduced-motion: reduce) { .kb-toc-link, .kb-toc-m-i, .kb-next-title, .kb-next-arrow { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .kb-toc-link, .kb-toc-m-i, .kb-next-title, .kb-next-arrow, .kb-next-shot, .kb-next-shot :global(img) { transition: none; } }
 </style>

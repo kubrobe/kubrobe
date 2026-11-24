@@ -34,7 +34,7 @@
 
   --kb-margin: max(16px, 4vw);
   --kb-gutter: clamp(16px, 1.6vw, 24px);
-  --kb-space-section: clamp(72px, 11vw, 176px);
+  --kb-space-section: clamp(64px, 8vw, 128px);
   --kb-space-block: clamp(32px, 5vw, 72px);
   --kb-bar-h: 52px;
   --kb-mobile-bar-h: 0px;

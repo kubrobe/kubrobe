@@ -1,0 +1,97 @@
+---
+/**
+ * One entry in the Work catalogue: its code, title, summary, a spec block read from the
+ * entry's own data, and up to three of its real screens. The whole card is one link.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import StatusGlyph from './StatusGlyph.astro';
+import { code, workTypeLabel } from '@/lib/entries';
+interface Props { entry: CollectionEntry<'work'> }
+const { entry } = Astro.props;
+const d = entry.data;
+const shots = d.gallery.slice(0, 3);
+const spec: [string, string][] = [
+  ['Type', workTypeLabel[d.type]],
+  ['Year', String(d.year)],
+  ...(d.role ? [['Role', d.role] as [string, string]] : []),
+  ...(d.stack.length ? [['Stack', d.stack.join(' · ')] as [string, string]] : []),
+];
+---
+<li class="kb-card" data-type={d.type} data-status={d.status} data-reveal>
+  <a href={`/work/${entry.id}/`} class="kb-card-a group" aria-describedby={`kb-card-${d.number}-d`}>
+    <span class="kb-card-code" aria-hidden="true">{code(d.number)}</span>
+    <span class="kb-card-body">
+      <span class="kb-card-top kb-meta"><span class="sr-only">Entry {code(d.number)}, </span><StatusGlyph kind="work" status={d.status} /></span>
+      <span class="kb-card-title" style={`view-transition-name:kb-t-${d.number};view-transition-class:kb-title`}>{d.title}</span>
+      {d.placeholder && <span class="kb-ph-tag w-fit">Placeholder</span>}
+      <span id={`kb-card-${d.number}-d`} class="kb-card-sum">{d.summary}</span>
+      <span class="kb-card-spec kb-meta">
+        {spec.map(([k, v]) => <span class:list={['kb-card-kv', (k === 'Role' || k === 'Stack') && 'kb-card-wide']}><span class="kb-card-k">{k}</span><span>{v}</span></span>)}
+      </span>
+      <span class="kb-card-cta kb-meta">Open entry <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span></span>
+    </span>
+    {shots.length > 0 && (
+      <span class="kb-card-strip" aria-hidden="true">
+        {shots.map((g, j) => (
+          <span class="kb-card-shot" style={`--j:${j}`}><Image src={g.src} alt="" widths={[200, 320, 480]} sizes="(min-width: 60rem) 9rem, 40vw" loading="lazy" decoding="async" /></span>
+        ))}
+      </span>
+    )}
+  </a>
+</li>
+<style>
+  .kb-card { border-bottom: 1px solid var(--kb-rule); }
+  .kb-card-a {
+    display: grid; gap: 18px 24px; padding: 28px 0 36px; color: inherit; text-decoration: none;
+    grid-template-columns: minmax(0, 1fr); grid-template-areas: 'code' 'body' 'strip';
+  }
+  .kb-card-code {
+    grid-area: code; font-family: var(--font-mono); font-size: clamp(1.25rem, 0.9rem + 1.5vw, 2.25rem);
+    letter-spacing: -0.02em; line-height: 1; color: var(--kb-ink-3);
+    transition: color var(--kb-dur-micro) var(--kb-ease-out);
+  }
+  .kb-card-body { grid-area: body; display: grid; gap: 14px; align-content: start; min-width: 0; }
+  .kb-card-top { display: flex; gap: 12px; }
+  .kb-card-title {
+    width: fit-content; font-size: var(--text-h2); line-height: 0.95; font-weight: 560; letter-spacing: -0.04em;
+    transition: transform var(--kb-dur-ui) var(--kb-ease-out);
+  }
+  .kb-card-sum { max-width: 52ch; font-size: var(--text-lg); line-height: 1.5; color: var(--kb-ink-2); text-wrap: pretty; }
+  .kb-card-spec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; max-width: 44rem; border-top: 1px solid var(--kb-rule); padding-top: 12px; color: var(--kb-ink-2); }
+  .kb-card-kv { display: grid; gap: 2px; min-width: 0; }
+  .kb-card-wide { grid-column: 1 / -1; }
+  .kb-card-k { color: var(--kb-ink-3); font-size: 0.75rem; letter-spacing: 0.07em; text-transform: uppercase; }
+  .kb-card-cta { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; width: fit-content; color: var(--kb-ink); }
+
+  /* Screens: a scroll-snapped strip on phones, a staggered column of three on wide screens. */
+  .kb-card-strip { grid-area: strip; display: grid; grid-auto-flow: column; grid-auto-columns: 42%; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .kb-card-strip::-webkit-scrollbar { display: none; }
+  .kb-card-shot { display: block; aspect-ratio: 9 / 19.5; overflow: clip; scroll-snap-align: start; background: var(--kb-raised); border: 1px solid var(--kb-rule); transition: transform var(--kb-dur-ui) var(--kb-ease-out), border-color var(--kb-dur-ui) var(--kb-ease-out); transition-delay: calc(var(--j) * 40ms); }
+  .kb-card-shot :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; filter: grayscale(0.35) brightness(0.86); transition: filter var(--kb-dur-ui) var(--kb-ease-out); }
+
+  @media (min-width: 48rem) {
+    .kb-card-a { grid-template-columns: 8rem minmax(0, 1fr); grid-template-areas: 'code body' '. strip'; }
+    .kb-card-code { padding-top: 0.2rem; }
+    .kb-card-strip { grid-auto-columns: minmax(0, 1fr); grid-auto-flow: unset; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; max-width: 30rem; }
+  }
+  @media (min-width: 60rem) {
+    .kb-card-a { grid-template-columns: 11rem minmax(0, 1fr) minmax(18rem, 24rem); grid-template-areas: 'code body strip'; padding: 48px 0 56px; gap: 0 clamp(24px, 3vw, 56px); }
+    .kb-card-strip { max-width: none; align-self: start; }
+    .kb-card-shot:nth-child(2) { margin-top: 32px; }
+    .kb-card-shot:nth-child(3) { margin-top: 16px; }
+  }
+
+  @media (hover: hover) {
+    .kb-card-a:hover .kb-card-code { color: var(--kb-ink); }
+    .kb-card-a:hover .kb-card-title { transform: translateX(10px); }
+    .kb-card-a:hover .kb-card-shot { transform: translateY(-6px); border-color: var(--kb-rule-2); }
+    .kb-card-a:hover .kb-card-shot :global(img) { filter: none; }
+    .kb-card-a:hover .kb-card-cta .kb-arrow { transform: translateX(4px); color: var(--kb-jade); }
+  }
+  .kb-card-a:focus-visible { outline: 2px solid var(--kb-jade); outline-offset: 6px; }
+  .kb-card-a:focus-visible .kb-card-code { color: var(--kb-ink); }
+  .kb-card-a:focus-visible .kb-card-title { transform: translateX(10px); }
+  .kb-card-a:focus-visible .kb-card-shot :global(img) { filter: none; }
+  @media (prefers-reduced-motion: reduce) { .kb-card-title, .kb-card-shot, .kb-card-shot :global(img), .kb-card-code { transition: none; } }
+</style>

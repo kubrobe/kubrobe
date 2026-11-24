@@ -1,22 +1,71 @@
 ---
 import Base from '@/layouts/Base.astro';
 import PageHead from '@/components/PageHead.astro';
-import EntryHead from '@/components/EntryHead.astro';
-import EntryRow from '@/components/EntryRow.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import StatusLegend from '@/components/StatusLegend.astro';
 import Empty from '@/components/Empty.astro';
-import { getWork, workTypeLabel, pad } from '@/lib/entries';
+import { getWork, workTypeLabel, pad, type Status } from '@/lib/entries';
 const work = await getWork();
+// Filter by type, built only from the types that actually occur. Radio buttons + :has(), so it works without JavaScript.
+const types = [...new Set(work.map((w) => w.data.type))];
+const counts = Object.fromEntries(types.map((t) => [t, work.filter((w) => w.data.type === t).length]));
+const filter = types.length > 1;
+const rules = types.map((t) => `.kb-cat:has(#kb-f-${t}:checked) .kb-card:not([data-type="${t}"]){display:none}`).join('');
+const statuses = [...new Set(work.map((w) => w.data.status))] as Status[];
 ---
 <Base title="Work" description="Projects and case studies by Kubrobe: SkillSwap, a skill-exchange platform, and Doran, an offline Korean-learning app.">
   <PageHead marker="Archive" label="Work" title="Work">
     <p class="kb-meta mt-6 text-ink-2">{pad(work.length)} entries</p>
   </PageHead>
-  <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main">
+  <div class="kb-wrap pb-20"><div class="kb-grid"><div class="kb-main kb-cat">
     {work.length ? (
       <>
-        <EntryHead />
-        <ol>{work.map((w) => <EntryRow href={`/work/${w.id}/`} number={w.data.number} title={w.data.title} kind="work" status={w.data.status} type={workTypeLabel[w.data.type]} year={w.data.year} placeholder={w.data.placeholder} preview={w.data.gallery[0]?.src} />)}</ol>
+        <div class="kb-cat-bar flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-b border-rule pb-3">
+          {filter && (
+            <fieldset class="kb-filter">
+              <legend class="kb-label mb-2 text-ink-3">Show</legend>
+              <div class="flex flex-wrap gap-2">
+                <input type="radio" name="kb-f" id="kb-f-all" value="all" class="kb-f-in sr-only" checked />
+                <label for="kb-f-all" class="kb-f-l">All <span class="text-ink-3">{pad(work.length)}</span></label>
+                {types.map((t) => (
+                  <>
+                    <input type="radio" name="kb-f" id={`kb-f-${t}`} value={t} class="kb-f-in sr-only" />
+                    <label for={`kb-f-${t}`} class="kb-f-l">{workTypeLabel[t]} <span class="text-ink-3">{pad(counts[t] ?? 0)}</span></label>
+                  </>
+                ))}
+              </div>
+            </fieldset>
+          )}
+          <StatusLegend kind="work" statuses={statuses} class="self-end" />
+        </div>
+        {filter && <style is:inline set:html={rules}></style>}
+        <p class="sr-only" aria-live="polite" data-kb-f-status></p>
+        <ol class="kb-cards">{work.map((w) => <WorkCard entry={w} />)}</ol>
       </>
     ) : <Empty />}
   </div></div></div>
 </Base>
+<script>
+  // Announces the result of a filter change; the filtering itself is pure CSS.
+  const out = document.querySelector<HTMLElement>('[data-kb-f-status]');
+  const cards = [...document.querySelectorAll<HTMLElement>('.kb-card')];
+  document.querySelectorAll<HTMLInputElement>('.kb-f-in').forEach((r) => r.addEventListener('change', () => {
+    if (!out) return;
+    const shown = cards.filter((c) => getComputedStyle(c).display !== 'none').length;
+    out.textContent = `Showing ${shown} of ${cards.length} entries`;
+  }));
+</script>
+<style>
+  .kb-cards { margin: 0; padding: 0; list-style: none; }
+  .kb-filter { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .kb-f-l {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; cursor: pointer;
+    font-family: var(--font-mono); font-size: var(--text-meta); color: var(--kb-ink-2);
+    border: 1px solid var(--kb-rule); transition: color var(--kb-dur-micro) var(--kb-ease-out), border-color var(--kb-dur-micro) var(--kb-ease-out), background-color var(--kb-dur-micro) var(--kb-ease-out);
+  }
+  @media (hover: hover) { .kb-f-l:hover { color: var(--kb-ink); border-color: var(--kb-rule-2); } }
+  .kb-f-in:checked + .kb-f-l { color: var(--kb-surface); background: var(--kb-ink); border-color: var(--kb-ink); }
+  .kb-f-in:checked + .kb-f-l span { color: inherit; opacity: 0.7; }
+  .kb-f-in:focus-visible + .kb-f-l { outline: 2px solid var(--kb-jade); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .kb-f-l { transition: none; } }
+</style>

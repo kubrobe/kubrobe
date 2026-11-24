@@ -1,0 +1,15 @@
+---
+/** Key to the status glyphs used on every entry. Shows only the statuses that actually occur. */
+import Glyph from './Glyph.astro';
+import { statusLabel, type Kind, type Status } from '@/lib/entries';
+interface Props { kind: Kind; statuses: Status[]; class?: string }
+const { kind, statuses, class: cls } = Astro.props;
+const order: Status[] = ['complete', 'in-progress', 'planned'];
+const shown = order.filter((s) => statuses.includes(s));
+---
+{shown.length > 0 && (
+  <p class:list={['kb-meta flex flex-wrap items-center gap-x-5 gap-y-1 text-ink-2', cls]}>
+    <span class="text-ink-3">Key</span>
+    {shown.map((s) => <span class="inline-flex items-center gap-1.5"><Glyph status={s} class="text-ink" />{statusLabel(kind, s)}</span>)}
+  </p>
+)}

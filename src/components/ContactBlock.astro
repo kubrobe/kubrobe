@@ -36,7 +36,7 @@ const domain = (href: string) => new URL(href).hostname.replace(/^www\./, '');
     {phone && (
       <div class="grid gap-3" data-reveal>
         <p class="kb-label">Phone</p>
-        <a href={phone.href} class="kb-cb-phone kb-draw w-fit" aria-label={phone.action}>{phone.handle}</a>
+        <a href={phone.href} class="kb-cb-phone kb-draw inline-flex min-h-11 w-fit items-center" aria-label={phone.action}>{phone.handle}</a>
       </div>
     )}
     <p class="max-w-[46ch] text-ink-2" data-reveal>Questions about a project, or anything else on this site.</p>

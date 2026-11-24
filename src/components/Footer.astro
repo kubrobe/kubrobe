@@ -1,11 +1,15 @@
 ---
-import ContactBlock from './ContactBlock.astro';
-import { contact } from '@/data/site';
+/**
+ * Site footer. On every page except /contact/ it opens with a compact contact strip:
+ * the email (with copy), the profiles by name, and a link to the full contact page.
+ * All contact data comes from src/data/site.ts.
+ */
+import CopyEmail from './CopyEmail.astro';
+import { contact, externalAttrs } from '@/data/site';
 import { profile } from '@/data/profile';
 import { getNav } from '@/lib/nav';
 import pkg from '../../package.json';
 const sha = import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
-// The contact page carries the full block itself; every other page closes with it.
 const onContact = /^\/contact\/?$/.test(Astro.url.pathname);
 const showContact = contact.channels.length > 0 && !onContact;
 const nav = await getNav();
@@ -13,8 +17,35 @@ const year = new Date().getFullYear();
 ---
 <footer id="contact" class="kb-foot kb-wrap border-t border-rule pb-6 lg:pb-8" aria-labelledby={showContact ? 'contact-h' : undefined} aria-label={showContact ? undefined : 'Site footer'}>
   {showContact && (
-    <div class="pt-[clamp(56px,9vw,128px)] pb-[clamp(48px,7vw,104px)]">
-      <ContactBlock />
+    <div class="kb-grid gap-y-6 py-[clamp(40px,6vw,80px)]">
+      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-1">
+        <span class="text-ink lg:block">@</span><h2 id="contact-h" class="inline">Contact</h2>
+      </div>
+      {contact.email && (
+        <div class="grid content-start gap-2 md:col-span-6 lg:col-[3/8]">
+          <p class="kb-label">Email</p>
+          <CopyEmail email={contact.email} compact />
+        </div>
+      )}
+      {contact.social.length > 0 && (
+        <div class="grid content-start gap-2 md:col-span-3 lg:col-[8/11]">
+          <p class="kb-label">Elsewhere</p>
+          <ul class="kb-foot-social flex flex-wrap gap-x-5">
+            {contact.social.map((c) => (
+              <li>
+                <a href={c.href} {...externalAttrs} class="kb-draw inline-flex min-h-11 items-center gap-1">
+                  {c.label}<span class="kb-arrow kb-meta text-ink-3" data-dir="ne" aria-hidden="true">↗</span>
+                  <span class="sr-only"> ({c.handle}, opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div class="grid content-start gap-2 md:col-span-3 lg:col-[11/13] lg:justify-items-end">
+        <p class="kb-label lg:text-right">Everything</p>
+        <a href="/contact/" class="kb-btn kb-btn--line w-fit gap-3 whitespace-nowrap">All contact details <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span></a>
+      </div>
     </div>
   )}
   <div class="kb-colophon kb-meta border-t border-rule pt-4 text-ink-2">
@@ -31,4 +62,5 @@ const year = new Date().getFullYear();
 <style>
   .kb-colophon { display: grid; gap: 4px 24px; align-items: center; }
   @media (min-width: 48rem) { .kb-colophon { grid-template-columns: auto auto minmax(0, 1fr); } .kb-colophon > :last-child { justify-self: end; text-align: right; } }
+  .kb-foot-social a:hover .kb-arrow { color: var(--kb-jade); }
 </style>

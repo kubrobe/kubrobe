@@ -37,7 +37,7 @@ const rail = (id: string) => sections.find((s) => s.id === id)!;
       <div class="grid min-w-0 content-start gap-5 text-lg md:col-span-6 lg:col-[3/9]">
         {profile.about.map((p, i) => <p data-reveal class:list={[i === 0 ? 'kb-bio-lead text-ink' : 'text-ink-2', 'max-w-[58ch] text-pretty']}>{p}</p>)}
       </div>
-      <aside class="md:col-span-6 lg:col-[9/13] lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:self-start" aria-label="At a glance">
+      <div class="md:col-span-6 lg:col-[9/13] lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:self-start">
         <p class="kb-label mb-3">At a glance</p>
         <Facts only={['Name', 'Age', 'Based']} />
         {contact.channels.length > 0 && (
@@ -52,7 +52,7 @@ const rail = (id: string) => sections.find((s) => s.id === id)!;
             ))}
           </ul>
         )}
-      </aside>
+      </div>
     </div>
   </section>
 

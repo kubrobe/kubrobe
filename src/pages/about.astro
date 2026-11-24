@@ -6,7 +6,7 @@ import NowList from '@/components/profile/NowList.astro';
 import Interests from '@/components/profile/Interests.astro';
 import StatusGlyph from '@/components/StatusGlyph.astro';
 import { profile, yearLabel } from '@/data/profile';
-import { contact } from '@/data/site';
+import { contact, externalAttrs } from '@/data/site';
 import { getWork, workTypeLabel, code } from '@/lib/entries';
 
 const work = await getWork();
@@ -35,7 +35,7 @@ const rail = (id: string) => sections.find((s) => s.id === id)!;
       <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3"><span class="text-ink lg:block">{rail('bio').n}</span><span>{rail('bio').label}</span></div>
       <h2 id="bio-h" class="sr-only">Biography</h2>
       <div class="grid min-w-0 content-start gap-5 text-lg md:col-span-6 lg:col-[3/9]">
-        {profile.about.map((p, i) => <p data-reveal class:list={[i === 0 ? 'text-ink' : 'text-ink-2', 'max-w-[60ch] text-pretty']}>{p}</p>)}
+        {profile.about.map((p, i) => <p data-reveal class:list={[i === 0 ? 'kb-bio-lead text-ink' : 'text-ink-2', 'max-w-[58ch] text-pretty']}>{p}</p>)}
       </div>
       <aside class="md:col-span-6 lg:col-[9/13] lg:sticky lg:top-[calc(var(--kb-bar-h)+28px)] lg:self-start" aria-label="At a glance">
         <p class="kb-label mb-3">At a glance</p>
@@ -44,8 +44,9 @@ const rail = (id: string) => sections.find((s) => s.id === id)!;
           <ul class="kb-meta border-b border-rule">
             {contact.channels.map((c) => (
               <li class="border-t border-rule first:border-t-0">
-                <a href={c.href} rel={c.external ? 'me noopener' : undefined} class="kb-about-ch grid min-h-11 grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 no-underline">
+                <a href={c.href} {...(c.external ? externalAttrs : {})} class="kb-about-ch grid min-h-11 grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 no-underline">
                   <span class="text-ink-3">{c.label}</span><span class="truncate">{c.handle}</span><span class="kb-arrow text-ink-2" data-dir={c.external ? 'ne' : 'e'} aria-hidden="true">{c.external ? '↗' : '→'}</span>
+                  <span class="sr-only">{c.action}{c.external && ' (opens in a new tab)'}</span>
                 </a>
               </li>
             ))}
@@ -129,7 +130,8 @@ const rail = (id: string) => sections.find((s) => s.id === id)!;
   </section>
 </Base>
 <style>
-  .kb-about-sec { padding-block: clamp(48px, 7vw, 112px); }
+  .kb-about-sec { padding-block: clamp(56px, 8vw, 128px); }
+  .kb-bio-lead { font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.75rem); line-height: 1.4; letter-spacing: -0.01em; }
   .kb-about-wt { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
   @media (hover: hover) { .kb-about-w:hover .kb-about-wt { transform: translateX(6px); } .kb-about-ch:hover .kb-arrow { color: var(--kb-jade); } }
   .kb-about-w:focus-visible .kb-about-wt { transform: translateX(6px); }

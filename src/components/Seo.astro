@@ -13,6 +13,7 @@ const SITE = meta.brand;
 const fallback = [profile.statement.replaceAll('*', ''), profile.intro].join(' ');
 const isHome = Astro.url.pathname === '/';
 const isAbout = /^\/about\/?$/.test(Astro.url.pathname);
+const isContact = /^\/contact\/?$/.test(Astro.url.pathname);
 // Person data: verified, approved facts only (no birth date, so no age field).
 const person = (origin: URL) => ({
   '@type': 'Person',
@@ -23,13 +24,14 @@ const person = (origin: URL) => ({
   alternateName: profile.brand,
   url: new URL('/', origin).href,
   ...(contact.email ? { email: `mailto:${contact.email}` } : {}),
+  ...(contact.phone ? { telephone: contact.phone } : {}),
   sameAs: contact.sameAs,
   homeLocation: { '@type': 'Place', name: `${profile.location.hometown}, ${profile.location.region}, ${profile.location.country}` },
   affiliation: { '@type': 'CollegeOrUniversity', name: profile.education.institution },
   knowsAbout: profile.interests.flatMap((g) => g.items.map((i) => i.title)),
 });
-const ld = (origin: URL) => isAbout
-  ? { '@context': 'https://schema.org', '@type': 'ProfilePage', url: new URL('/about/', origin).href, mainEntity: person(origin) }
+const ld = (origin: URL) => isAbout || isContact
+  ? { '@context': 'https://schema.org', '@type': isAbout ? 'ProfilePage' : 'ContactPage', url: new URL(Astro.url.pathname, origin).href, mainEntity: person(origin) }
   : { '@context': 'https://schema.org', '@graph': [
       { '@type': 'WebSite', '@id': new URL('/#website', origin).href, name: SITE, url: new URL('/', origin).href, description, author: { '@id': new URL('/#person', origin).href } },
       person(origin),
@@ -59,7 +61,7 @@ const image = hasDomain && site ? new URL('/og.png', site) : undefined;
 {image && !noindex && <meta property="og:image:height" content="630" />}
 {image && !noindex && <meta property="og:image:alt" content={meta.ogImageAlt} />}
 <meta name="twitter:card" content={image && !noindex ? 'summary_large_image' : 'summary'} />
-{canonical && !noindex && site && (isHome || isAbout) && (
+{canonical && !noindex && site && (isHome || isAbout || isContact) && (
   <script type="application/ld+json" set:html={JSON.stringify(ld(site))} />
 )}
 <meta name="twitter:title" content={fullTitle} />

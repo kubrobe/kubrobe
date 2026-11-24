@@ -1,23 +1,55 @@
 ---
-/** Current activities, each with its status glyph and, where one exists, a link to the evidence. */
+/**
+ * Current activities as a ledger: status glyph, a short name to scan by, its context, one sentence,
+ * and a link to the evidence where one exists. Data: profile.now.
+ */
 import Glyph from '@/components/Glyph.astro';
 import { profile } from '@/data/profile';
 ---
 <ol class="kb-now">
-  {profile.now.map((n) => (
-    <li class="kb-now-li" data-reveal>
-      <Glyph status={n.status ?? 'in-progress'} class="kb-now-g" />
-      {n.href
-        ? <a href={n.href} class="kb-now-a">{n.text}<span class="kb-arrow ml-2 text-ink-3" data-dir="e" aria-hidden="true">→</span></a>
-        : <span>{n.text}</span>}
-    </li>
-  ))}
+  {profile.now.map((n) => {
+    const inner = (
+      <>
+        <span class="kb-now-g" aria-hidden="true"><Glyph status={n.status ?? 'in-progress'} /></span>
+        <span class="kb-now-head">
+          <span class="kb-now-l">{n.label}</span>
+          {n.context && <span class="kb-now-c kb-meta">{n.context}</span>}
+        </span>
+        <span class="kb-now-t">{n.text}</span>
+        {n.href && <span class="kb-now-arrow kb-arrow kb-meta" data-dir="e" aria-hidden="true">→</span>}
+      </>
+    );
+    return (
+      <li data-reveal>
+        {n.href ? <a href={n.href} class="kb-now-row kb-now-link">{inner}</a> : <div class="kb-now-row">{inner}</div>}
+      </li>
+    );
+  })}
 </ol>
 <style>
-  .kb-now { display: grid; border-top: 1px solid var(--kb-rule); }
-  .kb-now-li { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: 10px; align-items: baseline; padding-block: 14px; border-bottom: 1px solid var(--kb-rule); font-size: var(--text-lg); line-height: 1.45; text-wrap: pretty; }
-  .kb-now-li :global(.kb-now-g) { color: var(--kb-jade); transform: translateY(1px); }
-  .kb-now-a { text-decoration: none; transition: color var(--kb-dur-micro) var(--kb-ease-out); }
-  @media (hover: hover) { .kb-now-a:hover { color: var(--kb-ink); } .kb-now-a:hover .kb-arrow { color: var(--kb-ink); } }
-  .kb-now-a:focus-visible { outline-offset: 4px; }
+  .kb-now { border-top: 1px solid var(--kb-rule); }
+  .kb-now > li { border-bottom: 1px solid var(--kb-rule); }
+  .kb-now-row {
+    display: grid; grid-template-columns: 1.25rem minmax(0, 1fr) auto; grid-template-areas: 'g head arrow' '. text arrow';
+    gap: 6px 12px; align-items: baseline; padding-block: 16px; text-decoration: none; color: inherit;
+  }
+  .kb-now-g { grid-area: g; color: var(--kb-jade); font-size: 0.875rem; }
+  .kb-now-head { grid-area: head; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
+  .kb-now-l { font-size: var(--text-lg); font-weight: 560; letter-spacing: -0.01em; display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-now-c { color: var(--kb-ink-3); }
+  .kb-now-t { grid-area: text; color: var(--kb-ink-2); max-width: 52ch; text-wrap: pretty; }
+  .kb-now-arrow { grid-area: arrow; color: var(--kb-ink-3); align-self: center; }
+  @media (min-width: 48rem) {
+    .kb-now-row { grid-template-columns: 1.25rem minmax(9rem, 2fr) minmax(0, 5fr) auto; grid-template-areas: 'g head text arrow'; gap: 0 16px; }
+    .kb-now-head { flex-direction: column; gap: 2px; }
+  }
+  @media (hover: hover) {
+    .kb-now-link:hover .kb-now-l { transform: translateX(6px); }
+    .kb-now-link:hover .kb-now-t { color: var(--kb-ink); }
+    .kb-now-link:hover .kb-now-arrow { color: var(--kb-jade); }
+  }
+  .kb-now-link:focus-visible { outline-offset: 2px; }
+  .kb-now-link:focus-visible .kb-now-l { transform: translateX(6px); }
+  .kb-now-t { transition: color var(--kb-dur-micro) var(--kb-ease-out); }
+  @media (prefers-reduced-motion: reduce) { .kb-now-l { transition: none; } }
 </style>

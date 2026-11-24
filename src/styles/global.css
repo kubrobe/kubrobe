@@ -14,7 +14,7 @@
   --kb-raised: #151515;   /* bg-2, charcoal */
   --kb-ink: #f2f2f0;      /* 17.9:1 */
   --kb-ink-2: #a8a8a4;    /* 8.4:1 */
-  --kb-ink-3: #808080;    /* 5.1:1 (4.6:1 on raised) */
+  --kb-ink-3: #8f8e8a;    /* 6.2:1 (5.6:1 on raised); warmer and easier to read at meta size */
   --kb-rule: #242424;
   --kb-rule-2: #3a3a3a;
   /* Jade: the one accent. Focus, active and selected details only; never large fills. */
@@ -74,7 +74,7 @@
   --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
   /* Fluid scale between 375px and 1440px */
-  --text-meta: 0.75rem;
+  --text-meta: 0.8125rem;
   --text-meta--line-height: 1.6;
   --text-sm: 0.875rem;
   --text-body: 1.0625rem;
@@ -151,13 +151,13 @@
     font-family: var(--font-mono);
     font-size: var(--text-meta);
     line-height: 1.6;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     font-variant-numeric: tabular-nums;
   }
   .kb-label {
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--kb-ink-2);
   }

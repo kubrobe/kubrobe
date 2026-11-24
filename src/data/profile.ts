@@ -31,6 +31,10 @@ export interface ToolUse {
 }
 
 export interface NowItem {
+  /** Short name to scan by, e.g. the project. */
+  label: string;
+  /** Where it happens or what it is, in a few words. */
+  context?: string;
   text: string;
   href?: string;
   /** Status glyph shared with work entries. */
@@ -79,9 +83,9 @@ export const profile = {
 
   /** What is happening now. Verified activities only. */
   now: [
-    { text: 'Building Doran, an offline Korean-learning app for Android, on my own.', href: '/work/doran/', status: 'in-progress' },
-    { text: 'Working on SkillSwap, a peer-to-peer skill exchange, across its website and Android app with a university team.', href: '/work/skillswap/', status: 'in-progress' },
-    { text: 'Third year of IT-Business at Ajou University in Tashkent.', status: 'in-progress' },
+    { label: 'Doran', context: 'Solo · Android', text: 'Building an offline Korean-learning app for Android, on my own.', href: '/work/doran/', status: 'in-progress' },
+    { label: 'SkillSwap', context: 'Team · Web and Android', text: 'Working across the website and Android app of a peer-to-peer skill exchange, with a university team.', href: '/work/skillswap/', status: 'in-progress' },
+    { label: 'IT-Business', context: 'Ajou University in Tashkent', text: 'Third year of the bachelor’s degree; graduating in May 2028.', status: 'in-progress' },
   ] as NowItem[],
 
   /** Grouped so they read as directions, not tags. Notes point to evidence only. */

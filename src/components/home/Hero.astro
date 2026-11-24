@@ -5,24 +5,21 @@ import { pad } from '@/lib/entries';
 import { revealWords } from '@/lib/text';
 import type { NavItem } from '@/lib/nav';
 
-interface Props { entries: number; nav: NavItem[]; hasContact: boolean }
-const { entries, nav, hasContact } = Astro.props;
+interface Props { entries: number; nav: NavItem[] }
+const { entries, nav } = Astro.props;
 const clock = profile.showLocalTime && profile.timeZone ? profile.timeZone : undefined;
 const study = [profile.education.major, yearLabel(profile.education.year)].filter(Boolean).join(' · ');
 // Hero navigation: only destinations that exist, with real counts.
-const links = [
-  ...nav.map((n) => ({ href: n.href, label: n.label, count: n.count })),
-  ...(hasContact ? [{ href: '#contact', label: 'Contact', count: undefined }] : []),
-];
+const links = nav.map((n) => ({ href: n.href, label: n.label, count: n.count }));
 ---
 <section class="kb-hero kb-wrap flex flex-col pt-5 pb-10 lg:pt-8 lg:pb-14" aria-labelledby="kb-wordmark">
   <div class="kb-grid kb-meta kb-in text-ink-2" style="--i:0">
     <div class="kb-rail hidden lg:block"><span class="block text-ink">Index</span>{profile.brand}</div>
     <p class="kb-main kb-draw-in grid grid-cols-2 gap-x-6 gap-y-1 pt-2 md:flex md:flex-wrap md:justify-between" style="--i:0">
-      <span class="col-span-2 text-ink md:col-span-1">{profile.name}</span>
-      <span class="col-span-2 md:col-span-1">{profile.location.display}{clock && <> · <time data-clock={clock}>--:--</time></>}</span>
-      {study && <span class="whitespace-nowrap">{study}</span>}
-      {entries > 0 && <span class="whitespace-nowrap text-right md:text-left">Entries {pad(entries, 3)}</span>}
+      <span class="kb-in col-span-2 text-ink md:col-span-1" style="--i:1">{profile.name}</span>
+      <span class="kb-in col-span-2 md:col-span-1" style="--i:2">{profile.location.display}{clock && <> · <time data-clock={clock}>--:--</time></>}</span>
+      {study && <span class="kb-in whitespace-nowrap" style="--i:3">{study}</span>}
+      {entries > 0 && <span class="kb-in whitespace-nowrap text-right md:text-left" style="--i:4">Entries {pad(entries, 3)}</span>}
     </p>
   </div>
 
@@ -34,19 +31,19 @@ const links = [
     <div class="kb-rail kb-meta kb-in hidden text-ink-2 lg:block" style="--i:6">
       <span class="block text-ink">01</span>Statement
     </div>
-    <div class="kb-in grid min-w-0 content-start gap-5 md:col-span-6 lg:col-[3/10]" style="--i:7">
+    <div class="grid min-w-0 content-start gap-5 md:col-span-6 lg:col-[3/10]">
       <p class="kb-statement text-balance">
         <Fragment set:html={revealWords(profile.statement)} />
       </p>
-      <p class="kb-meta max-w-[46ch] text-ink-2">
+      <p class="kb-in kb-hero-id max-w-[40ch] text-ink-2" style="--i:9">
         <span class="text-ink">{profile.name}</span>, {profile.education.major} student at {profile.education.institution}.
       </p>
     </div>
     {links.length > 0 && (
-      <nav aria-label="Contents" class="kb-in md:col-span-6 lg:col-[10/13] lg:self-end" style="--i:8">
+      <nav aria-label="Contents" class="md:col-span-6 lg:col-[10/13] lg:self-end">
         <ol class="border-b border-rule md:max-lg:grid md:max-lg:grid-cols-3 md:max-lg:gap-x-[var(--kb-gutter)] md:max-lg:border-t md:max-lg:border-b-0">
           {links.map((l, i) => (
-            <li class="border-t border-rule md:max-lg:border-t-0 md:max-lg:border-b">
+            <li class="kb-in border-t border-rule md:max-lg:border-t-0 md:max-lg:border-b" style={`--i:${10 + i}`}>
               <a href={l.href} class="kb-hero-link group flex min-h-12 items-center justify-between gap-4 py-2 no-underline">
                 <span class="flex items-baseline gap-3">
                   <span class="kb-meta text-ink-3 transition-colors duration-[var(--kb-dur-micro)] group-hover:text-jade group-focus-visible:text-jade">{pad(i + 1)}</span>
@@ -69,6 +66,7 @@ const links = [
   @media (min-width: 60rem) and (min-height: 600px) {
     .kb-hero { min-height: calc(100svh - var(--kb-bar-h) - var(--kb-mobile-bar-h) - env(safe-area-inset-top)); }
   }
+  .kb-hero-id { font-size: var(--text-lg); line-height: 1.45; }
   .kb-statement {
     font-size: clamp(2rem, 1.2rem + 3.4vw, 4.25rem);
     line-height: 1.02;

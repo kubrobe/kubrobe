@@ -1,7 +1,7 @@
 ---
 import Facts from '@/components/profile/Facts.astro';
 import { profile } from '@/data/profile';
-/** Who is behind KUBROBE: the approved introduction beside the identity card. */
+/** Who is behind KUBROBE: the approved introduction, with the identity card set beside it as its marginal note. */
 ---
 <section id="about" class="kb-wrap kb-section kb-rule" aria-labelledby="intro-h">
   <div class="kb-grid gap-y-10">
@@ -9,10 +9,17 @@ import { profile } from '@/data/profile';
       <span class="text-ink lg:block">02</span><span>Introduction</span>
     </div>
     <h2 id="intro-h" class="sr-only">Introduction</h2>
-    <p data-reveal class="kb-serif min-w-0 text-[clamp(1.875rem,1.25rem+2.7vw,3.75rem)] leading-[1.06] tracking-[-0.015em] text-pretty md:col-span-6 lg:col-[3/10]">{profile.intro}</p>
-    <div class="grid content-start gap-6 md:col-span-4 lg:col-[3/8]">
-      <Facts />
+    <div class="grid min-w-0 content-start gap-8 md:col-span-6 lg:col-[3/9]">
+      <p data-reveal class="kb-intro-lead kb-serif text-pretty">{profile.intro}</p>
       <a href="/about/" class="kb-btn kb-btn--line w-fit gap-3" data-reveal>More about me <span class="kb-arrow" data-dir="e" aria-hidden="true">→</span></a>
     </div>
+    <aside class="md:col-span-6 lg:col-[9/13] lg:pt-3" aria-label="At a glance" data-reveal>
+      <p class="kb-label mb-3">At a glance</p>
+      <Facts />
+    </aside>
   </div>
 </section>
+<style>
+  /* Sized for reading, not display: about 28 characters a line on phones, 34 on desktop. */
+  .kb-intro-lead { font-size: clamp(1.75rem, 1.3rem + 1.9vw, 3rem); line-height: 1.12; letter-spacing: -0.012em; max-width: 24ch; }
+</style>

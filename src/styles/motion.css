@@ -73,7 +73,7 @@
 
   /* ---------- Intro: first arrival at the home page only ---------- */
   html[data-intro] .kb-wm-l { animation: kb-wm-in 900ms var(--kb-ease-mask) both; animation-delay: calc(140ms + var(--d) * 70ms); }
-  html[data-intro] .kb-in { animation: kb-hero-in 700ms var(--kb-ease-out) both; animation-delay: calc(var(--i) * 90ms + 200ms); }
+  html[data-intro] .kb-in { animation: kb-hero-in 600ms var(--kb-ease-out) both; animation-delay: calc(var(--i) * 60ms + 240ms); }
   html[data-intro] .kb-header { animation: kb-hdr 600ms var(--kb-ease-out) 450ms both; }
   html[data-intro] .kb-hero .kb-draw-in::before { animation: kb-rule 900ms var(--kb-ease-mask) both; animation-delay: calc(var(--i, 0) * 90ms + 300ms); }
   html[data-intro] .kb-wd > span { animation: kb-wm-in 800ms var(--kb-ease-out) both; animation-delay: calc(780ms + var(--n) * 42ms); }
@@ -131,3 +131,13 @@
   @keyframes kb-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 }
 @media print { .kb-progress { display: none; } }
+
+/* ---------- Project screens: each screen unmasks in turn as the row arrives ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .kb-ix-shot { animation: kb-shot linear both; }
+    .kb-ix-shot:is(.kb-ix-shot) { animation-timeline: view(); animation-range: entry calc(var(--j, 0) * 8%) entry calc(55% + var(--j, 0) * 8%); }
+    @keyframes kb-shot { from { clip-path: inset(100% 0 0 0); opacity: 0.4; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
+  }
+  @media print { .kb-ix-shot { animation: none !important; } }
+}

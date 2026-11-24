@@ -9,12 +9,12 @@ import Interests from '@/components/profile/Interests.astro';
       <span class="text-ink lg:block">04</span><span>Now</span>
     </div>
     <div class="kb-main grid min-w-0 gap-[var(--kb-space-block)]">
-      <div class="grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,5fr)] lg:gap-x-[var(--kb-gutter)]">
+      <div class="grid gap-8">
         <h2 id="now-h" data-reveal="mask" class="text-h2 font-[560] leading-[0.98] tracking-[-0.035em]">Currently <em class="kb-em">working on</em></h2>
         <NowList />
       </div>
       <div class="grid gap-6">
-        <h3 class="kb-label">Interests</h3>
+        <h3 data-reveal="mask" class="text-h3 font-[560] tracking-[-0.02em]">Interests, in <em class="kb-em">three directions</em></h3>
         <Interests level={4} />
       </div>
     </div>

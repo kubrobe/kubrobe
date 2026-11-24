@@ -1,59 +1,27 @@
 ---
-import CopyEmail from './CopyEmail.astro';
+import ContactBlock from './ContactBlock.astro';
 import { contact } from '@/data/site';
 import { profile } from '@/data/profile';
+import { getNav } from '@/lib/nav';
 import pkg from '../../package.json';
 const sha = import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
-const others = contact.channels.filter((c) => c.label !== 'Email');
-const hasContact = contact.channels.length > 0;
+// The contact page carries the full block itself; every other page closes with it.
+const onContact = /^\/contact\/?$/.test(Astro.url.pathname);
+const showContact = contact.channels.length > 0 && !onContact;
+const nav = await getNav();
 const year = new Date().getFullYear();
 ---
-<footer id="contact" class="kb-foot kb-wrap border-t border-rule pb-6 lg:pb-8" aria-labelledby={hasContact ? 'contact-h' : undefined}>
-  {hasContact && (
-    <div class="kb-grid gap-y-8 pt-[clamp(56px,9vw,128px)] pb-[clamp(48px,7vw,104px)] lg:gap-y-12">
-      <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
-        <span class="text-ink lg:block">@</span><span>Contact</span>
-      </div>
-      <h2 id="contact-h" data-reveal="mask" class="kb-close-h kb-main">Get in <em class="kb-em">touch</em></h2>
-
-      <div class="grid content-start gap-4 md:col-span-6 lg:col-[3/9]" data-reveal>
-        <p class="kb-label">Email</p>
-        {contact.email && <CopyEmail email={contact.email} />}
-        <p class="max-w-[48ch] text-ink-2">Questions about a project, or anything else on this site.</p>
-      </div>
-
-      <div class="grid content-start gap-6 md:col-span-6 lg:col-[9/13]" data-reveal>
-        {others.length > 0 && (
-          <div>
-            <p class="kb-label mb-3">Elsewhere</p>
-            <ul class="border-t border-rule">
-              {others.map((c) => (
-                <li class="border-b border-rule">
-                  <a href={c.href} class="kb-ch group grid min-h-12 grid-cols-[6rem_minmax(0,1fr)_auto] items-center gap-3 py-2 no-underline" rel={c.external ? 'me noopener' : undefined}>
-                    <span class="kb-ch-l">{c.label}</span>
-                    <span class="kb-meta truncate text-ink-2">{c.handle}</span>
-                    <span class="kb-meta kb-arrow text-ink-2" data-dir="ne" aria-hidden="true">↗</span>
-                    {c.external && <span class="sr-only">(opens another site)</span>}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <dl class="kb-meta grid grid-cols-[6rem_minmax(0,1fr)] gap-x-3 gap-y-1 text-ink-2">
-          <dt class="text-ink-3">Based</dt><dd>{profile.location.display}</dd>
-          <dt class="text-ink-3">Time zone</dt><dd>Tashkent, UTC+5</dd>
-        </dl>
-      </div>
+<footer id="contact" class="kb-foot kb-wrap border-t border-rule pb-6 lg:pb-8" aria-labelledby={showContact ? 'contact-h' : undefined} aria-label={showContact ? undefined : 'Site footer'}>
+  {showContact && (
+    <div class="pt-[clamp(56px,9vw,128px)] pb-[clamp(48px,7vw,104px)]">
+      <ContactBlock />
     </div>
   )}
-
   <div class="kb-colophon kb-meta border-t border-rule pt-4 text-ink-2">
     <p class="text-ink">© {year} {profile.name}</p>
     <nav aria-label="Footer">
       <ul class="flex flex-wrap gap-x-5">
-        <li><a class="kb-draw inline-flex min-h-11 items-center" href="/work/">Work</a></li>
-        <li><a class="kb-draw inline-flex min-h-11 items-center" href="/about/">About</a></li>
+        {nav.map((n) => <li><a class="kb-draw inline-flex min-h-11 items-center" href={n.href}>{n.label}</a></li>)}
         <li><a class="kb-draw inline-flex min-h-11 items-center" href="#main">Top <span aria-hidden="true" class="kb-arrow ml-1" data-dir="n">↑</span></a></li>
       </ul>
     </nav>
@@ -61,11 +29,6 @@ const year = new Date().getFullYear();
   </div>
 </footer>
 <style>
-  .kb-close-h { font-size: clamp(3rem, 1.2rem + 8vw, 9.5rem); line-height: 0.88; font-weight: 600; letter-spacing: -0.05em; }
-  .kb-ch-l { display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
-  @media (hover: hover) { .kb-ch:hover .kb-ch-l { transform: translateX(6px); } .kb-ch:hover .kb-arrow { color: var(--kb-jade); } }
-  .kb-ch:focus-visible { outline-offset: 2px; }
-  .kb-ch:focus-visible .kb-ch-l { transform: translateX(6px); }
   .kb-colophon { display: grid; gap: 4px 24px; align-items: center; }
   @media (min-width: 48rem) { .kb-colophon { grid-template-columns: auto auto minmax(0, 1fr); } .kb-colophon > :last-child { justify-self: end; text-align: right; } }
 </style>

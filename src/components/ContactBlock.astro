@@ -1,0 +1,94 @@
+---
+/**
+ * The contact experience, shared by the footer of every page and the /contact/ page.
+ * Email leads (copy action), the phone number is the visible second line, and every
+ * profile on another site is one row with its handle and domain. All data: src/data/site.ts.
+ */
+import CopyEmail from './CopyEmail.astro';
+import { contact, externalAttrs } from '@/data/site';
+import { profile } from '@/data/profile';
+
+interface Props {
+  /** Show the large closing heading (footer). The contact page has its own page heading. */
+  heading?: boolean;
+  /** Show the rail marker. Off on the contact page, whose page heading already names it. */
+  rail?: boolean;
+}
+const { heading = true, rail = true } = Astro.props;
+const phone = contact.channels.find((c) => c.kind === 'phone');
+const domain = (href: string) => new URL(href).hostname.replace(/^www\./, '');
+---
+<div class="kb-cb kb-grid gap-y-10 lg:gap-y-14">
+  {rail && (
+    <div class="kb-rail kb-meta flex gap-3 text-ink-2 lg:block lg:pt-3">
+      <span class="text-ink lg:block">@</span><span>Contact</span>
+    </div>
+  )}
+  {heading && <h2 id="contact-h" data-reveal="mask" class="kb-close-h kb-main">Get in <em class="kb-em">touch</em></h2>}
+
+  <div class="kb-cb-direct grid content-start gap-8 md:col-span-6 lg:col-[3/9]">
+    {contact.email && (
+      <div class="grid gap-3" data-reveal>
+        <p class="kb-label">Email</p>
+        <CopyEmail email={contact.email} />
+      </div>
+    )}
+    {phone && (
+      <div class="grid gap-3" data-reveal>
+        <p class="kb-label">Phone</p>
+        <a href={phone.href} class="kb-cb-phone kb-draw w-fit" aria-label={phone.action}>{phone.handle}</a>
+      </div>
+    )}
+    <p class="max-w-[46ch] text-ink-2" data-reveal>Questions about a project, or anything else on this site.</p>
+  </div>
+
+  <div class="grid content-start gap-8 md:col-span-6 lg:col-[9/13]">
+    {contact.social.length > 0 && (
+      <div data-reveal>
+        <p class="kb-label mb-3">Elsewhere</p>
+        <ul class="kb-cb-list">
+          {contact.social.map((c) => (
+            <li>
+              <a href={c.href} {...externalAttrs} class="kb-cb-row group">
+                <span class="kb-cb-name">{c.label}</span>
+                <span class="kb-cb-handle kb-meta">{c.handle}<span class="text-ink-3"> · {domain(c.href)}</span></span>
+                <span class="kb-cb-arrow kb-arrow kb-meta" data-dir="ne" aria-hidden="true">↗</span>
+                <span class="sr-only">{c.action} (opens in a new tab)</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+    <dl class="kb-meta grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-ink-2" data-reveal>
+      <dt class="text-ink-3">Based</dt><dd>{profile.location.display}</dd>
+      <dt class="text-ink-3">Time zone</dt><dd>Tashkent, UTC+5</dd>
+    </dl>
+  </div>
+</div>
+<style>
+  .kb-close-h { font-size: clamp(3rem, 1.2rem + 8vw, 9.5rem); line-height: 0.88; font-weight: 600; letter-spacing: -0.05em; }
+  .kb-cb-phone { font-size: clamp(1.25rem, 1rem + 1.1vw, 1.875rem); line-height: 1.2; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .kb-cb-list { border-top: 1px solid var(--kb-rule); }
+  .kb-cb-list > li { border-bottom: 1px solid var(--kb-rule); }
+  .kb-cb-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'name arrow' 'handle arrow';
+    align-items: center; gap: 2px 12px; min-height: 64px; padding-block: 10px; text-decoration: none; position: relative;
+  }
+  .kb-cb-name { grid-area: name; font-size: var(--text-lg); line-height: 1.3; display: inline-block; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  .kb-cb-handle { grid-area: handle; color: var(--kb-ink-2); transition: transform var(--kb-dur-ui) var(--kb-ease-out), color var(--kb-dur-micro) var(--kb-ease-out); }
+  .kb-cb-arrow { grid-area: arrow; color: var(--kb-ink-2); }
+  /* A jade hairline draws along the row's base on hover or focus. */
+  .kb-cb-row::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--kb-jade); transform: scaleX(0); transform-origin: left; transition: transform var(--kb-dur-ui) var(--kb-ease-out); }
+  @media (hover: hover) {
+    .kb-cb-row:hover .kb-cb-name, .kb-cb-row:hover .kb-cb-handle { transform: translateX(6px); }
+    .kb-cb-row:hover .kb-cb-handle { color: var(--kb-ink); }
+    .kb-cb-row:hover .kb-cb-arrow { color: var(--kb-jade); }
+    .kb-cb-row:hover::after { transform: scaleX(1); }
+  }
+  .kb-cb-row:focus-visible { outline-offset: 2px; }
+  .kb-cb-row:focus-visible .kb-cb-name, .kb-cb-row:focus-visible .kb-cb-handle { transform: translateX(6px); }
+  .kb-cb-row:focus-visible::after { transform: scaleX(1); }
+  .kb-cb-row:active { background: var(--kb-raised); }
+  @media (prefers-reduced-motion: reduce) { .kb-cb-name, .kb-cb-handle, .kb-cb-row::after { transition: none; } }
+</style>

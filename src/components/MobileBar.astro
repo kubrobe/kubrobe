@@ -7,7 +7,7 @@ const isActive = (href: string) => path.startsWith(href) || path === href.replac
 ---
 {nav.length > 0 && (
   <nav aria-label="Primary" style="view-transition-name: kb-mobile-bar" class="kb-mobile-bar fixed inset-x-0 bottom-0 z-50 border-t border-rule bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
-    <ul class="kb-wrap grid h-14 items-stretch" style={`grid-template-columns:repeat(${nav.length + 1},minmax(0,1fr))`}>
+    <ul class="kb-wrap grid h-14 items-stretch" style={`grid-template-columns:repeat(${nav.length},minmax(0,1fr))`}>
       {nav.map((n) => (
         <li class="flex">
           <a
@@ -20,9 +20,6 @@ const isActive = (href: string) => path.startsWith(href) || path === href.replac
           </a>
         </li>
       ))}
-      <li class="flex">
-        <a href="#contact" class="kb-meta relative flex min-h-11 flex-1 items-center justify-center text-ink-2 no-underline transition-colors active:bg-raised">Contact</a>
-      </li>
     </ul>
   </nav>
 )}

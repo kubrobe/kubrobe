@@ -1,0 +1,15 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHead from '@/components/PageHead.astro';
+import ContactBlock from '@/components/ContactBlock.astro';
+import { profile } from '@/data/profile';
+import { contact } from '@/data/site';
+const ways = contact.channels.map((c) => c.label.toLowerCase());
+const description = `How to reach ${profile.name} (${profile.brand}): ${ways.slice(0, -1).join(', ')} and ${ways.at(-1)}.`;
+---
+<Base title="Contact" description={description}>
+  <PageHead marker="@" label="Contact" title="Get in *touch*" lede={`${profile.name}. ${profile.location.display}.`} />
+  <section class="kb-wrap pb-[clamp(56px,9vw,128px)]" aria-label="Contact details">
+    <ContactBlock heading={false} rail={false} />
+  </section>
+</Base>

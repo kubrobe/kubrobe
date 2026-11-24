@@ -75,7 +75,8 @@ const spec: [string, string][] = [
     .kb-card-code { padding-top: 0.2rem; }
     .kb-card-strip { grid-auto-columns: minmax(0, 1fr); grid-auto-flow: unset; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; max-width: 30rem; }
   }
-  @media (min-width: 60rem) {
+  /* Three columns only once the title has room beside the strip. */
+  @media (min-width: 80rem) {
     .kb-card-a { grid-template-columns: 11rem minmax(0, 1fr) minmax(18rem, 24rem); grid-template-areas: 'code body strip'; padding: 48px 0 56px; gap: 0 clamp(24px, 3vw, 56px); }
     .kb-card-strip { max-width: none; align-self: start; }
     .kb-card-shot:nth-child(2) { margin-top: 32px; }

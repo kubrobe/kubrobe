@@ -91,10 +91,11 @@ const { featured, total } = Astro.props;
     .kb-ix-n { flex-direction: column; gap: 2px; padding-top: 0.9rem; }
     .kb-ix-sheet { max-width: 30rem; }
   }
-  @media (min-width: 60rem) {
-    .kb-ix-a { grid-template-columns: 6rem minmax(0, 1fr) minmax(20rem, 28rem); grid-template-areas: 'n body sheet'; padding: 56px 0 64px; gap: 0 clamp(24px, 3vw, 56px); }
+  /* Three columns only once the title has room beside the sheet; below this the two-row plate holds. */
+  @media (min-width: 80rem) {
+    .kb-ix-a { grid-template-columns: 6rem minmax(0, 1fr) minmax(18rem, 24rem); grid-template-areas: 'n body sheet'; padding: 56px 0 64px; gap: 0 clamp(24px, 3vw, 56px); }
     /* Alternate the composition, so consecutive projects read as separate plates rather than a list. */
-    .kb-ix-li:nth-child(even) .kb-ix-a { grid-template-columns: minmax(20rem, 28rem) minmax(0, 1fr) 6rem; grid-template-areas: 'sheet body n'; }
+    .kb-ix-li:nth-child(even) .kb-ix-a { grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr) 6rem; grid-template-areas: 'sheet body n'; }
     .kb-ix-li:nth-child(even) .kb-ix-n { align-items: flex-end; text-align: right; }
     .kb-ix-shot { aspect-ratio: 9 / 19.5; }
     .kb-ix-shot:nth-child(2) { margin-top: 28px; }
